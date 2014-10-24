@@ -1,0 +1,8 @@
+#ifndef vlinder_rtimdb_config_hpp
+#define vlinder_rtimdb_config_hpp
+
+#define RTIMDB_CELL_SIZE @RTIMDB_CELL_SIZE@
+#define RTIMDB_POINT_COUNT @RTIMDB_POINT_COUNT@
+
+#endif
+

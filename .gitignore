@@ -1,0 +1,13 @@
+*.vcxproj
+*.filters
+CMakeCache.txt
+CMakeFiles/
+CMakeLists.txt
+Debug/
+Win32/
+cmake_install.cmake
+*.dir/
+*.opensdf
+*.sdf
+*.sln
+rtimdb_config.hpp
