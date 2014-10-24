@@ -23,8 +23,13 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int const retval(type_end_index - type_start_index);
 		unsigned int const last_index(start_index_[static_cast<unsigned int>(PointType::_type_count__)]);
 		bool dismiss(false);
-		auto rollback = [&](void *){ if (!dismiss) --next_cell_; };
+		auto rollback = [&](void *){ if (!dismiss) { --next_cell_; move(points_ + next_index + 1, end(points_), points_ + next_index); } };
 		unique_ptr< void, decltype(rollback) > scope_guard(&rollback, rollback);
+
+		auto curr_begin(begin(points_) + next_index);
+		auto curr_end(begin(points_) + last_index);
+		auto target_end(begin(points_) + last_index + 1);
+		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
 		(*points_[next_index]).set(value);
 		dismiss = true;
@@ -32,7 +37,6 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int * first = (start_index_ + static_cast<unsigned int>(value.type_) + 1);
 		for_each(first, end(start_index_), [](unsigned int &val){ ++val; });
 		typedef reverse_iterator< remove_reference< decltype(*points_) >::type * > ReverseIterator;
-		move(ReverseIterator(points_ + last_index), ReverseIterator(points_), ReverseIterator(points_ + last_index + 1));
 
 		return retval;
 	}

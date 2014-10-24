@@ -1,0 +1,160 @@
+#include "../database.hpp"
+
+using namespace Vlinder::RTIMDB;
+
+int main()
+{
+	Database database;
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+	database.insert(Point(PointType::binary_input__, false));
+
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+	database.insert(Point(PointType::analog_input__, 0.0));
+
+	auto first_transaction(database.freeze());
+	database.update(PointType::analog_input__, 3, 13.24);
+	database.update(PointType::analog_input__, 5, 26.48);
+	database.update(PointType::analog_input__, 7, 52.96);
+	database.update(PointType::analog_input__, 13, 104.192);
+	auto second_transaction(database.freeze());
+	database.update(PointType::binary_input__, 3, true);
+	database.update(PointType::binary_input__, 5, true);
+	database.update(PointType::binary_input__, 7, true);
+	database.update(PointType::binary_input__, 13, true);
+	database.update(PointType::binary_input__, 17, true);
+
+	// a read using the first transaction should get the old analogs and the old binaries
+	assert(PointType::binary_input__ == database.read(first_transaction, PointType::binary_input__, 3).type_);
+	assert(false == database.read(first_transaction, PointType::binary_input__, 3).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(first_transaction, PointType::binary_input__, 5).type_);
+	assert(false == database.read(first_transaction, PointType::binary_input__, 5).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(first_transaction, PointType::binary_input__, 7).type_);
+	assert(false == database.read(first_transaction, PointType::binary_input__, 7).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(first_transaction, PointType::binary_input__, 13).type_);
+	assert(false == database.read(first_transaction, PointType::binary_input__, 13).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(first_transaction, PointType::binary_input__, 17).type_);
+	assert(false == database.read(first_transaction, PointType::binary_input__, 17).payload_.binary_);
+
+	assert(PointType::analog_input__ == database.read(first_transaction, PointType::analog_input__, 3).type_);
+	assert(0.0 == database.read(first_transaction, PointType::analog_input__, 3).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(first_transaction, PointType::analog_input__, 5).type_);
+	assert(0.0 == database.read(first_transaction, PointType::analog_input__, 5).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(first_transaction, PointType::analog_input__, 7).type_);
+	assert(0.0 == database.read(first_transaction, PointType::analog_input__, 7).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(first_transaction, PointType::analog_input__, 13).type_);
+	assert(0.0 == database.read(first_transaction, PointType::analog_input__, 13).payload_.analog_);
+
+	// a read using the first transaction should get the new analogs and the old binaries
+	assert(PointType::binary_input__ == database.read(second_transaction, PointType::binary_input__, 3).type_);
+	assert(false == database.read(second_transaction, PointType::binary_input__, 3).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(second_transaction, PointType::binary_input__, 5).type_);
+	assert(false == database.read(second_transaction, PointType::binary_input__, 5).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(second_transaction, PointType::binary_input__, 7).type_);
+	assert(false == database.read(second_transaction, PointType::binary_input__, 7).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(second_transaction, PointType::binary_input__, 13).type_);
+	assert(false == database.read(second_transaction, PointType::binary_input__, 13).payload_.binary_);
+	assert(PointType::binary_input__ == database.read(second_transaction, PointType::binary_input__, 17).type_);
+	assert(false == database.read(second_transaction, PointType::binary_input__, 17).payload_.binary_);
+
+	assert(PointType::analog_input__ == database.read(second_transaction, PointType::analog_input__, 3).type_);
+	assert(13.24 == database.read(second_transaction, PointType::analog_input__, 3).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(second_transaction, PointType::analog_input__, 5).type_);
+	assert(26.48 == database.read(second_transaction, PointType::analog_input__, 5).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(second_transaction, PointType::analog_input__, 7).type_);
+	assert(52.96 == database.read(second_transaction, PointType::analog_input__, 7).payload_.analog_);
+	assert(PointType::analog_input__ == database.read(second_transaction, PointType::analog_input__, 13).type_);
+	assert(104.192 == database.read(second_transaction, PointType::analog_input__, 13).payload_.analog_);
+}
