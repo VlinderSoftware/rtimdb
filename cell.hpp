@@ -147,7 +147,8 @@ namespace Vlinder { namespace RTIMDB {
 
 		mutable std::mutex values_lock_;
 		Point values_[cell_size__];
-		std::atomic< unsigned int > frozen_versions_[cell_size__ - 1];
+		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
+		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 	};
 }}
 

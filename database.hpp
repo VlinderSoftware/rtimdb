@@ -48,7 +48,7 @@ namespace Vlinder { namespace RTIMDB {
 		std::pair< Cell< RTIMDB_CELL_SIZE > *const*, Errors > fetch(PointType type, unsigned int index) const;
 		void freezeCells(unsigned int frozen_version);
 
-		std::atomic< unsigned int > frozen_versions_[RTIMDB_CELL_SIZE - 1];
+		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		unsigned int start_index_[static_cast< unsigned int >(PointType::_type_count__) + 1];
 		std::atomic< unsigned int > curr_version_;
 		Cell< RTIMDB_CELL_SIZE > *points_[RTIMDB_POINT_COUNT];
