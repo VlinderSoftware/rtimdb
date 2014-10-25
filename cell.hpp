@@ -7,6 +7,7 @@
 #include <atomic>
 #include <mutex>
 #include <vector>
+#include <cassert>
 
 namespace Vlinder { namespace RTIMDB {
 	template < unsigned int cell_size__ >
@@ -30,6 +31,9 @@ namespace Vlinder { namespace RTIMDB {
 
 		Point get(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
 		{
+			using std::begin;
+			using std::end;
+
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			Point retval;
 			unsigned int highest_version_so_far(0);
@@ -92,6 +96,9 @@ namespace Vlinder { namespace RTIMDB {
 
 		Point* fetchAvailableSlot()
 		{
+			using std::begin;
+			using std::end;
+
 			// find the highest version that's frozen
 			unsigned int highest_frozen_version(0);
 			std::for_each(
@@ -116,6 +123,9 @@ namespace Vlinder { namespace RTIMDB {
 		}
 		Point* findEmptySlot()
 		{
+			using std::begin;
+			using std::end;
+
 			// find out which slots are frozen, which for each frozen version are the slot with the highest version number lower than or equal to the frozen version
 			std::vector< bool > frozen(cell_size__);
 			std::for_each(

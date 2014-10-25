@@ -1,6 +1,7 @@
 #include "database.hpp"
 #include <algorithm>
 #include <cstring>
+#include <atomic>
 
 using namespace std;
 
@@ -17,6 +18,8 @@ namespace Vlinder { namespace RTIMDB {
 	
 	unsigned int Database::insert(Point const &value)
 	{
+		using std::begin;
+		using std::end;
 		unsigned int const type_start_index(start_index_[static_cast< unsigned int >(value.type_)]);
 		unsigned int const type_end_index(start_index_[static_cast< unsigned int >(value.type_) + 1]);
 		unsigned int const next_index(type_end_index);
@@ -129,6 +132,8 @@ namespace Vlinder { namespace RTIMDB {
 		// find an empty slot in freeze_indices_
 		while (true)
 		{
+			using std::begin;
+			using std::end;
 			auto which(find(begin(frozen_versions_), end(frozen_versions_), 0));
 			if (end(frozen_versions_) == which)
 			{
@@ -151,6 +156,9 @@ namespace Vlinder { namespace RTIMDB {
 
 	void Database::thaw(unsigned int frozen_version)
 	{
+		using std::begin;
+		using std::end;
+
 		unsigned int const last_index(start_index_[static_cast<unsigned int>(PointType::_type_count__)]);
 		for_each(cells_, cells_ + last_index, [frozen_version](decltype(cells_[0]) cell){ cell.thaw(frozen_version); });
 		auto which(find(begin(frozen_versions_), end(frozen_versions_), frozen_version));
@@ -170,6 +178,8 @@ namespace Vlinder { namespace RTIMDB {
 
 	void Database::freezeCells(unsigned int frozen_version)
 	{
+		using std::begin;
+		using std::end;
 		bool dismiss(false);
 		auto cell(begin(cells_));
 		auto rollback = [&](void*)
@@ -178,7 +188,7 @@ namespace Vlinder { namespace RTIMDB {
 			{
 				for_each(
 					  reverse_iterator< remove_reference< decltype(cell) >::type >(cell)
-					, rend(cells_)
+					, reverse_iterator< remove_reference< decltype(cell) >::type >(cells_)
 					, [&](Cell< RTIMDB_CELL_SIZE > &c){ c.thaw(frozen_version); }
 					);
 			}
