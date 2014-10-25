@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <cstring>
 #include <atomic>
+#include "exceptions/contract.h"
 
 using namespace std;
 
@@ -42,6 +43,16 @@ namespace Vlinder { namespace RTIMDB {
 		typedef reverse_iterator< remove_reference< decltype(*points_) >::type * > ReverseIterator;
 
 		return retval;
+	}
+
+	Database::const_iterator Database::begin()
+	{
+		return Details::Iterator(this, freeze(), Details::Locator(getPointTypeAtOffset(0), 0));
+	}
+
+	Database::const_iterator Database::end()
+	{
+		return Details::Iterator();
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -91,7 +102,7 @@ namespace Vlinder { namespace RTIMDB {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Point Database::read(Transaction transaction, PointType type, unsigned int index) const
+	Point Database::read(Details::Transaction transaction, PointType type, unsigned int index) const
 	{
 		auto result(read(transaction, type, indexRTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -105,14 +116,14 @@ namespace Vlinder { namespace RTIMDB {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	std::pair< Details::Variant< Point >, Errors > Database::read(Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	std::pair< Details::Variant< Point >, Errors > Database::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
 		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(*transaction) : Details::Variant< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Database::Transaction Database::freeze()
+	Details::Transaction Database::freeze()
 	{
 		auto result(freeze(nothrow));
 		if (Errors::no_error__ == result.second)
@@ -126,7 +137,7 @@ namespace Vlinder { namespace RTIMDB {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	pair < Database::Transaction, Errors > Database::freeze(RTIMDB_NOTHROW_PARAM_1) throw()
+	pair < Details::Transaction, Errors > Database::freeze(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
 		unsigned int frozen_version(curr_version_);
 		// find an empty slot in freeze_indices_
@@ -137,7 +148,7 @@ namespace Vlinder { namespace RTIMDB {
 			auto which(find(begin(frozen_versions_), end(frozen_versions_), 0));
 			if (end(frozen_versions_) == which)
 			{
-				return make_pair(Transaction(), Errors::cannot_freeze__);
+				return make_pair(Details::Transaction(), Errors::cannot_freeze__);
 			}
 			else
 			{ /* try to CAS */ }
@@ -145,7 +156,7 @@ namespace Vlinder { namespace RTIMDB {
 			if (which->compare_exchange_strong(exp, frozen_version))
 			{
 				auto deleter([this, frozen_version](void *p){ thaw(frozen_version); });
-				Transaction retval(which, deleter);
+				Details::Transaction retval(which, deleter);
 				freezeCells(*retval);
 				return make_pair(retval, Errors::no_error__);
 			}
@@ -167,12 +178,12 @@ namespace Vlinder { namespace RTIMDB {
 
 	std::pair< Cell< RTIMDB_CELL_SIZE > *const*, Errors > Database::fetch(PointType type, unsigned int index) const
 	{
-		unsigned int const type_start_index_(start_index_[static_cast< unsigned int >(type)]);
-		unsigned int const type_end_index_(start_index_[static_cast< unsigned int >(type)+1]);
+		unsigned int const type_start_index(start_index_[static_cast< unsigned int >(type)]);
+		unsigned int const type_end_index(start_index_[static_cast< unsigned int >(type)+1]);
 
-		if ((type_end_index_ - type_start_index_) < index) return make_pair(nullptr, Errors::unknown_point__);
+		if ((type_end_index - type_start_index) < index) return make_pair(nullptr, Errors::unknown_point__);
 
-		index += type_start_index_;
+		index += type_start_index;
 		return make_pair(&points_[index], Errors::no_error__);
 	}
 
@@ -197,12 +208,65 @@ namespace Vlinder { namespace RTIMDB {
 		};
 		unique_ptr< void, decltype(rollback) > scope_guard(&rollback, rollback);
 		unsigned int const last_index(start_index_[static_cast<unsigned int>(PointType::_type_count__)]);
-		auto const end(begin(cells_) + last_index);
-		for (; cell != end; ++cell)
+		auto const cells_end(begin(cells_) + last_index);
+		for (; cell != cells_end; ++cell)
 		{
 			cell->freeze(frozen_version);
 		}
 		dismiss = true;
 	}
+
+	unsigned int Database::getPointCount(PointType point_type) const
+	{
+        unsigned int const start_index(start_index_[static_cast< unsigned int >(point_type)]);
+        unsigned int const end_index(start_index_[static_cast< unsigned int >(point_type) + 1]);
+        return end_index - start_index;
+    }
+
+    unsigned int Database::getPointOffset(PointType point_type, unsigned int index) const
+    {
+        unsigned int const type_start_index(start_index_[static_cast< unsigned int >(point_type)]);
+
+        return type_start_index + index;
+    }
+    PointType Database::getPointTypeAtOffset(unsigned int offset) const
+    {
+        using std::begin;
+        using std::end;
+        // find the first point we have
+        auto const rbound(
+            find_if(
+                  begin(start_index_)
+                , end(start_index_)
+                , [offset](decltype(start_index_[0]) start_index)
+                    {
+                        return offset < start_index;
+                    }
+                )
+            );
+        auto const where(rbound - 1);
+        auto const point_type_index(distance(begin(start_index_), where));
+        invariant(point_type_index <= static_cast< unsigned int >(PointType::_type_count__));
+        invariant(point_type_index >= 0);
+        auto const point_type(static_cast< PointType >(point_type_index));
+
+        return point_type;
+    }
+
+	Details::Locator Database::advance(
+		  Details::Locator const &curr_location
+		) const
+	{
+		Details::Locator new_location(curr_location);
+		++new_location.second;
+        if (new_location.second >= getPointCount(new_location.first))
+        {
+            new_location.first = getPointTypeAtOffset(getPointOffset(new_location.first, 0) + new_location.second);
+            new_location.second = 0;
+        }
+        else
+        { /* nothing more to be done */ }
+        return new_location;
+    }
 }}
 

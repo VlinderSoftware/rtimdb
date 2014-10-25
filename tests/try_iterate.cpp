@@ -1,0 +1,112 @@
+#include "../database.hpp"
+
+using namespace Vlinder::RTIMDB;
+using namespace std;
+
+int main()
+{
+	Database database;
+	unsigned int exp_ai_index(0);
+	unsigned int exp_bi_index(0);
+
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+
+	assert(96 == distance(database.begin(), database.end()));
+}
