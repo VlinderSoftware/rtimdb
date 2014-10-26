@@ -20,8 +20,8 @@ using namespace std;
 
 namespace Vlinder { namespace RTIMDB {
 	Database::Database()
-		: next_cell_(0)
-		, curr_version_(1)
+		: curr_version_(1)
+		, next_cell_(0)
 	{
 		memset(start_index_, 0, sizeof(start_index_));
 		memset(points_, 0, sizeof(points_));
@@ -73,7 +73,6 @@ namespace Vlinder { namespace RTIMDB {
 		// as of this, cannot fail
 		unsigned int * first = (start_index_ + static_cast<unsigned int>(value.type_) + 1);
 		for_each(first, end(start_index_), [](unsigned int &val){ ++val; });
-		typedef reverse_iterator< remove_reference< decltype(*points_) >::type * > ReverseIterator;
 
 		return retval;
 	}

@@ -13,13 +13,16 @@
 #ifndef vlinder_rtimdb_details_prologue_hpp
 #define vlinder_rtimdb_details_prologue_hpp
 
-#ifndef RTIMDB_API
-#ifdef rtimdb_EXPORTS
-#define RTIMDB_API __declspec(dllexport)
+#ifdef _MSC_VER
+#	ifndef RTIMDB_API
+#		ifdef rtimdb_EXPORTS
+#			define RTIMDB_API __declspec(dllexport)
+#		else
+#			define RTIMDB_API __declspec(dllimport)
+#		endif
+#	endif
 #else
-#define RTIMDB_API __declspec(dllimport)
+#	define RTIMDB_API
 #endif
-#endif
-
 #endif
 
