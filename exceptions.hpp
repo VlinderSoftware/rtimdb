@@ -11,6 +11,7 @@ namespace Vlinder {	namespace RTIMDB {
 		  no_error__
 		, unknown_point__
 		, cannot_freeze__
+		, not_allowed__
 		};
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::unknown_point__ > UnknownPoint;

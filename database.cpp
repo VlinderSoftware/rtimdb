@@ -35,7 +35,28 @@ namespace Vlinder { namespace RTIMDB {
 		auto target_end(begin(points_) + last_index + 1);
 		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
-		(*points_[next_index]).set(value);
+		(*points_[next_index]).set(Details::Action::update__, value);
+
+		// install the default filter
+		switch (value.type_)
+		{
+		case PointType::binary_input__ :
+			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return false; });
+			break;
+		case PointType::counter__ :
+		case PointType::analog_input__ :
+			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::freeze__) || (action == Details::Action::freeze_and_clear__)); });
+			break;
+		case PointType::binary_output__:
+		case PointType::analog_output__:
+			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::select__) || (action == Details::Action::operate__) || (action == Details::Action::direct_operate__)); });
+			break;
+		case PointType::dataset__:
+		case PointType::octet_string__ :
+			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return action == Details::Action::write__; });
+			break;
+		}
+
 		dismiss = true;
 		// as of this, cannot fail
 		unsigned int * first = (start_index_ + static_cast<unsigned int>(value.type_) + 1);
@@ -68,16 +89,30 @@ namespace Vlinder { namespace RTIMDB {
 	void Database::update(PointType type, unsigned int index, String *value)				{ throwException(update(type, index, value RTIMDB_NOTHROW_ARG)); }
 #endif
 
-	Errors Database::update(PointType type, unsigned int index, bool value                    RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, DoubleBitBinary const &value  RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, uint32_t value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, double value                  RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, Time value                    RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, File *value                   RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, Dataset *value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, uint16_t value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, uint8_t value                 RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
-	Errors Database::update(PointType type, unsigned int index, String *value                 RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { (*fetch_result.first)->set(Point(type, value, ++curr_version_)); return Errors::no_error__; } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, bool value                    RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, DoubleBitBinary const &value  RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, uint32_t value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, double value                  RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, Time value                    RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, File *value                   RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, Dataset *value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, uint16_t value                RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, uint8_t value                 RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+	Errors Database::update(PointType type, unsigned int index, String *value                 RTIMDB_NOTHROW_PARAM) throw() { auto fetch_result(fetch(type, index)); if (Errors::no_error__ == fetch_result.second) { return (*fetch_result.first)->set(Details::Action::update__, Point(type, value, ++curr_version_)); } else { return fetch_result.second; } }
+
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	void Database::registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter)
+	{
+		throwException(registerFilter(type, index, std::move(filter), nothrow));
+	}
+#endif
+	Errors Database::registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
+	{
+		auto cell(fetch(type, index));
+		if (Errors::no_error__ != cell.second) return cell.second;
+		(*cell.first)->registerFilter(std::move(filter));
+		return Errors::no_error__;
+	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Point Database::read(PointType type, unsigned int index) const

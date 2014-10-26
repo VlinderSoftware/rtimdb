@@ -2,6 +2,7 @@
 #define vlinder_rtimdb_database_hpp
 
 #include "details/prologue.hpp"
+#include "details/action.hpp"
 #include "rtimdb_config.hpp"
 #include "cell.hpp"
 #include "exceptions.hpp"
@@ -15,7 +16,7 @@ namespace Vlinder { namespace RTIMDB {
 	{
 	public :
 		typedef Details::Iterator const_iterator;
-		
+
 		Database();
 		~Database();
 
@@ -46,6 +47,11 @@ namespace Vlinder { namespace RTIMDB {
 		Errors update(PointType type, unsigned int index, uint16_t value RTIMDB_NOTHROW_PARAM) throw();
 		Errors update(PointType type, unsigned int index, uint8_t value RTIMDB_NOTHROW_PARAM) throw();
 		Errors update(PointType type, unsigned int index, String *value RTIMDB_NOTHROW_PARAM) throw();
+
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+		void registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter);
+#endif
+		Errors registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM);
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Point read(PointType type, unsigned int index) const;

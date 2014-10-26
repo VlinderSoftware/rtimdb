@@ -2,6 +2,7 @@
 #define vlinder_rtimdb_cell_hpp
 
 #include "point.hpp"
+#include "details/action.hpp"
 #include "exceptions.hpp"
 #include <algorithm>
 #include <atomic>
@@ -54,11 +55,20 @@ namespace Vlinder { namespace RTIMDB {
 				);
 			return retval;
 		}
-		void set(Point const &point)
+		Errors set(Details::Action action, Point const &point)
 		{
+			using Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
-			*target = point;
+			if ((action == Action::update__) || filter_(action, point, *target))
+			{
+				*target = point;
+				return Errors::no_error__;
+			}
+			else
+			{
+				return Errors::not_allowed__;
+			}
 		}
 
 		Errors freeze(unsigned int frozen_version)
@@ -90,6 +100,10 @@ namespace Vlinder { namespace RTIMDB {
 			*which = 0;
 		}
 
+		void registerFilter(std::function< bool(Details::Action, Point, Point) > &&filter)
+		{
+			filter_ = std::move(filter);
+		}
 	private:
 		Cell(Cell const&) = delete;
 		Cell& operator=(Cell const&) = delete;
@@ -159,6 +173,7 @@ namespace Vlinder { namespace RTIMDB {
 		Point values_[cell_size__];
 		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
+		std::function< bool(Details::Action, Point, Point) > filter_;
 	};
 }}
 
