@@ -72,7 +72,7 @@ namespace Vlinder { namespace RTIMDB {
 			using Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
-			if ((action == Action::update__) || filter_(action, point, *target))
+			if ((action == Action::update__) || filter_(action, point, get()))
 			{
 				*target = point;
 				return Errors::no_error__;

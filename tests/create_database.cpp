@@ -29,5 +29,5 @@ int main()
 	database.insert(Point(PointType::analog_output__, 72.435));
 	database.insert(Point(PointType::binary_input__, true));
 
-	database.update(PointType::binary_input__, 1, false);
+	database.update(1, Point(PointType::binary_input__, false));
 }

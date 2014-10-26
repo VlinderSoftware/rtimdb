@@ -38,27 +38,9 @@ namespace Vlinder { namespace RTIMDB {
 		const_iterator end();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void update(PointType type, unsigned int index, bool value);
-		void update(PointType type, unsigned int index, DoubleBitBinary const &value);
-		void update(PointType type, unsigned int index, uint32_t value);
-		void update(PointType type, unsigned int index, double value);
-		void update(PointType type, unsigned int index, Time value);
-		void update(PointType type, unsigned int index, File *value);
-		void update(PointType type, unsigned int index, Dataset *value);
-		void update(PointType type, unsigned int index, uint16_t value);
-		void update(PointType type, unsigned int index, uint8_t value);
-		void update(PointType type, unsigned int index, String *value);
+		void update(unsigned int index, Point new_value);
 #endif
-		Errors update(PointType type, unsigned int index, bool value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, DoubleBitBinary const &value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, uint32_t value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, double value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, Time value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, File *value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, Dataset *value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, uint16_t value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, uint8_t value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(PointType type, unsigned int index, String *value RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter);

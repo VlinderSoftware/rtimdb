@@ -132,20 +132,20 @@ int main()
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == first_transaction_.second);
 #endif
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 3, 13.24 RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 5, 26.48 RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 7, 52.96 RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 13, 104.192 RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 3, Point(PointType::analog_input__,   13.24) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 5, Point(PointType::analog_input__,   26.48) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 7, Point(PointType::analog_input__,   52.96) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(13, Point(PointType::analog_input__, 104.192) RTIMDB_NOTHROW_ARG));
 	auto second_transaction_(database.freeze());
 	auto second_transaction(second_transaction_ DOT_FIRST);
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == second_transaction_.second);
 #endif
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 3, true RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 5, true RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 7, true RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 13, true RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 17, true RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 3, Point(PointType::binary_input__, true) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 5, Point(PointType::binary_input__, true) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update( 7, Point(PointType::binary_input__, true) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(13, Point(PointType::binary_input__, true) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(17, Point(PointType::binary_input__, true) RTIMDB_NOTHROW_ARG));
 
 	// a read using the first transaction should get the old analogs and the old binaries
 #ifdef RTIMDB_ALLOW_EXCEPTIONS

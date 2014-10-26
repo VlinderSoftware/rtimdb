@@ -29,7 +29,7 @@ int main()
 	auto index(database.insert(Point(PointType::binary_input__, false)));
 
 	auto transaction(database.freeze() DOT_FIRST);
-	database.update(PointType::binary_input__, index, true);
+	database.update(index, Point(PointType::binary_input__, true));
 	auto frozen_value(database.read(transaction, PointType::binary_input__, index) DOT_FIRST);
 	assert(PointType::binary_input__ == frozen_value DEREF type_);
 	assert(false == frozen_value DEREF payload_.binary_);
