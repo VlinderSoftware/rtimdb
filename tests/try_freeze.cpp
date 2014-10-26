@@ -18,7 +18,7 @@ int main()
 
 	auto transaction(database.freeze() DOT_FIRST);
 	database.update(PointType::binary_input__, index, true);
-	auto frozen_value(database.read(transaction, PointType::binary_input__, index RTIMDB_NOTHROW_ARG) DOT_FIRST);
+	auto frozen_value(database.read(transaction, PointType::binary_input__, index) DOT_FIRST);
 	assert(PointType::binary_input__ == frozen_value DEREF type_);
 	assert(false == frozen_value DEREF payload_.binary_);
 	frozen_value = database.read(PointType::binary_input__, index) DOT_FIRST;

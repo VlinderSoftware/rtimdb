@@ -2,6 +2,7 @@
 #define vlinder_rtimdb_exceptions_hpp
 
 #include "details/prologue.hpp"
+#include "rtimdb_config.hpp"
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #include "exceptions/exception.h"
 #endif

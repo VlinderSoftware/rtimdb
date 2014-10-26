@@ -82,7 +82,7 @@ namespace Vlinder { namespace RTIMDB {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Point Database::read(PointType type, unsigned int index) const
 	{
-		auto result(read(type, indexRTIMDB_NOTHROW_ARG));
+		auto result(read(type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
 		{
 			return result.first.get();
@@ -104,7 +104,7 @@ namespace Vlinder { namespace RTIMDB {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Point Database::read(Details::Transaction transaction, PointType type, unsigned int index) const
 	{
-		auto result(read(transaction, type, indexRTIMDB_NOTHROW_ARG));
+		auto result(read(transaction, type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
 		{
 			return result.first.get();

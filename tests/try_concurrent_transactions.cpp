@@ -137,11 +137,11 @@ int main()
 
 	// a read using the first transaction should get the old analogs and the old binaries
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-#define CHECK(TRANSACTION, TYPE, INDEX)													\
+#define CHECK(EXP, TRANSACTION, TYPE, INDEX, PAYLOAD)										\
 	{																					\
 		auto read_result_1(database.read(TRANSACTION, TYPE, INDEX));					\
-		assert(PointType::binary_input__ == read_result_1.FIRST_DEREF type_);			\
-		assert(false == read_result_1.FIRST_DEREF payload_.binary_);					\
+		assert(TYPE == read_result_1.FIRST_DEREF type_);								\
+		assert(EXP == read_result_1.FIRST_DEREF payload_.PAYLOAD);					\
 	}
 #else
 #define CHECK(EXP, TRANSACTION, TYPE, INDEX, PAYLOAD)									\
@@ -176,4 +176,4 @@ int main()
 	CHECK(  26.48, second_transaction, PointType::analog_input__,  5, analog_);
 	CHECK(  52.96, second_transaction, PointType::analog_input__,  7, analog_);
 	CHECK(104.192, second_transaction, PointType::analog_input__, 13, analog_);
-}
+} 
