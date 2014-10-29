@@ -3,9 +3,10 @@ project(rtimdb)
 
 enable_testing()
 
-set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS	  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
-set(RTIMDB_POINT_COUNT					200	CACHE STRING "Total number of points in the system (maximum)")
-set(RTIMDB_ALLOW_EXCEPTIONS              ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
+set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
+set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
+set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
+set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON CACHE BOOL	 "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
 
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
@@ -45,21 +46,20 @@ set(RTIMDB_SOURCES
 	database.cpp
 	database.hpp
 	details/action.hpp
+	details/duplicateselectionpolicy.hpp
 	details/iterator.cpp
 	details/iterator.hpp
 	details/locator.hpp
 	details/prologue.hpp
+	details/selection.hpp
 	details/transaction.hpp
 	details/variant.hpp
-	doublebitbinary.hpp
 	exceptions.cpp
 	exceptions.hpp
-	file.hpp
 	rtimdb_config.hpp
 	point.cpp
 	point.hpp
 	pointtype.hpp
-	time.hpp
 	)
 
 add_library(rtimdb SHARED

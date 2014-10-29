@@ -49,25 +49,8 @@ namespace Vlinder { namespace RTIMDB {
 		points_[next_index] = &cells_[next_cell_++];
 		(*points_[next_index]).set(Details::Action::update__, value);
 
-		// install the default filter
-		switch (value.type_)
-		{
-		case PointType::binary_input__ :
-			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return false; });
-			break;
-		case PointType::counter__ :
-		case PointType::analog_input__ :
-			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::freeze__) || (action == Details::Action::freeze_and_clear__)); });
-			break;
-		case PointType::binary_output__:
-		case PointType::analog_output__:
-			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::select__) || (action == Details::Action::operate__) || (action == Details::Action::direct_operate__)); });
-			break;
-		case PointType::dataset__:
-		case PointType::octet_string__ :
-			(*points_[next_index]).registerFilter([](Details::Action action, Point new_value, Point old_value) -> bool { return action == Details::Action::write__; });
-			break;
-		}
+		(*points_[next_index]).registerFilter(getDefaultFilter(value.type_));
+		(*points_[next_index]).setDefaultClearValue(getClearValue(value.type_));
 
 		dismiss = true;
 		// as of this, cannot fail
@@ -88,7 +71,13 @@ namespace Vlinder { namespace RTIMDB {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void Database::update(unsigned int index, Point new_value) { throwException(update(index, new_value, nothrow)); }
+	void Database::update(unsigned int index, Point new_value)															{ throwException(update(index, new_value, nothrow)); }
+	void Database::write(unsigned int index, Point new_value)															{ throwException(write(index, new_value, nothrow)); }
+	Details::Selection Database::select(PointType type, unsigned int index)												{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
+	void Database::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value)	{ throwException(operate(selection, type, index, new_value, nothrow)); }
+	void Database::directOperate(unsigned int index, Point new_value)													{ throwException(directOperate(index, new_value, nothrow)); }
+	void Database::freeze(PointType type, unsigned int index)															{ throwException(freeze(type, index, nothrow)); }
+	void Database::freezeAndClear(PointType type, unsigned int index)													{ throwException(freezeAndClear(type, index, nothrow)); }
 #endif
 
 	Errors Database::update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
@@ -98,6 +87,80 @@ namespace Vlinder { namespace RTIMDB {
 		{
 			new_value.version_ = ++curr_version_;
 			return (*fetch_result.first)->set(Details::Action::update__, new_value);
+		}
+		else
+		{
+			return fetch_result.second;
+		}
+	}
+	Errors Database::write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(new_value.type_, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			new_value.version_ = ++curr_version_;
+			return (*fetch_result.first)->set(Details::Action::write__, new_value);
+		}
+		else
+		{
+			return fetch_result.second;
+		}
+	}
+	std::pair< Details::Selection, Errors > Database::select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(type, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			return (*fetch_result.first)->select();
+		}
+		else
+		{
+			return std::make_pair(Details::Selection(), fetch_result.second);
+		}
+	}
+	Errors Database::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(type, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			return (*fetch_result.first)->operate(selection, new_value);
+		}
+		else
+		{
+			return fetch_result.second;
+		}
+	}
+	Errors Database::directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(new_value.type_, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			new_value.version_ = ++curr_version_;
+			return (*fetch_result.first)->set(Details::Action::direct_operate__, new_value);
+		}
+		else
+		{
+			return fetch_result.second;
+		}
+	}
+	Errors Database::freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(type, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			return (*fetch_result.first)->freeze();
+		}
+		else
+		{
+			return fetch_result.second;
+		}
+	}
+	Errors Database::freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	{
+		auto fetch_result(fetch(type, index));
+		if (Errors::no_error__ == fetch_result.second)
+		{
+			return (*fetch_result.first)->freezeAndClear();
 		}
 		else
 		{
@@ -308,5 +371,45 @@ namespace Vlinder { namespace RTIMDB {
         { /* nothing more to be done */ }
         return new_location;
     }
+
+	/*static */std::function< bool(Details::Action, Point, Point) > Database::getDefaultFilter(PointType point_type)
+	{
+		// install the default filter
+		switch (point_type)
+		{
+		case PointType::binary_input__:
+			return [](Details::Action action, Point new_value, Point old_value) -> bool { return false; };
+		case PointType::counter__:
+		case PointType::analog_input__:
+			return [](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::freeze__) || (action == Details::Action::freeze_and_clear__)); };
+		case PointType::binary_output__:
+		case PointType::analog_output__:
+			return [](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::select__) || (action == Details::Action::operate__) || (action == Details::Action::direct_operate__)); };
+		case PointType::dataset__:
+		case PointType::octet_string__:
+			return [](Details::Action action, Point new_value, Point old_value) -> bool { return action == Details::Action::write__; };
+		default:
+			return [](Details::Action action, Point new_value, Point old_value) -> bool { return true; };
+		}
+	}
+
+	/*static */Point Database::getClearValue(PointType point_type)
+	{
+		switch (point_type)
+		{
+		case PointType::binary_input__  :
+		case PointType::binary_output__	:
+			return Point(point_type, false);
+		case PointType::counter__		:
+			return Point(point_type, 0U);
+		case PointType::analog_input__	:
+		case PointType::analog_output__	:
+			return Point(point_type, 0.0);
+		case PointType::dataset__		:
+			return Point(point_type, static_cast< Dataset* >(nullptr));
+		case PointType::octet_string__:
+			return Point(point_type, static_cast< String* >(nullptr));
+		}
+	}
 }}
 

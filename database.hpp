@@ -15,6 +15,7 @@
 
 #include "details/prologue.hpp"
 #include "details/action.hpp"
+#include "details/selection.hpp"
 #include "rtimdb_config.hpp"
 #include "cell.hpp"
 #include "exceptions.hpp"
@@ -39,8 +40,20 @@ namespace Vlinder { namespace RTIMDB {
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void update(unsigned int index, Point new_value);
+		void write(unsigned int index, Point new_value);
+		Details::Selection Database::select(PointType type, unsigned int index);
+		void operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value);
+		void directOperate(unsigned int index, Point new_value);
+		void freeze(PointType type, unsigned int index);
+		void freezeAndClear(PointType type, unsigned int index);
 #endif
 		Errors update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		std::pair< Details::Selection, Errors > select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
+		Errors operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
+		Errors freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter);
@@ -74,6 +87,9 @@ namespace Vlinder { namespace RTIMDB {
         unsigned int getPointOffset(PointType point_type, unsigned int index) const;
         PointType getPointTypeAtOffset(unsigned int offset) const;
 		Details::Locator advance(Details::Locator const &curr_location) const;
+
+		static std::function< bool(Details::Action, Point, Point) > getDefaultFilter(PointType point_type);
+		static Point getClearValue(PointType point_type);
 
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		unsigned int start_index_[static_cast< unsigned int >(PointType::_type_count__) + 1];

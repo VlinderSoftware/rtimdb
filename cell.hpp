@@ -15,6 +15,7 @@
 
 #include "point.hpp"
 #include "details/action.hpp"
+#include "details/duplicateselectionpolicy.hpp"
 #include "exceptions.hpp"
 #include <algorithm>
 #include <atomic>
@@ -23,11 +24,12 @@
 #include <cassert>
 
 namespace Vlinder { namespace RTIMDB {
-	template < unsigned int cell_size__ >
+	template < unsigned int cell_size__, Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >
 	class Cell
 	{
 	public :
 		Cell()
+			: next_selection_id_(0)
 		{ /* no-op */ }
 		~Cell()
 		{ /* no-op */ }
@@ -98,6 +100,12 @@ namespace Vlinder { namespace RTIMDB {
 				unsigned int exp(0);
 				if (which->compare_exchange_strong(exp, frozen_version))
 				{
+					if (getCurrentVersion() > frozen_version)
+					{
+						return Errors::expired_while_freezing__;
+					}
+					else
+					{ /* all is well */ }
 					break;
 				}
 				else
@@ -116,6 +124,75 @@ namespace Vlinder { namespace RTIMDB {
 		{
 			filter_ = std::move(filter);
 		}
+
+		std::pair< Details::Selection, Errors > select()
+		{
+			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
+			auto makeRelease([](unsigned int select_id) -> std::function< void(Details::Selection_*) >{ return [select_id](Details::Selection_ *selection) -> void{ if (selection) { unsigned int exp(select_id); selection->id_.compare_exchange_strong(exp, 0); }};});
+			unsigned int exp(0);
+			unsigned int selection_id(next_selection_id_++);
+			if (selection_.id_.compare_exchange_strong(exp, selection_id))
+			{
+				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::no_error__);
+			}
+			else if (duplicate_selection_policy__ == Details::DuplicateSelectionPolicy::replace_selection__)
+			{
+				selection_.id_ = selection_id;
+				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::duplicate_selection__);
+			}
+			else
+			{
+				return std::make_pair(Details::Selection(), Errors::duplicate_selection__);
+			}
+		}
+		Errors operate(Details::Selection const &selection, Point new_value)
+		{
+			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
+			if ((selection.first.get() == &selection_) && (selection.second == selection.first->id_))
+			{
+				return set(Details::Action::operate__, new_value);
+			}
+			return Errors::operate_without_select__;
+		}
+		Errors freeze()
+		{
+			auto current_value(get());
+			if (filter_(Details::Action::freeze__, current_value, current_value))
+			{
+				return freeze(getCurrentVersion());
+			}
+			else
+			{
+				return Errors::not_allowed__;
+			}
+		}
+		Errors freezeAndClear()
+		{
+			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
+			auto current_value(get());
+			if (filter_(Details::Action::freeze_and_clear__, default_clear_value_, current_value))
+			{
+				Errors retval(freeze(getCurrentVersion()));
+				if (Errors::no_error__ == retval)
+				{
+					auto target(fetchAvailableSlot());
+					*target = default_clear_value_;
+				}
+				else
+				{ /* failed to freeze */ }
+				return retval;
+			}
+			else
+			{
+				return Errors::not_allowed__;
+			}
+		}
+
+		void setDefaultClearValue(Point &&default_clear_value)
+		{
+			default_clear_value_ = std::move(default_clear_value);
+		}
+
 	private:
 		Cell(Cell const&) = delete;
 		Cell& operator=(Cell const&) = delete;
@@ -180,12 +257,23 @@ namespace Vlinder { namespace RTIMDB {
 			assert(which != frozen.end());
 			return values_ + std::distance(frozen.begin(), which);
 		}
-
+		unsigned int getCurrentVersion() const
+		{
+			unsigned int current_version(0);
+			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
+			std::for_each(std::begin(values_), std::end(values_), [&](decltype(*values_) point){ if (current_version < point.version_) current_version = point.version_; });
+			return current_version;
+		}
+		
 		mutable std::mutex values_lock_;
 		Point values_[cell_size__];
 		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		std::function< bool(Details::Action, Point, Point) > filter_;
+		Details::Selection_ selection_;
+		std::atomic< unsigned int > next_selection_id_;
+		std::mutex select_operate_lock_;
+		Point default_clear_value_;
 	};
 }}
 
