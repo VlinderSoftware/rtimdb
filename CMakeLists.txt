@@ -36,6 +36,10 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
     endif ()
 endif()
 
+if (MSVC)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996 /wd4251")
+endif()
+
 if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     add_subdirectory(exceptions)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
