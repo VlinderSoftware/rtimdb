@@ -10,8 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_cell_hpp
-#define vlinder_rtimdb_cell_hpp
+#ifndef vlinder_rtimdb_details_cell_hpp
+#define vlinder_rtimdb_details_cell_hpp
 
 #include "point.hpp"
 #include "details/action.hpp"
@@ -23,7 +23,7 @@
 #include <vector>
 #include <cassert>
 
-namespace Vlinder { namespace RTIMDB {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	template < unsigned int cell_size__, Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >
 	class Cell
 	{
@@ -275,6 +275,6 @@ namespace Vlinder { namespace RTIMDB {
 		std::mutex select_operate_lock_;
 		Point default_clear_value_;
 	};
-}}
+}}}
 
 #endif

@@ -279,7 +279,7 @@ namespace Vlinder { namespace RTIMDB {
 		*which = 0;
 	}
 
-	std::pair< Cell< RTIMDB_CELL_SIZE > *const*, Errors > Database::fetch(PointType type, unsigned int index) const
+	std::pair< Details::Cell< RTIMDB_CELL_SIZE > *const*, Errors > Database::fetch(PointType type, unsigned int index) const
 	{
 		unsigned int const type_start_index(start_index_[static_cast< unsigned int >(type)]);
 		unsigned int const type_end_index(start_index_[static_cast< unsigned int >(type)+1]);
@@ -303,7 +303,7 @@ namespace Vlinder { namespace RTIMDB {
 				for_each(
 					  reverse_iterator< remove_reference< decltype(cell) >::type >(cell)
 					, reverse_iterator< remove_reference< decltype(cell) >::type >(cells_)
-					, [&](Cell< RTIMDB_CELL_SIZE > &c){ c.thaw(frozen_version); }
+					, [&](Details::Cell< RTIMDB_CELL_SIZE > &c){ c.thaw(frozen_version); }
 					);
 			}
 			else
@@ -409,6 +409,8 @@ namespace Vlinder { namespace RTIMDB {
 			return Point(point_type, static_cast< Dataset* >(nullptr));
 		case PointType::octet_string__:
 			return Point(point_type, static_cast< String* >(nullptr));
+		default :
+			return Point();
 		}
 	}
 }}

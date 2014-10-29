@@ -17,7 +17,7 @@
 #include "details/action.hpp"
 #include "details/selection.hpp"
 #include "rtimdb_config.hpp"
-#include "cell.hpp"
+#include "details/cell.hpp"
 #include "exceptions.hpp"
 #include "details/iterator.hpp"
 #include "details/variant.hpp"
@@ -80,7 +80,7 @@ namespace Vlinder { namespace RTIMDB {
 
 		void thaw(unsigned int frozen_version);
 
-		std::pair< Cell< RTIMDB_CELL_SIZE > *const*, Errors > fetch(PointType type, unsigned int index) const;
+		std::pair< Details::Cell< RTIMDB_CELL_SIZE > *const*, Errors > fetch(PointType type, unsigned int index) const;
 		void freezeCells(unsigned int frozen_version);
 
 		unsigned int getPointCount(PointType point_type) const;
@@ -94,8 +94,8 @@ namespace Vlinder { namespace RTIMDB {
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		unsigned int start_index_[static_cast< unsigned int >(PointType::_type_count__) + 1];
 		std::atomic< unsigned int > curr_version_;
-		Cell< RTIMDB_CELL_SIZE > *points_[RTIMDB_POINT_COUNT];
-		Cell< RTIMDB_CELL_SIZE > cells_[RTIMDB_POINT_COUNT];
+		Details::Cell< RTIMDB_CELL_SIZE > *points_[RTIMDB_POINT_COUNT];
+		Details::Cell< RTIMDB_CELL_SIZE > cells_[RTIMDB_POINT_COUNT];
 		unsigned int next_cell_;
 
 		friend class Details::Iterator;

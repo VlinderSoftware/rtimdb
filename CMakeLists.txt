@@ -42,10 +42,10 @@ if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 set(RTIMDB_SOURCES
-	cell.hpp
 	database.cpp
 	database.hpp
 	details/action.hpp
+	details/cell.hpp
 	details/duplicateselectionpolicy.hpp
 	details/iterator.cpp
 	details/iterator.hpp
