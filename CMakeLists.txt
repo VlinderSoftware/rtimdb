@@ -54,6 +54,8 @@ set(RTIMDB_SOURCES
 	details/iterator.cpp
 	details/iterator.hpp
 	details/locator.hpp
+	details/observer.hpp
+	details/observerregistration.hpp
 	details/prologue.hpp
 	details/selection.hpp
 	details/transaction.hpp
@@ -77,6 +79,8 @@ foreach (test
 	try_concurrent_transactions
 	try_freeze
 	try_iterate
+	try_set_filter
+	try_register_observer
 	)
 	add_executable(test_${test} tests/${test}.cpp)
 	target_link_libraries(test_${test} rtimdb)

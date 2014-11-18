@@ -26,6 +26,16 @@ namespace Vlinder { namespace RTIMDB {
 			throw UnknownPoint("Unknown point");
 		case Errors::cannot_freeze__:
 			throw CannotFreeze("Cannot freeze");
+		case Errors::not_allowed__:
+			throw NotAllowed("Not allowed");
+		case Errors::duplicate_selection__ :
+			throw DuplicateSelection("Duplicate selection");
+		case Errors::operate_without_select__ :
+			throw OperateWithoutSelect("Operate without select");
+		case Errors::not_yet_implemented__ : 
+			throw NotYetImplemented("Not yet implemented");
+		case Errors::expired_while_freezing__ :
+			throw ExpiredWhileFreezing("Expired while freezing");
 		default :
 			throw logic_error("Unknown error type");
 		}

@@ -32,6 +32,11 @@ namespace Vlinder {	namespace RTIMDB {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::unknown_point__ > UnknownPoint;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::cannot_freeze__ > CannotFreeze;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::not_allowed__ > NotAllowed;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::duplicate_selection__ > DuplicateSelection;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::operate_without_select__ > OperateWithoutSelect;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::not_yet_implemented__ > NotYetImplemented;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::expired_while_freezing__ > ExpiredWhileFreezing;
 
 	RTIMDB_API void throwException(Errors error);
 #endif

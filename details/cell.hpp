@@ -13,10 +13,11 @@
 #ifndef vlinder_rtimdb_details_cell_hpp
 #define vlinder_rtimdb_details_cell_hpp
 
-#include "point.hpp"
-#include "details/action.hpp"
-#include "details/duplicateselectionpolicy.hpp"
-#include "exceptions.hpp"
+#include "action.hpp"
+#include "observer.hpp"
+#include "duplicateselectionpolicy.hpp"
+#include "../point.hpp"
+#include "../exceptions.hpp"
 #include <algorithm>
 #include <atomic>
 #include <mutex>
@@ -30,6 +31,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 	public :
 		Cell()
 			: next_selection_id_(0)
+			, observer_([](Action, Point, Point){})
 		{ /* no-op */ }
 		~Cell()
 		{ /* no-op */ }
@@ -50,33 +52,20 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			using std::end;
 
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
-			Point retval;
-			unsigned int highest_version_so_far(0);
-			std::for_each(
-				  begin(values_)
-				, end(values_)
-				, [&](std::atomic< Point > const &point)
-					{
-						Point p(point);
-						if ((PointType::_type_count__ != p.type_) && (highest_version_so_far <= p.version_) && (p.version_ <= max_version))
-						{
-							highest_version_so_far = p.version_;
-							retval = p;
-						}
-						else
-						{ /* not the latest version */ }
-					}
-				);
-			return retval;
+			return get_(max_version);
 		}
 		Errors set(Details::Action action, Point const &point)
 		{
 			using Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
-			if ((action == Action::update__) || filter_(action, point, get()))
+			if ((action == Action::update__) || filter_(action, point, get_()))
 			{
+				auto prev_value(get_());
 				*target = point;
+				values_lock.unlock();
+				std::unique_lock< decltype(observer_lock_) > observer_lock(observer_lock_);
+				observer_(action, point, prev_value);
 				return Errors::no_error__;
 			}
 			else
@@ -150,13 +139,15 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
 			if ((selection.first.get() == &selection_) && (selection.second == selection.first->id_))
 			{
-				return set(Details::Action::operate__, new_value);
+				auto set_result(set(Details::Action::operate__, new_value));
+				return set_result;
 			}
 			return Errors::operate_without_select__;
 		}
 		Errors freeze()
 		{
-			auto current_value(get());
+			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
+			auto current_value(get_());
 			if (filter_(Details::Action::freeze__, current_value, current_value))
 			{
 				return freeze(getCurrentVersion());
@@ -169,7 +160,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Errors freezeAndClear()
 		{
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
-			auto current_value(get());
+			auto current_value(get_());
 			if (filter_(Details::Action::freeze_and_clear__, default_clear_value_, current_value))
 			{
 				Errors retval(freeze(getCurrentVersion()));
@@ -191,6 +182,12 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		void setDefaultClearValue(Point &&default_clear_value)
 		{
 			default_clear_value_ = std::move(default_clear_value);
+		}
+
+		void registerObserver(Observer const &observer)
+		{
+			std::unique_lock< decltype(observer_lock_) > observer_lock(observer_lock_);
+			observer_= observer;
 		}
 
 	private:
@@ -264,6 +261,27 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			std::for_each(std::begin(values_), std::end(values_), [&](decltype(*values_) point){ if (current_version < point.version_) current_version = point.version_; });
 			return current_version;
 		}
+		Point get_(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
+		{
+			Point retval;
+			unsigned int highest_version_so_far(0);
+			std::for_each(
+				  begin(values_)
+				, end(values_)
+				, [&](std::atomic< Point > const &point)
+					{
+						Point p(point);
+						if ((PointType::_type_count__ != p.type_) && (highest_version_so_far <= p.version_) && (p.version_ <= max_version))
+						{
+							highest_version_so_far = p.version_;
+							retval = p;
+						}
+						else
+						{ /* not the latest version */ }
+					}
+				);
+			return retval;
+		}
 		
 		mutable std::mutex values_lock_;
 		Point values_[cell_size__];
@@ -274,6 +292,8 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		std::atomic< unsigned int > next_selection_id_;
 		std::mutex select_operate_lock_;
 		Point default_clear_value_;
+		Observer observer_;
+		std::mutex observer_lock_;
 	};
 }}}
 

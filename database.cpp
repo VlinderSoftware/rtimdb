@@ -123,6 +123,7 @@ namespace Vlinder { namespace RTIMDB {
 		auto fetch_result(fetch(type, index));
 		if (Errors::no_error__ == fetch_result.second)
 		{
+			new_value.version_ = ++curr_version_;
 			return (*fetch_result.first)->operate(selection, new_value);
 		}
 		else
@@ -180,6 +181,13 @@ namespace Vlinder { namespace RTIMDB {
 		if (Errors::no_error__ != cell.second) return cell.second;
 		(*cell.first)->registerFilter(std::move(filter));
 		return Errors::no_error__;
+	}
+
+	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
+	{
+		auto cell(fetch(type, index));
+		throwException(cell.second);
+		(*cell.first)->registerObserver(observer);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
