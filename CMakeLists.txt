@@ -55,7 +55,6 @@ set(RTIMDB_SOURCES
 	details/iterator.hpp
 	details/locator.hpp
 	details/observer.hpp
-	details/observerregistration.hpp
 	details/prologue.hpp
 	details/selection.hpp
 	details/transaction.hpp
