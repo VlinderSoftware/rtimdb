@@ -13,6 +13,10 @@
 #ifndef vlinder_rtimdb_details_variant_hpp
 #define vlinder_rtimdb_details_variant_hpp
 
+#include <new>
+#include <utility>
+#include <stdexcept>
+
 namespace Vlinder {	namespace RTIMDB { namespace Details {
 	template < typename T >
 	class Variant
@@ -22,6 +26,10 @@ namespace Vlinder {	namespace RTIMDB { namespace Details {
 			: empty_(true)
 			, p_(nullptr)
 		{ /* no-op */ }
+		~Variant()
+		{
+			clear();
+		}
 
 		Variant(T const &v)
 			: empty_(true)
@@ -31,11 +39,64 @@ namespace Vlinder {	namespace RTIMDB { namespace Details {
 			empty_ = false;
 		}
 
+		Variant(Variant const &other)
+			: empty_(other.empty_)
+			, p_(nullptr)
+		{
+			if (!empty_)
+			{
+				p_ = new (value_.buffer_) T(other.get());
+			}
+			else
+			{ /* nothing more to do */ }
+		}
+
+		Variant& operator=(Variant other)
+		{
+			return swap(other);
+		}
+
+		Variant& swap(Variant &other)
+		{
+			using std::swap;
+			if (empty_ && other.empty_)
+			{
+				/* nothing to do */
+			}
+			else if (!empty_ && !other.empty_)
+			{
+				swap(*p_, *other.p_);
+			}
+			else if (empty_ && !other.empty_)
+			{
+				p_ = new (value_.buffer_) T(other.get());
+				other.clear();
+			}
+			else if (!empty_ && other.empty_)
+			{
+				other.p_ = new (other.value_.buffer_) T(get());
+				clear();
+			}
+			else
+			{
+				throw std::logic_error("Unreachable code");
+			}
+
+			return *this;
+		}
+
 		T const &get() const { return *p_; }
 		T const &operator*() const { return get(); }
 		T const *operator->() const { return p_; }
 		bool empty() const { return empty_; }
-
+		void clear()
+		{
+			if (!empty_)
+			{
+				p_->~T();
+			}
+			empty_ = true;
+		}
 	private :
 		bool empty_;
 		union
