@@ -48,9 +48,6 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 
 		Point get(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
 		{
-			using std::begin;
-			using std::end;
-
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			return get_(max_version);
 		}
@@ -263,6 +260,9 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		}
 		Point get_(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
 		{
+			using std::begin;
+			using std::end;
+
 			Point retval;
 			unsigned int highest_version_so_far(0);
 			std::for_each(

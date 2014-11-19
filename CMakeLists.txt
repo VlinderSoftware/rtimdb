@@ -80,6 +80,7 @@ foreach (test
 	try_iterate
 	try_set_filter
 	try_register_observer
+	try_variant
 	)
 	add_executable(test_${test} tests/${test}.cpp)
 	target_link_libraries(test_${test} rtimdb)

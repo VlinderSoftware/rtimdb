@@ -41,7 +41,7 @@ namespace Vlinder { namespace RTIMDB {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void update(unsigned int index, Point new_value);
 		void write(unsigned int index, Point new_value);
-		Details::Selection Database::select(PointType type, unsigned int index);
+		Details::Selection select(PointType type, unsigned int index);
 		void operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value);
 		void directOperate(unsigned int index, Point new_value);
 		void freeze(PointType type, unsigned int index);
