@@ -81,6 +81,7 @@ foreach (test
 	try_set_filter
 	try_register_observer
 	try_variant
+	try_update_through_observer
 	)
 	add_executable(test_${test} tests/${test}.cpp)
 	target_link_libraries(test_${test} rtimdb)
