@@ -16,7 +16,7 @@
 #include "details/prologue.hpp"
 #include "rtimdb_config.hpp"
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-#include "exceptions/exception.h"
+#include "exceptions/exception.hpp"
 #endif
 namespace Vlinder {	namespace RTIMDB {
 	enum struct Errors {

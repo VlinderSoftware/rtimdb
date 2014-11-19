@@ -14,7 +14,7 @@
 #include <algorithm>
 #include <cstring>
 #include <atomic>
-#include "exceptions/contract.h"
+#include "exceptions/contract.hpp"
 
 using namespace std;
 
