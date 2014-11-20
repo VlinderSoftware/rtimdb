@@ -1,0 +1,36 @@
+Test cases
+[ ] Database creation
+    [ ] query on an empty database
+        * iteration (assert begin == end)
+        * read (always returns error)
+        * update, selct, operate, write, directOperate - idem
+        * freeze should work
+    [ ] insert
+        * insert more than # of allowed points
+        * insert, then update, then insert again
+        * insert, then read, then insert again
+[ ] filtering
+    [ ] database must not allow silently changing point type
+    [ ] verify filter is called on all ops except read, select
+        and udate
+    [ ] verify changes are not allowed unless filter allows them
+    [ ] verify that when filter returns false, not-allowed error
+        is raised
+[ ] freezing
+    [ ] verify behavior when too many freezes
+[ ] transactions
+    [ ] any number of concurrent write transactions
+    [ ] configurable max. number of steps per transaction
+[ ] memory management
+    [ ] override alloc/free functions
+    [ ] set a flag when initializarion is done
+    [ ] break if allocation after that
+    [ ] systematically check for memory problems (leaks)
+    =>  this should be integrated into all tests as much as
+        possible
+[ ] threading: use Relacy
+    [ ] port RTIMDB to Vlinder.Atomics
+    [ ] identify test cases
+    [ ] port any fixes to GitHub branch (which must not depend 
+        on Vlinder.Atomics)
+
