@@ -36,6 +36,10 @@ namespace Vlinder { namespace RTIMDB {
 			, std::pair < Transaction, Errors > const &maybe_transaction
 			, Locator const &locator
 			);
+		Iterator(Iterator const &) = default;
+		~Iterator();
+
+		Iterator& operator=(Iterator const &) = default;
 
 		bool operator==(Iterator const &rhs) const;
 		bool operator!=(Iterator const &rhs) const;

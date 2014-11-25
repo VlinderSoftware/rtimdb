@@ -181,10 +181,11 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			default_clear_value_ = std::move(default_clear_value);
 		}
 
-		void registerObserver(Observer const &observer)
+		Errors registerObserver(Observer const &observer)
 		{
 			std::unique_lock< decltype(observer_lock_) > observer_lock(observer_lock_);
 			observer_= observer;
+			return Errors::no_error__;
 		}
 
 	private:
