@@ -1,10 +1,10 @@
 Test cases
 [ ] Database creation
     [ ] query on an empty database
-        * iteration (assert begin == end)
-        * read (always returns error)
-        * update, selct, operate, write, directOperate - idem
-        * freeze should work
+        [x] iteration (assert begin == end)
+        [x] read (always returns error)
+        [ ] update, select, operate, write, directOperate - idem
+        [x] freeze should work
     [ ] insert
         * insert more than # of allowed points
         * insert, then update, then insert again

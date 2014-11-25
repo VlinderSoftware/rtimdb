@@ -33,7 +33,12 @@ int main()
 	database.registerObserver(PointType::binary_output__, 0, [&](Details::Action action, Point new_val, Point old_val) { called = true; });
 	auto selection(database.select(PointType::binary_output__, 0));
 	assert(!called);
-	database.operate(selection, PointType::binary_output__, 0, Point(PointType::binary_output__, true));
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+#define FIRST
+#else
+#define FIRST .first
+#endif
+	database.operate(selection FIRST, PointType::binary_output__, 0, Point(PointType::binary_output__, true));
 	assert(called);
 	called = false;
 	database.directOperate(0, Point(PointType::binary_output__, true));

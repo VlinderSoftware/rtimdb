@@ -38,8 +38,15 @@ int main()
 			}
 		);
 	auto selection(database.select(PointType::binary_output__, 0));
-	database.operate(selection, PointType::binary_output__, 0, Point(PointType::binary_output__, true));
-	assert(!database.read(PointType::binary_output__, 1).payload_.binary_);
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+#define FIRST
+#define FIRST_GET
+#else
+#define FIRST .first
+#define FIRST_GET .first.get()
+#endif
+	database.operate(selection FIRST, PointType::binary_output__, 0, Point(PointType::binary_output__, true));
+	assert(!database.read(PointType::binary_output__, 1) FIRST_GET .payload_.binary_);
 	database.directOperate(0, Point(PointType::binary_output__, false));
-	assert(database.read(PointType::binary_output__, 1).payload_.binary_);
+	assert(database.read(PointType::binary_output__, 1) FIRST_GET .payload_.binary_);
 }

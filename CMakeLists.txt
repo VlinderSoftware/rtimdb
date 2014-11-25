@@ -73,7 +73,7 @@ add_library(rtimdb SHARED
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 
-foreach (test
+set(TESTS
 	create_database
 	try_concurrent_transactions
 	try_freeze
@@ -82,10 +82,26 @@ foreach (test
 	try_register_observer
 	try_variant
 	try_update_through_observer
+	queries_on_empty_db
+	)
+
+foreach (test
+	${TESTS}
 	)
 	add_executable(test_${test} tests/${test}.cpp)
 	target_link_libraries(test_${test} rtimdb)
 	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
 endforeach (test)
+foreach (test_config 1 2 3 4)
+	foreach (test
+		${TESTS}
+		)
+		add_executable(test_cfg${test_config}_${test} tests/${test}.cpp)
+		set_target_properties(test_cfg${test_config}_${test} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
+		target_link_libraries(test_cfg${test_config}_${test} rtimdb)
+		add_test(test_cfg${test_config}_${test} ${EXECUTABLE_OUTPUT_PATH}/test_cfg${test_config}_${test})
+	endforeach (test)
+endforeach(test_config)
 
 configure_file(rtimdb_config.hpp.in rtimdb_config.hpp)
+

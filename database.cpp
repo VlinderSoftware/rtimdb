@@ -292,7 +292,15 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int const type_start_index(start_index_[static_cast< unsigned int >(type)]);
 		unsigned int const type_end_index(start_index_[static_cast< unsigned int >(type)+1]);
 
-		if ((type_end_index - type_start_index) < index) return make_pair(nullptr, Errors::unknown_point__);
+		if (
+			   (type_end_index == type_start_index)
+			|| ((type_end_index - type_start_index) < index)
+			)
+		{
+			return make_pair(nullptr, Errors::unknown_point__);
+		}
+		else
+		{ /* we have the point */ }
 
 		index += type_start_index;
 		return make_pair(&points_[index], Errors::no_error__);

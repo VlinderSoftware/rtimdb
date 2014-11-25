@@ -21,13 +21,13 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		, at_end_(true)
 	{ /* no-op */ }
     Iterator::Iterator(
-			Database *database
+                  Database *database
 		, Transaction const &transaction
 		, Locator const &locator
 		)
 		: database_(database)
 		, transaction_(transaction)
-		, at_end_(false)
+		, at_end_(PointType::_type_count__ == locator.first)
 		, locator_(locator)
 	{ /* no-op */ }
     Iterator::Iterator(
@@ -37,7 +37,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		)
 		: database_(database)
 		, transaction_(maybe_transaction.first)
-		, at_end_((Errors::no_error__ != maybe_transaction.second) && (PointType::_type_count__ != locator.first))
+		, at_end_((Errors::no_error__ == maybe_transaction.second) || (PointType::_type_count__ == locator.first))
 		, locator_(locator)
 	{ /* no-op */
 	}
