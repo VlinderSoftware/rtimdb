@@ -42,7 +42,7 @@ int tryReadFromEmptyDB()
 	auto transaction(db.freeze());
 	if (transaction.second != Errors::no_error__) return 1;
 	auto read_result(db.read(transaction.first, PointType::binary_input__, 0));
-	return read_result.second != Errors::unknown_point__ ? 0 : 1;
+	return read_result.second == Errors::unknown_point__ ? 0 : 1;
 #endif
 }
 

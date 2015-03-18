@@ -57,10 +57,11 @@ namespace Vlinder { namespace RTIMDB {
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter);
+		void registerObserver(PointType type, unsigned int index, Details::Observer const &observer);
 #endif
 		Errors registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM);
+		Errors registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM);
 
-		void registerObserver(PointType type, unsigned int index, Details::Observer const &observer);
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Point read(PointType type, unsigned int index) const;

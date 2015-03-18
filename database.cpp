@@ -174,6 +174,11 @@ namespace Vlinder { namespace RTIMDB {
 	{
 		throwException(registerFilter(type, index, std::move(filter), nothrow));
 	}
+
+	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
+	{
+		throwException(registerObserver(type, index, observer, nothrow));
+	}
 #endif
 	Errors Database::registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
 	{
@@ -183,11 +188,11 @@ namespace Vlinder { namespace RTIMDB {
 		return Errors::no_error__;
 	}
 
-	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
+	Errors Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM)
 	{
 		auto cell(fetch(type, index));
-		throwException(cell.second);
-		(*cell.first)->registerObserver(observer);
+		if (Errors::no_error__ != cell.second) return cell.second;
+		return (*cell.first)->registerObserver(observer);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
