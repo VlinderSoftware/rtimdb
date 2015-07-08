@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 project(rtimdb)
 
 enable_testing()
+include(CTest)
 
 set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
 set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
