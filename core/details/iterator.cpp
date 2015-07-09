@@ -37,7 +37,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		)
 		: database_(database)
 		, transaction_(maybe_transaction.first)
-		, at_end_((Errors::no_error__ == maybe_transaction.second) || (PointType::_type_count__ == locator.first))
+		, at_end_((Errors::no_error__ != maybe_transaction.second) || (PointType::_type_count__ == locator.first))
 		, locator_(locator)
 	{ /* no-op */ }
 	Iterator::~Iterator()
