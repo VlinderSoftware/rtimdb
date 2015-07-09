@@ -1,14 +1,16 @@
 Test cases
 [ ] Database creation
-    [ ] query on an empty database
+    [*] query on an empty database
         [x] iteration (assert begin == end)
         [x] read (always returns error)
-        [ ] update, select, operate, write, directOperate - idem
+        [-] update, select, operate, write, directOperate - idem
+		    -- the only thing that really gets tested here is the fetch method, which makes this a low-priority test
         [x] freeze should work
     [ ] insert
-        * insert more than # of allowed points
-        * insert, then update, then insert again
-        * insert, then read, then insert again
+        [x] insert more than # of allowed points
+        [x] insert, then update, then insert again
+        [x] insert, then read, then insert again
+        [ ] insert, then freeze, then insert again
 [ ] filtering
     [ ] database must not allow silently changing point type
     [ ] verify filter is called on all ops except read, select

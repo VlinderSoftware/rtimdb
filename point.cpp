@@ -11,3 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 #include "point.hpp"
+
+namespace Vlinder { namespace RTIMDB {
+	template <> bool getValue< PointType::binary_input__ >(Point const &point) { return point.payload_.binary_; }
+	template <> bool getValue< PointType::binary_output__ >(Point const &point) { return point.payload_.binary_; }
+	template <> unsigned int getValue< PointType::counter__ >(Point const &point) { return point.payload_.counter_; }
+	template <> double getValue< PointType::analog_input__ >(Point const &point) { return point.payload_.analog_; }
+	template <> double getValue< PointType::analog_output__ >(Point const &point) { return point.payload_.analog_; }
+	template <> Dataset* getValue< PointType::dataset__ >(Point const &point) { return point.payload_.dataset_; }
+	template <> String* getValue< PointType::octet_string__ >(Point const &point) { return point.payload_.octet_string_; }
+}
+}

@@ -13,6 +13,7 @@
 #ifndef vlinder_rtimdb_point_hpp
 #define vlinder_rtimdb_point_hpp
 
+#include "details/prologue.hpp"
 #include <cstdint>
 #include <atomic>
 #include "pointtype.hpp"
@@ -20,6 +21,37 @@
 namespace Vlinder { namespace RTIMDB {
 	class Dataset;
 	class String;
+	namespace Details {
+		template < PointType point_type__ > struct PointTraits;
+		template <> struct PointTraits< PointType::binary_input__ >
+		{
+			typedef bool cpp_type;
+		};
+		template <> struct PointTraits< PointType::binary_output__ >
+		{
+			typedef bool cpp_type;
+		};
+		template <> struct PointTraits< PointType::counter__ >
+		{
+			typedef unsigned int cpp_type;
+		};
+		template <> struct PointTraits< PointType::analog_input__ >
+		{
+			typedef double cpp_type;
+		};
+		template <> struct PointTraits< PointType::analog_output__ >
+		{
+			typedef double cpp_type;
+		};
+		template <> struct PointTraits< PointType::dataset__ >
+		{
+			typedef Dataset* cpp_type;
+		};
+		template <> struct PointTraits< PointType::octet_string__ >
+		{
+			typedef String* cpp_type;
+		};
+	}
 	struct Point
 	{
 		union Payload
@@ -70,7 +102,14 @@ namespace Vlinder { namespace RTIMDB {
 		Payload payload_;
 		unsigned int version_;
 	};
-
+	template < PointType point_type__ > typename Details::PointTraits< point_type__ >::cpp_type getValue(Point const &point);
+	template <> RTIMDB_API bool getValue< PointType::binary_input__ >(Point const &point);
+	template <> RTIMDB_API bool getValue< PointType::binary_output__ >(Point const &point);
+	template <> RTIMDB_API unsigned int getValue< PointType::counter__ >(Point const &point);
+	template <> RTIMDB_API double getValue< PointType::analog_input__ >(Point const &point);
+	template <> RTIMDB_API double getValue< PointType::analog_output__ >(Point const &point);
+	template <> RTIMDB_API Dataset* getValue< PointType::dataset__ >(Point const &point);
+	template <> RTIMDB_API String* getValue< PointType::octet_string__ >(Point const &point);
 }}
 
 #endif
