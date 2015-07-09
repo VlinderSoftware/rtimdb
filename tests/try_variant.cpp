@@ -10,11 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
- #include "../details/variant.hpp"
-#include "../point.hpp"
+ #include "../core/details/variant.hpp"
+#include "../core/point.hpp"
 #include <cassert>
 
-using namespace Vlinder::RTIMDB;
+using namespace Vlinder::RTIMDB::Core;
 
 int tryCreateInstance()
 {

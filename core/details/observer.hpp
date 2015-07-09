@@ -10,15 +10,15 @@
 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 * See the License for the specific language governing permissions and
 * limitations under the License. */
-#ifndef vlinder_rtimdb_details_observer_hpp
-#define vlinder_rtimdb_details_observer_hpp
+#ifndef vlinder_rtimdb_core_details_observer_hpp
+#define vlinder_rtimdb_core_details_observer_hpp
 
 #include <functional>
 #include "../point.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	typedef std::function< void(Action action, Point new_value, Point old_value) throw() > Observer;
-}}}
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
+	typedef std::function< void(RTIMDB::Details::Action action, Point new_value, Point old_value) throw() > Observer;
+}}}}
 
 #endif
 

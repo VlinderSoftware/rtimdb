@@ -10,9 +10,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../database.hpp"
+#include "../core/database.hpp"
 
 using namespace Vlinder::RTIMDB;
+using namespace Vlinder::RTIMDB::Core;
 using namespace std;
 
 int main()
@@ -122,3 +123,4 @@ int main()
 
 	assert(96 == distance(database.begin(), database.end()));
 }
+

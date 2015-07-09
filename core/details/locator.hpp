@@ -10,23 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_selection_hpp
-#define vlinder_rtimdb_details_selection_hpp
+#ifndef vlinder_rtimdb_core_details_locator_hpp
+#define vlinder_rtimdb_core_details_locator_hpp
 
-#include <memory>
-#include <atomic>
+#include "../pointtype.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	struct Selection_
-	{
-		Selection_()
-			: id_(0)
-		{ /* no-op */ }
-
-		std::atomic< unsigned int > id_; // atomic for asynchronous release
-	};
-	typedef std::pair< std::shared_ptr< Selection_ const >, unsigned int > Selection;
-}}}
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
+	typedef std::pair< PointType, unsigned int > Locator;
+}}}}
 
 #endif
 

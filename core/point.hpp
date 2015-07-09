@@ -10,14 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_point_hpp
-#define vlinder_rtimdb_point_hpp
+#ifndef vlinder_rtimdb_core_point_hpp
+#define vlinder_rtimdb_core_point_hpp
 
 #include <cstdint>
 #include <atomic>
-#include "pointtype.hpp"
+#include "../pointtype.hpp"
 
-namespace Vlinder { namespace RTIMDB {
+namespace Vlinder { namespace RTIMDB { namespace Core {
 	class Dataset;
 	class String;
 	struct Point
@@ -71,7 +71,7 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int version_;
 	};
 
-}}
+}}}
 
 #endif
 

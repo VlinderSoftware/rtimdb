@@ -10,14 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_variant_hpp
-#define vlinder_rtimdb_details_variant_hpp
+#ifndef vlinder_rtimdb_core_details_variant_hpp
+#define vlinder_rtimdb_core_details_variant_hpp
 
 #include <new>
 #include <utility>
 #include <stdexcept>
 
-namespace Vlinder {	namespace RTIMDB { namespace Details {
+namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 	template < typename T >
 	class Variant
 	{
@@ -106,7 +106,7 @@ namespace Vlinder {	namespace RTIMDB { namespace Details {
 		} value_;
 		T *p_;
 	};
-}}}
+}}}}
 
 
 #endif
