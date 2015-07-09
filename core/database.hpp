@@ -10,21 +10,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_database_hpp
-#define vlinder_rtimdb_database_hpp
+#ifndef vlinder_rtimdb_core_database_hpp
+#define vlinder_rtimdb_core_database_hpp
 
-#include "details/prologue.hpp"
-#include "details/action.hpp"
+#include "../details/prologue.hpp"
+#include "../details/action.hpp"
 #include "details/selection.hpp"
 #include "rtimdb_config.hpp"
 #include "details/cell.hpp"
-#include "exceptions.hpp"
+#include "../exceptions.hpp"
 #include "details/iterator.hpp"
 #include "details/variant.hpp"
 #include <memory>
 #include <utility>
 
-namespace Vlinder { namespace RTIMDB {
+namespace Vlinder { namespace RTIMDB { namespace Core {
 	class RTIMDB_API Database
 	{
 	public :
@@ -33,7 +33,10 @@ namespace Vlinder { namespace RTIMDB {
 		Database();
 		~Database();
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
 		unsigned int insert(Point const &value);
+#endif
+		std::pair< unsigned int, Errors > insert(Point value RTIMDB_NOTHROW_PARAM) throw();
 
 		const_iterator begin();
 		const_iterator end();
@@ -56,10 +59,10 @@ namespace Vlinder { namespace RTIMDB {
 		Errors freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter);
+		void registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter);
 		void registerObserver(PointType type, unsigned int index, Details::Observer const &observer);
 #endif
-		Errors registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM);
+		Errors registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM);
 		Errors registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM);
 
 
@@ -91,7 +94,7 @@ namespace Vlinder { namespace RTIMDB {
         PointType getPointTypeAtOffset(unsigned int offset) const;
 		Details::Locator advance(Details::Locator const &curr_location) const;
 
-		static std::function< bool(Details::Action, Point, Point) > getDefaultFilter(PointType point_type);
+		static std::function< bool(RTIMDB::Details::Action, Point, Point) > getDefaultFilter(PointType point_type);
 		static Point getClearValue(PointType point_type);
 
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
@@ -103,7 +106,7 @@ namespace Vlinder { namespace RTIMDB {
 
 		friend class Details::Iterator;
 	};
-}}
+}}}
 
 #endif
 

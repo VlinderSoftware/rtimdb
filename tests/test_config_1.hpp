@@ -29,9 +29,9 @@
 #	define RTIMDB_NOTHROW_ARG
 #endif
 #ifdef RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION
-#	define RTIMDB_DUPLICATE_SELECTION_POLICY Details::DuplicateSelectionPolicy::abort_selection__
+#	define RTIMDB_DUPLICATE_SELECTION_POLICY RTIMDB::Details::DuplicateSelectionPolicy::abort_selection__
 #else
-#	define RTIMDB_DUPLICATE_SELECTION_POLICY Details::DuplicateSelectionPolicy::replace_selection__
+#	define RTIMDB_DUPLICATE_SELECTION_POLICY RTIMDB::Details::DuplicateSelectionPolicy::replace_selection__
 #endif
 
 #endif

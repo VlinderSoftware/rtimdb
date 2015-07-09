@@ -34,9 +34,11 @@ namespace Vlinder { namespace RTIMDB {
 			throw OperateWithoutSelect("Operate without select");
 		case Errors::not_yet_implemented__ : 
 			throw NotYetImplemented("Not yet implemented");
-		case Errors::expired_while_freezing__ :
+		case Errors::expired_while_freezing__:
 			throw ExpiredWhileFreezing("Expired while freezing");
-		default :
+		case Errors::database_full__:
+			throw DatabaseFull("Database full");
+		default:
 			throw logic_error("Unknown error type");
 		}
 	}

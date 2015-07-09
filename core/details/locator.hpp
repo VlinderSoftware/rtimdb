@@ -10,4 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "point.hpp"
+#ifndef vlinder_rtimdb_core_details_locator_hpp
+#define vlinder_rtimdb_core_details_locator_hpp
+
+#include "../../pointtype.hpp"
+
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
+	typedef std::pair< PointType, unsigned int > Locator;
+}}}}
+
+#endif
+

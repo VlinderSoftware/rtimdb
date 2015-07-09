@@ -10,15 +10,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_iterator_hpp
-#define vlinder_rtimdb_details_iterator_hpp
+#ifndef vlinder_rtimdb_core_details_iterator_hpp
+#define vlinder_rtimdb_core_details_iterator_hpp
 
-#include "prologue.hpp"
+#include "../../details/prologue.hpp"
 #include "transaction.hpp"
 #include "locator.hpp"
-#include "../exceptions.hpp"
+#include "../../exceptions.hpp"
 
-namespace Vlinder { namespace RTIMDB { 
+namespace Vlinder { namespace RTIMDB { namespace Core { 
 	class Database;
 	struct Point;
 	namespace Details {
@@ -53,7 +53,7 @@ namespace Vlinder { namespace RTIMDB {
 		bool at_end_;
 		Locator locator_;
 	};
-}}}
+}}}}
 
 #endif
 

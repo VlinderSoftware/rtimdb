@@ -15,13 +15,13 @@
 #include "../database.hpp"
 #include <utility>
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
     Iterator::Iterator()
 		: database_(0)
 		, at_end_(true)
 	{ /* no-op */ }
     Iterator::Iterator(
-          Database *database
+                  Database *database
 		, Transaction const &transaction
 		, Locator const &locator
 		)
@@ -75,6 +75,6 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
         ++(*this);
         return retval;
     }
-}}}
+}}}}
 
 

@@ -10,8 +10,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../database.hpp"
+#include "../core/database.hpp"
+
 using namespace Vlinder::RTIMDB;
+using namespace Vlinder::RTIMDB::Core;
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #define FIRST_DEREF
@@ -26,7 +28,7 @@ using namespace Vlinder::RTIMDB;
 int main()
 {
 	Database database;
-	auto index(database.insert(Point(PointType::binary_input__, false)));
+	auto index(database.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
 
 	auto transaction(database.freeze() DOT_FIRST);
 	database.update(index, Point(PointType::binary_input__, true));
