@@ -3,10 +3,12 @@ project(rtimdb)
 
 enable_testing()
 
-set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
-set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
-set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
-set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON CACHE BOOL	 "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
+include_directories(${CMAKE_SOURCE_DIR})
+
+set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS			  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
+set(RTIMDB_POINT_COUNT					200	CACHE STRING "Total number of points in the system (maximum)")
+set(RTIMDB_ALLOW_EXCEPTIONS				 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
+set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON 	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
 
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
@@ -45,30 +47,33 @@ if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif()
 
+set(RTIMDB_CORE_SOURCES
+	core/database.cpp
+	core/database.hpp
+	core/details/cell.hpp
+	core/details/iterator.cpp
+	core/details/iterator.hpp
+	core/details/locator.hpp
+	core/details/observer.hpp
+	core/details/selection.hpp
+	core/details/transaction.hpp
+	core/details/variant.hpp
+	core/point.cpp
+	core/point.hpp
+	)
 set(RTIMDB_SOURCES
-	database.cpp
-	database.hpp
 	details/action.hpp
-	details/cell.hpp
 	details/duplicateselectionpolicy.hpp
-	details/iterator.cpp
-	details/iterator.hpp
-	details/locator.hpp
-	details/observer.hpp
 	details/prologue.hpp
-	details/selection.hpp
-	details/transaction.hpp
-	details/variant.hpp
 	exceptions.cpp
 	exceptions.hpp
 	rtimdb_config.hpp
-	point.cpp
-	point.hpp
 	pointtype.hpp
 	)
 
 add_library(rtimdb SHARED
 	${RTIMDB_SOURCES}
+	${RTIMDB_CORE_SOURCES}
 	)
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 
@@ -94,6 +99,7 @@ endforeach (test)
 foreach (test_config 1 2 3 4)
 	add_library(rtimdb_cfg_${test_config} SHARED
 		${RTIMDB_SOURCES}
+		${RTIMDB_CORE_SOURCES}
 		)
 	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
 	if (MSVC)

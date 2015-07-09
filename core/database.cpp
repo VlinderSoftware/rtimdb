@@ -18,7 +18,7 @@
 
 using namespace std;
 
-namespace Vlinder { namespace RTIMDB {
+namespace Vlinder { namespace RTIMDB { namespace Core {
 	Database::Database()
 		: curr_version_(1)
 		, next_cell_(0)
@@ -47,7 +47,7 @@ namespace Vlinder { namespace RTIMDB {
 		auto target_end(begin(points_) + last_index + 1);
 		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
-		(*points_[next_index]).set(Details::Action::update__, value);
+		(*points_[next_index]).set(RTIMDB::Details::Action::update__, value);
 
 		(*points_[next_index]).registerFilter(getDefaultFilter(value.type_));
 		(*points_[next_index]).setDefaultClearValue(getClearValue(value.type_));
@@ -86,7 +86,7 @@ namespace Vlinder { namespace RTIMDB {
 		if (Errors::no_error__ == fetch_result.second)
 		{
 			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(Details::Action::update__, new_value);
+			return (*fetch_result.first)->set(RTIMDB::Details::Action::update__, new_value);
 		}
 		else
 		{
@@ -99,7 +99,7 @@ namespace Vlinder { namespace RTIMDB {
 		if (Errors::no_error__ == fetch_result.second)
 		{
 			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(Details::Action::write__, new_value);
+			return (*fetch_result.first)->set(RTIMDB::Details::Action::write__, new_value);
 		}
 		else
 		{
@@ -137,7 +137,7 @@ namespace Vlinder { namespace RTIMDB {
 		if (Errors::no_error__ == fetch_result.second)
 		{
 			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(Details::Action::direct_operate__, new_value);
+			return (*fetch_result.first)->set(RTIMDB::Details::Action::direct_operate__, new_value);
 		}
 		else
 		{
@@ -170,17 +170,12 @@ namespace Vlinder { namespace RTIMDB {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void Database::registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter)
+	void Database::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter)
 	{
 		throwException(registerFilter(type, index, std::move(filter), nothrow));
 	}
-
-	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
-	{
-		throwException(registerObserver(type, index, observer, nothrow));
-	}
 #endif
-	Errors Database::registerFilter(PointType type, unsigned int index, std::function< bool(Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
+	Errors Database::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
 	{
 		auto cell(fetch(type, index));
 		if (Errors::no_error__ != cell.second) return cell.second;
@@ -188,14 +183,24 @@ namespace Vlinder { namespace RTIMDB {
 		return Errors::no_error__;
 	}
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
+	{
+		auto cell(fetch(type, index));
+		throwException(cell.second);
+		(*cell.first)->registerObserver(observer);
+	}
+#endif
 	Errors Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM)
 	{
 		auto cell(fetch(type, index));
 		if (Errors::no_error__ != cell.second) return cell.second;
-		return (*cell.first)->registerObserver(observer);
+		(*cell.first)->registerObserver(observer);
+		return Errors::no_error__;
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
+
 	Point Database::read(PointType type, unsigned int index) const
 	{
 		auto result(read(type, index RTIMDB_NOTHROW_ARG));
@@ -393,24 +398,24 @@ namespace Vlinder { namespace RTIMDB {
         return new_location;
     }
 
-	/*static */std::function< bool(Details::Action, Point, Point) > Database::getDefaultFilter(PointType point_type)
+	/*static */std::function< bool(RTIMDB::Details::Action, Point, Point) > Database::getDefaultFilter(PointType point_type)
 	{
 		// install the default filter
 		switch (point_type)
 		{
 		case PointType::binary_input__:
-			return [](Details::Action action, Point new_value, Point old_value) -> bool { return false; };
+			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return false; };
 		case PointType::counter__:
 		case PointType::analog_input__:
-			return [](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::freeze__) || (action == Details::Action::freeze_and_clear__)); };
+			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return ((action == RTIMDB::Details::Action::freeze__) || (action == RTIMDB::Details::Action::freeze_and_clear__)); };
 		case PointType::binary_output__:
 		case PointType::analog_output__:
-			return [](Details::Action action, Point new_value, Point old_value) -> bool { return ((action == Details::Action::select__) || (action == Details::Action::operate__) || (action == Details::Action::direct_operate__)); };
+			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return ((action == RTIMDB::Details::Action::select__) || (action == RTIMDB::Details::Action::operate__) || (action == RTIMDB::Details::Action::direct_operate__)); };
 		case PointType::dataset__:
 		case PointType::octet_string__:
-			return [](Details::Action action, Point new_value, Point old_value) -> bool { return action == Details::Action::write__; };
+			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return action == RTIMDB::Details::Action::write__; };
 		default:
-			return [](Details::Action action, Point new_value, Point old_value) -> bool { return true; };
+			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return true; };
 		}
 	}
 
@@ -434,5 +439,5 @@ namespace Vlinder { namespace RTIMDB {
 			return Point();
 		}
 	}
-}}
+}}}
 

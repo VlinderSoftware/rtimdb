@@ -10,12 +10,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_cell_hpp
-#define vlinder_rtimdb_details_cell_hpp
+#ifndef vlinder_rtimdb_core_details_cell_hpp
+#define vlinder_rtimdb_core_details_cell_hpp
 
-#include "action.hpp"
+#include "../../details/action.hpp"
 #include "observer.hpp"
-#include "duplicateselectionpolicy.hpp"
+#include "../../details/duplicateselectionpolicy.hpp"
 #include "../point.hpp"
 #include "../exceptions.hpp"
 #include <algorithm>
@@ -24,14 +24,14 @@
 #include <vector>
 #include <cassert>
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	template < unsigned int cell_size__, Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
+	template < unsigned int cell_size__, RTIMDB::Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >
 	class Cell
 	{
 	public :
 		Cell()
 			: next_selection_id_(0)
-			, observer_([](Action, Point, Point){})
+			, observer_([](RTIMDB::Details::Action, Point, Point){})
 		{ /* no-op */ }
 		~Cell()
 		{ /* no-op */ }
@@ -51,9 +51,9 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			return get_(max_version);
 		}
-		Errors set(Details::Action action, Point const &point)
+		Errors set(RTIMDB::Details::Action action, Point const &point)
 		{
-			using Details::Action;
+			using RTIMDB::Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
 			if ((action == Action::update__) || filter_(action, point, get_()))
@@ -106,7 +106,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			*which = 0;
 		}
 
-		void registerFilter(std::function< bool(Details::Action, Point, Point) > &&filter)
+		void registerFilter(std::function< bool(RTIMDB::Details::Action, Point, Point) > &&filter)
 		{
 			filter_ = std::move(filter);
 		}
@@ -121,7 +121,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			{
 				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::no_error__);
 			}
-			else if (duplicate_selection_policy__ == Details::DuplicateSelectionPolicy::replace_selection__)
+			else if (duplicate_selection_policy__ == RTIMDB::Details::DuplicateSelectionPolicy::replace_selection__)
 			{
 				selection_.id_ = selection_id;
 				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::duplicate_selection__);
@@ -136,7 +136,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
 			if ((selection.first.get() == &selection_) && (selection.second == selection.first->id_))
 			{
-				auto set_result(set(Details::Action::operate__, new_value));
+				auto set_result(set(RTIMDB::Details::Action::operate__, new_value));
 				return set_result;
 			}
 			return Errors::operate_without_select__;
@@ -145,7 +145,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		{
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto current_value(get_());
-			if (filter_(Details::Action::freeze__, current_value, current_value))
+			if (filter_(RTIMDB::Details::Action::freeze__, current_value, current_value))
 			{
 				return freeze(getCurrentVersion());
 			}
@@ -158,7 +158,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		{
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto current_value(get_());
-			if (filter_(Details::Action::freeze_and_clear__, default_clear_value_, current_value))
+			if (filter_(RTIMDB::Details::Action::freeze_and_clear__, default_clear_value_, current_value))
 			{
 				Errors retval(freeze(getCurrentVersion()));
 				if (Errors::no_error__ == retval)
@@ -288,7 +288,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Point values_[cell_size__];
 		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
-		std::function< bool(Details::Action, Point, Point) > filter_;
+		std::function< bool(RTIMDB::Details::Action, Point, Point) > filter_;
 		Details::Selection_ selection_;
 		std::atomic< unsigned int > next_selection_id_;
 		std::mutex select_operate_lock_;
@@ -296,6 +296,6 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Observer observer_;
 		std::mutex observer_lock_;
 	};
-}}}
+}}}}
 
 #endif

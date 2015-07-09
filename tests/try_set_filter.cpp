@@ -10,9 +10,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../database.hpp"
+#include "../core/database.hpp"
 
+using namespace Vlinder;
 using namespace Vlinder::RTIMDB;
+using namespace Vlinder::RTIMDB::Core;
 using namespace std;
 
 int main()
@@ -29,5 +31,5 @@ int main()
 
 	assert(4 == distance(database.begin(), database.end()));
 
-	database.registerFilter(PointType::binary_input__, 0, [](Details::Action action, Point new_val, Point old_val) -> bool { return true; });
+	database.registerFilter(PointType::binary_input__, 0, [](RTIMDB::Details::Action action, Point new_val, Point old_val) -> bool { return true; });
 }

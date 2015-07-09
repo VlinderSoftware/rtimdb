@@ -10,15 +10,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_transaction_hpp
-#define vlinder_rtimdb_details_transaction_hpp
+#ifndef vlinder_rtimdb_core_details_selection_hpp
+#define vlinder_rtimdb_core_details_selection_hpp
 
 #include <memory>
 #include <atomic>
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	typedef std::shared_ptr< std::atomic< unsigned int > const > Transaction;
-}}}
+namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
+	struct Selection_
+	{
+		Selection_()
+			: id_(0)
+		{ /* no-op */ }
+
+		std::atomic< unsigned int > id_; // atomic for asynchronous release
+	};
+	typedef std::pair< std::shared_ptr< Selection_ const >, unsigned int > Selection;
+}}}}
 
 #endif
 
