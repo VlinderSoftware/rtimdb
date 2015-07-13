@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
 project(rtimdb)
 
 enable_testing()
+include(CTest)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
@@ -79,6 +80,8 @@ target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 
 set(TESTS
 	create_database
+	insertions
+	filtering
 	try_concurrent_transactions
 	try_freeze
 	try_iterate

@@ -10,9 +10,9 @@ Test cases
         * insert, then update, then insert again
         * insert, then read, then insert again
 [ ] filtering
-    [ ] database must not allow silently changing point type
+    [x] database must not allow silently changing point type
     [ ] verify filter is called on all ops except read, select
-        and udate
+        and update
     [ ] verify changes are not allowed unless filter allows them
     [ ] verify that when filter returns false, not-allowed error
         is raised

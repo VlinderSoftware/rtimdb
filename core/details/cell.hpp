@@ -56,7 +56,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			using RTIMDB::Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
-			if ((action == Action::update__) || filter_(action, point, get_()))
+			Point current(get_());
+			if (((point.type_ == current.type_) || (PointType::_type_count__ == current.type_)) && ((action == Action::update__) || filter_(action, point, current)))
 			{
 				auto prev_value(get_());
 				*target = point;
