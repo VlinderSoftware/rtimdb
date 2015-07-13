@@ -16,8 +16,8 @@ Test cases
     [ ] verify changes are not allowed unless filter allows them
     [ ] verify that when filter returns false, not-allowed error
         is raised
-[ ] freezing
-    [ ] verify behavior when too many freezes
+[x] freezing
+    [x] verify behavior when too many freezes
 [ ] transactions
     [ ] any number of concurrent write transactions
     [ ] configurable max. number of steps per transaction
