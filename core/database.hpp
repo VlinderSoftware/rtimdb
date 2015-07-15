@@ -33,7 +33,10 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Database();
 		~Database();
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
 		unsigned int insert(Point const &value);
+#endif
+		std::pair< unsigned int, Errors > insert(Point value RTIMDB_NOTHROW_PARAM) throw();
 
 		const_iterator begin();
 		const_iterator end();

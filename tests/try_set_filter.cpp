@@ -17,17 +17,23 @@ using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
 using namespace std;
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+#define DOT_FIRST
+#else
+#define DOT_FIRST	.first
+#endif
+
 int main()
 {
 	Database database;
 	unsigned int exp_ai_index(0);
 	unsigned int exp_bi_index(0);
 
-	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0))); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0)) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0)) DOT_FIRST); ++exp_ai_index;
 
-	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false))); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false)) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(Point(PointType::binary_input__, false)) DOT_FIRST); ++exp_bi_index;
 
 	assert(4 == distance(database.begin(), database.end()));
 

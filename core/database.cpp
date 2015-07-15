@@ -29,7 +29,15 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	Database::~Database()
 	{ /* no-op */ }
 	
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
 	unsigned int Database::insert(Point const &value)
+	{
+		auto insert_result(insert(value, nothrow));
+		throwException(insert_result.second);
+		return insert_result.first;
+	}
+#endif
+	std::pair< unsigned int, Errors > Database::insert(Point value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		using std::begin;
 		using std::end;
@@ -38,6 +46,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		unsigned int const next_index(type_end_index);
 		unsigned int const retval(type_end_index - type_start_index);
 		unsigned int const last_index(start_index_[static_cast<unsigned int>(PointType::_type_count__)]);
+		if (last_index == (sizeof(points_) / sizeof(points_[0]))) return make_pair(-1, Errors::database_full__);
 		bool dismiss(false);
 		auto rollback = [&](void *){ if (!dismiss) { --next_cell_; move(points_ + next_index + 1, end(points_), points_ + next_index); } };
 		unique_ptr< void, decltype(rollback) > scope_guard(&rollback, rollback);
@@ -47,7 +56,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		auto target_end(begin(points_) + last_index + 1);
 		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
-		(*points_[next_index]).set(RTIMDB::Details::Action::update__, value);
+		auto set_result((*points_[next_index]).set(RTIMDB::Details::Action::update__, value));
+		if (Errors::no_error__ != set_result) return make_pair(-1, set_result);
 
 		(*points_[next_index]).registerFilter(getDefaultFilter(value.type_));
 		(*points_[next_index]).setDefaultClearValue(getClearValue(value.type_));
@@ -57,7 +67,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		unsigned int * first = (start_index_ + static_cast<unsigned int>(value.type_) + 1);
 		for_each(first, end(start_index_), [](unsigned int &val){ ++val; });
 
-		return retval;
+		return make_pair((unsigned int)retval, Errors::no_error__);
 	}
 
 	Database::const_iterator Database::begin()

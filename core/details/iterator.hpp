@@ -16,7 +16,7 @@
 #include "../../details/prologue.hpp"
 #include "transaction.hpp"
 #include "locator.hpp"
-#include "../exceptions.hpp"
+#include "../../exceptions.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core { 
 	class Database;

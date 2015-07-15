@@ -28,6 +28,7 @@ namespace Vlinder {	namespace RTIMDB {
 		, operate_without_select__
 		, not_yet_implemented__
 		, expired_while_freezing__
+		, database_full__
 		};
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::unknown_point__ > UnknownPoint;
@@ -37,6 +38,7 @@ namespace Vlinder {	namespace RTIMDB {
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::operate_without_select__ > OperateWithoutSelect;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::not_yet_implemented__ > NotYetImplemented;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::expired_while_freezing__ > ExpiredWhileFreezing;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::database_full__ > DatabaseFull;
 
 	RTIMDB_API void throwException(Errors error);
 #endif

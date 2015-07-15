@@ -13,7 +13,7 @@
 #ifndef vlinder_rtimdb_core_details_locator_hpp
 #define vlinder_rtimdb_core_details_locator_hpp
 
-#include "../pointtype.hpp"
+#include "../../pointtype.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	typedef std::pair< PointType, unsigned int > Locator;

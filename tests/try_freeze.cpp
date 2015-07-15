@@ -28,7 +28,7 @@ using namespace Vlinder::RTIMDB::Core;
 int main()
 {
 	Database database;
-	auto index(database.insert(Point(PointType::binary_input__, false)));
+	auto index(database.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
 
 	auto transaction(database.freeze() DOT_FIRST);
 	database.update(index, Point(PointType::binary_input__, true));
