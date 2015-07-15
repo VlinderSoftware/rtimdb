@@ -18,8 +18,8 @@ using namespace Vlinder::RTIMDB::Core;
 template < PointType first__, PointType second__ >
 int pointTypeShallNotSilentlyChange()
 {
-    typedef Core::Details::PointTraits< first__ >::cpp_type FirstCPPType;
-    typedef Core::Details::PointTraits< second__ >::cpp_type SecondCPPType;
+    typedef typename Core::Details::PointTraits< first__ >::cpp_type FirstCPPType;
+    typedef typename Core::Details::PointTraits< second__ >::cpp_type SecondCPPType;
     FirstCPPType first_value(0);
     SecondCPPType second_value(0);
     Point first_point_value(first__, first_value);
