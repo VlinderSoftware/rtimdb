@@ -81,6 +81,8 @@ target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 set(TESTS
 	create_database
 	insertions
+	filtering
+	freezing
 	try_concurrent_transactions
 	try_freeze
 	try_iterate

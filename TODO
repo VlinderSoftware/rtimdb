@@ -6,20 +6,20 @@ Test cases
         [-] update, select, operate, write, directOperate - idem
 		    -- the only thing that really gets tested here is the fetch method, which makes this a low-priority test
         [x] freeze should work
-    [ ] insert
+    [x] insert
         [x] insert more than # of allowed points
         [x] insert, then update, then insert again
         [x] insert, then read, then insert again
-        [ ] insert, then freeze, then insert again
+        [x] insert, then freeze, then insert again
 [ ] filtering
-    [ ] database must not allow silently changing point type
+    [x] database must not allow silently changing point type
     [ ] verify filter is called on all ops except read, select
-        and udate
+        and update
     [ ] verify changes are not allowed unless filter allows them
     [ ] verify that when filter returns false, not-allowed error
         is raised
-[ ] freezing
-    [ ] verify behavior when too many freezes
+[x] freezing
+    [x] verify behavior when too many freezes
 [ ] transactions
     [ ] any number of concurrent write transactions
     [ ] configurable max. number of steps per transaction

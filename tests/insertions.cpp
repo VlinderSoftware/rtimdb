@@ -90,6 +90,26 @@ int tryInsertReadInsert()
 
 	return 0;
 }
+template < PointType point_type__, typename T >
+int tryInsertFreezeInsert()
+{
+	T const value__(static_cast< T >(0));
+	Database database;
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	database.insert(Point(point_type__, value__));
+	auto freeze_result(database.freeze());
+	database.insert(Point(point_type__, value__));
+#else
+	auto insert_result(database.insert(Point(point_type__, value__)));
+	if (Errors::no_error__ != insert_result.second) return 1;
+	auto freeze_result(database.freeze());
+	if (Errors::no_error__ != freeze_result.second) return 1;
+	auto insert_result2(database.insert(Point(point_type__, value__)));
+	if (Errors::no_error__ != insert_result2.second) return 1;
+#endif
+
+	return 0;
+}
 
 int main()
 {
@@ -116,6 +136,13 @@ int main()
 		|| tryInsertReadInsert< PointType::octet_string__, String* >()
 		|| tryInsertReadInsert< PointType::analog_input__, double >()
 		|| tryInsertReadInsert< PointType::analog_output__, double >()
+		|| tryInsertFreezeInsert< PointType::binary_input__, bool >()
+		|| tryInsertFreezeInsert< PointType::binary_output__, bool >()
+		|| tryInsertFreezeInsert< PointType::counter__, uint32_t >()
+		|| tryInsertFreezeInsert< PointType::dataset__, Dataset* >()
+		|| tryInsertFreezeInsert< PointType::octet_string__, String* >()
+		|| tryInsertFreezeInsert< PointType::analog_input__, double >()
+		|| tryInsertFreezeInsert< PointType::analog_output__, double >()
 		;
 }
 
