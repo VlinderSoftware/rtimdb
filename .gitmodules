@@ -1,3 +1,6 @@
 [submodule "exceptions"]
 	path = exceptions
 	url = ssh://rlc@192.168.200.80/srv/git/rlc/exceptions.git
+[submodule "cmake"]
+	path = cmake
+	url = ../cmake

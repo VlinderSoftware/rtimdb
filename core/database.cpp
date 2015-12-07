@@ -23,6 +23,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		: curr_version_(1)
 		, next_cell_(0)
 	{
+		for_each(std::begin(frozen_versions_), std::end(frozen_versions_), [](decltype(frozen_versions_[0]) &frozen_version){ frozen_version = 0; });
 		memset(start_index_, 0, sizeof(start_index_));
 		memset(points_, 0, sizeof(points_));
 	}
@@ -68,10 +69,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		for_each(first, end(start_index_), [](unsigned int &val){ ++val; });
 
 		return make_pair((unsigned int)retval, Errors::no_error__);
-	}
-#endif
-	std::pair< unsigned int, Errors > Database::insert(Point value RTIMDB_NOTHROW_PARAM) throw()
-	{
 	}
 
 	Database::const_iterator Database::begin()

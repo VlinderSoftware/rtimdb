@@ -32,7 +32,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		Cell()
 			: next_selection_id_(0)
 			, observer_([](RTIMDB::Details::Action, Point, Point){})
-		{ /* no-op */ }
+		{
+			std::for_each(std::begin(frozen_versions_), std::end(frozen_versions_), [](decltype(frozen_versions_[0]) &frozen_version){ frozen_version = 0; });
+		}
 		~Cell()
 		{ /* no-op */ }
 
