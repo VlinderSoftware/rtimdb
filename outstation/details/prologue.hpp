@@ -10,19 +10,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_prologue_hpp
-#define vlinder_rtimdb_details_prologue_hpp
+#ifndef vlinder_rtimdb_outstation_details_prologue_hpp
+#define vlinder_rtimdb_outstation_details_prologue_hpp
 
 #ifdef _MSC_VER
-#	ifndef RTIMDB_API
-#		ifdef rtimdb_EXPORTS
-#			define RTIMDB_API __declspec(dllexport)
+#	ifndef RTIMDB_OUTSTATION_API
+#		ifdef rtimdb_outstation_EXPORTS
+#			define RTIMDB_OUTSTATION_API __declspec(dllexport)
 #		else
-#			define RTIMDB_API __declspec(dllimport)
+#			define RTIMDB_OUTSTATION_API __declspec(dllimport)
 #		endif
 #	endif
 #else
-#	define RTIMDB_API
+#	define RTIMDB_OUTSTATION_API
 #endif
 
 #endif

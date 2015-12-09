@@ -11,10 +11,12 @@ include(cmake/settings.cmake)
 
 include_directories(${CMAKE_SOURCE_DIR})
 
-set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS			  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
-set(RTIMDB_POINT_COUNT					200	CACHE STRING "Total number of points in the system (maximum)")
-set(RTIMDB_ALLOW_EXCEPTIONS				 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
-set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON 	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
+set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
+set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
+set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
+set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
+set(RTIMDB_MAX_COMMAND_QUEUE_COUNT					  2	CACHE STRING "Maximum number of command queues that can be used by the application")
+set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
 
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
@@ -41,6 +43,15 @@ set(RTIMDB_CORE_SOURCES
 	core/point.cpp
 	core/point.hpp
 	)
+set(RTIMDB_OUTSTATION_SOURCES
+	outstation/command.hpp
+	outstation/commandqueue.cpp
+	outstation/commandqueue.hpp
+	outstation/database.cpp
+	outstation/database.hpp
+	outstation/details/crob.hpp
+	outstation/details/prologue.hpp
+	)
 set(RTIMDB_SOURCES
 	details/action.hpp
 	details/duplicateselectionpolicy.hpp
@@ -50,14 +61,19 @@ set(RTIMDB_SOURCES
 	rtimdb_config.hpp
 	pointtype.hpp
 	)
-
 add_library(rtimdb SHARED
-	${RTIMDB_SOURCES}
 	${RTIMDB_CORE_SOURCES}
+	${RTIMDB_SOURCES}
+	)
+add_library(rtimdb_outstation SHARED
+	${RTIMDB_OUTSTATION_SOURCES}
 	)
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
+target_link_libraries(rtimdb_outstation rtimdb exceptions ${EXTRA_LIBS})
 
 set(TESTS
+	commandqueue
+	commandqueuemanagement
 	create_database
 	insertions
 	filtering
@@ -76,21 +92,31 @@ foreach (test
 	${TESTS}
 	)
 	add_executable(test_${test} tests/${test}.cpp)
-	target_link_libraries(test_${test} rtimdb)
+	target_link_libraries(test_${test} rtimdb_outstation rtimdb)
 	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
 endforeach (test)
 foreach (test_config 1 2 3 4)
 	add_library(rtimdb_cfg_${test_config} SHARED
-		${RTIMDB_SOURCES}
 		${RTIMDB_CORE_SOURCES}
+		${RTIMDB_SOURCES}
+		)
+	add_library(rtimdb_outstation_cfg_${test_config} SHARED
+		${RTIMDB_OUTSTATION_SOURCES}
 		)
 	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
+	target_link_libraries(rtimdb_outstation_cfg_${test_config} rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
 	if (MSVC)
 		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
 	else()
 		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
 	endif()
+	if (MSVC)
+		set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
+	else()
+		set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
+	endif()
 	set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_EXPORTS")
+	set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_outstation_EXPORTS")
 
 	foreach (test
 		${TESTS}
@@ -101,7 +127,7 @@ foreach (test_config 1 2 3 4)
 		else()
 			set_target_properties(test_cfg${test_config}_${test} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
 		endif()
-		target_link_libraries(test_cfg${test_config}_${test} rtimdb_cfg_${test_config})
+		target_link_libraries(test_cfg${test_config}_${test} rtimdb_outstation_cfg_${test_config} rtimdb_cfg_${test_config})
 		add_test(test_cfg${test_config}_${test} ${EXECUTABLE_OUTPUT_PATH}/test_cfg${test_config}_${test})
 	endforeach (test)
 endforeach(test_config)

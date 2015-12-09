@@ -30,7 +30,7 @@ Test cases
     [ ] systematically check for memory problems (leaks)
     =>  this should be integrated into all tests as much as
         possible
-[ ] threading: use Relacy
+[ ] threading: use ThreadSanitizer
     [ ] port RTIMDB to Vlinder.Atomics
     [ ] identify test cases
     [ ] port any fixes to GitHub branch (which must not depend 
