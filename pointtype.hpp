@@ -22,8 +22,6 @@ namespace Vlinder { namespace RTIMDB {
 		, counter__						// g20, g21, g22, g23
 		, analog_input__				// g30, g31, g32, g33
 		, analog_output__				// g40, g41, g42, g43
-		, dataset__						// g83, g85, g86, g87, g88
-		, octet_string__				// g110, g111, g114, g115
 		, _type_count__
 		};
 }}

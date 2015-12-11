@@ -25,6 +25,34 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	Database::~Database()
 	{ /* no-op */ }
 
+	std::pair< Details::PointDescriptor, bool > Database::createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM)
+	{
+		Core::Point point(point_type, initial_value);
+		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
+
+		return std::make_pair(Details::PointDescriptor(), false);
+	}
+	std::pair< Details::PointDescriptor, bool > Database::createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM)
+	{
+		return std::make_pair(Details::PointDescriptor(), false);
+
+	}
+	std::pair< Details::PointDescriptor, bool > Database::createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM)
+	{
+
+		return std::make_pair(Details::PointDescriptor(), false);
+	}
+	std::pair< Details::PointDescriptor, bool > Database::createPoint(uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM)
+	{
+
+		return std::make_pair(Details::PointDescriptor(), false);
+	}
+	std::pair< Details::PointDescriptor, bool > Database::createPoint(uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM)
+	{
+		return std::make_pair(Details::PointDescriptor(), false);
+
+	}
+
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	unsigned int Database::allocateCommandQueue()
 	{

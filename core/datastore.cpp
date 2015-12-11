@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "database.hpp"
+#include "datastore.hpp"
 #include <algorithm>
 #include <cstring>
 #include <atomic>
@@ -19,7 +19,7 @@
 using namespace std;
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
-	Database::Database()
+	DataStore::DataStore()
 		: curr_version_(1)
 		, next_cell_(0)
 	{
@@ -27,18 +27,18 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		memset(start_index_, 0, sizeof(start_index_));
 		memset(points_, 0, sizeof(points_));
 	}
-	Database::~Database()
+	DataStore::~DataStore()
 	{ /* no-op */ }
 	
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	unsigned int Database::insert(Point const &value)
+	unsigned int DataStore::insert(Point const &value)
 	{
 		auto insert_result(insert(value, nothrow));
 		throwException(insert_result.second);
 		return insert_result.first;
 	}
 #endif
-	std::pair< unsigned int, Errors > Database::insert(Point value RTIMDB_NOTHROW_PARAM) throw()
+	std::pair< unsigned int, Errors > DataStore::insert(Point value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		using std::begin;
 		using std::end;
@@ -71,27 +71,27 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		return make_pair((unsigned int)retval, Errors::no_error__);
 	}
 
-	Database::const_iterator Database::begin()
+	DataStore::const_iterator DataStore::begin()
 	{
 		return Details::Iterator(this, freeze(), Details::Locator(getPointTypeAtOffset(0), 0));
 	}
 
-	Database::const_iterator Database::end()
+	DataStore::const_iterator DataStore::end()
 	{
 		return Details::Iterator();
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void Database::update(unsigned int index, Point new_value)															{ throwException(update(index, new_value, nothrow)); }
-	void Database::write(unsigned int index, Point new_value)															{ throwException(write(index, new_value, nothrow)); }
-	Details::Selection Database::select(PointType type, unsigned int index)												{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
-	void Database::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value)	{ throwException(operate(selection, type, index, new_value, nothrow)); }
-	void Database::directOperate(unsigned int index, Point new_value)													{ throwException(directOperate(index, new_value, nothrow)); }
-	void Database::freeze(PointType type, unsigned int index)															{ throwException(freeze(type, index, nothrow)); }
-	void Database::freezeAndClear(PointType type, unsigned int index)													{ throwException(freezeAndClear(type, index, nothrow)); }
+	void DataStore::update(unsigned int index, Point new_value)															{ throwException(update(index, new_value, nothrow)); }
+	void DataStore::write(unsigned int index, Point new_value)															{ throwException(write(index, new_value, nothrow)); }
+	Details::Selection DataStore::select(PointType type, unsigned int index)												{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
+	void DataStore::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value)	{ throwException(operate(selection, type, index, new_value, nothrow)); }
+	void DataStore::directOperate(unsigned int index, Point new_value)													{ throwException(directOperate(index, new_value, nothrow)); }
+	void DataStore::freeze(PointType type, unsigned int index)															{ throwException(freeze(type, index, nothrow)); }
+	void DataStore::freezeAndClear(PointType type, unsigned int index)													{ throwException(freezeAndClear(type, index, nothrow)); }
 #endif
 
-	Errors Database::update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(new_value.type_, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -104,7 +104,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return fetch_result.second;
 		}
 	}
-	Errors Database::write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(new_value.type_, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -117,7 +117,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return fetch_result.second;
 		}
 	}
-	std::pair< Details::Selection, Errors > Database::select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	std::pair< Details::Selection, Errors > DataStore::select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(type, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -129,7 +129,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return std::make_pair(Details::Selection(), fetch_result.second);
 		}
 	}
-	Errors Database::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(type, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -142,7 +142,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return fetch_result.second;
 		}
 	}
-	Errors Database::directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(new_value.type_, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -155,7 +155,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return fetch_result.second;
 		}
 	}
-	Errors Database::freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(type, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -167,7 +167,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return fetch_result.second;
 		}
 	}
-	Errors Database::freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto fetch_result(fetch(type, index));
 		if (Errors::no_error__ == fetch_result.second)
@@ -181,12 +181,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void Database::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter)
+	void DataStore::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter)
 	{
 		throwException(registerFilter(type, index, std::move(filter), nothrow));
 	}
 #endif
-	Errors Database::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
+	Errors DataStore::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
 	{
 		auto cell(fetch(type, index));
 		if (Errors::no_error__ != cell.second) return cell.second;
@@ -195,14 +195,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
+	void DataStore::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
 	{
 		auto cell(fetch(type, index));
 		throwException(cell.second);
 		(*cell.first)->registerObserver(observer);
 	}
 #endif
-	Errors Database::registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM)
+	Errors DataStore::registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM)
 	{
 		auto cell(fetch(type, index));
 		if (Errors::no_error__ != cell.second) return cell.second;
@@ -211,8 +211,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-
-	Point Database::read(PointType type, unsigned int index) const
+	Point DataStore::read(PointType type, unsigned int index) const
 	{
 		auto result(read(type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -227,14 +226,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 #endif
 
-	pair< Details::Variant< Point >, Errors > Database::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	pair< Details::Variant< Point >, Errors > DataStore::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
 		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get() : Details::Variant< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Point Database::read(Details::Transaction transaction, PointType type, unsigned int index) const
+	Point DataStore::read(Details::Transaction transaction, PointType type, unsigned int index) const
 	{
 		auto result(read(transaction, type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -248,14 +247,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	std::pair< Details::Variant< Point >, Errors > Database::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	std::pair< Details::Variant< Point >, Errors > DataStore::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
 		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(*transaction) : Details::Variant< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Details::Transaction Database::freeze()
+	Details::Transaction DataStore::freeze()
 	{
 		auto result(freeze(nothrow));
 		if (Errors::no_error__ == result.second)
@@ -269,7 +268,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	pair < Details::Transaction, Errors > Database::freeze(RTIMDB_NOTHROW_PARAM_1) throw()
+	pair < Details::Transaction, Errors > DataStore::freeze(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
 		unsigned int frozen_version(curr_version_);
 		// find an empty slot in freeze_indices_
@@ -297,7 +296,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		};
 	}
 
-	void Database::thaw(unsigned int frozen_version)
+	void DataStore::thaw(unsigned int frozen_version)
 	{
 		using std::begin;
 		using std::end;
@@ -308,7 +307,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		*which = 0;
 	}
 
-	std::pair< Details::Cell< RTIMDB_CELL_SIZE > *const*, Errors > Database::fetch(PointType type, unsigned int index) const
+	std::pair< Details::Cell< RTIMDB_CELL_SIZE > *const*, Errors > DataStore::fetch(PointType type, unsigned int index) const
 	{
 		unsigned int const type_start_index(start_index_[static_cast< unsigned int >(type)]);
 		unsigned int const type_end_index(start_index_[static_cast< unsigned int >(type)+1]);
@@ -327,7 +326,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		return make_pair(&points_[index], Errors::no_error__);
 	}
 
-	void Database::freezeCells(unsigned int frozen_version)
+	void DataStore::freezeCells(unsigned int frozen_version)
 	{
 		using std::begin;
 		using std::end;
@@ -356,20 +355,20 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		dismiss = true;
 	}
 
-	unsigned int Database::getPointCount(PointType point_type) const
+	unsigned int DataStore::getPointCount(PointType point_type) const
 	{
         unsigned int const start_index(start_index_[static_cast< unsigned int >(point_type)]);
         unsigned int const end_index(start_index_[static_cast< unsigned int >(point_type) + 1]);
         return end_index - start_index;
     }
 
-    unsigned int Database::getPointOffset(PointType point_type, unsigned int index) const
+    unsigned int DataStore::getPointOffset(PointType point_type, unsigned int index) const
     {
         unsigned int const type_start_index(start_index_[static_cast< unsigned int >(point_type)]);
 
         return type_start_index + index;
     }
-    PointType Database::getPointTypeAtOffset(unsigned int offset) const
+    PointType DataStore::getPointTypeAtOffset(unsigned int offset) const
     {
         using std::begin;
         using std::end;
@@ -393,7 +392,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         return point_type;
     }
 
-	Details::Locator Database::advance(
+	Details::Locator DataStore::advance(
 		  Details::Locator const &curr_location
 		) const
 	{
@@ -409,7 +408,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         return new_location;
     }
 
-	/*static */std::function< bool(RTIMDB::Details::Action, Point, Point) > Database::getDefaultFilter(PointType point_type)
+	/*static */std::function< bool(RTIMDB::Details::Action, Point, Point) > DataStore::getDefaultFilter(PointType point_type)
 	{
 		// install the default filter
 		switch (point_type)
@@ -422,15 +421,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		case PointType::binary_output__:
 		case PointType::analog_output__:
 			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return ((action == RTIMDB::Details::Action::select__) || (action == RTIMDB::Details::Action::operate__) || (action == RTIMDB::Details::Action::direct_operate__)); };
-		case PointType::dataset__:
-		case PointType::octet_string__:
-			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return action == RTIMDB::Details::Action::write__; };
 		default:
 			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return true; };
 		}
 	}
 
-	/*static */Point Database::getClearValue(PointType point_type)
+	/*static */Point DataStore::getClearValue(PointType point_type)
 	{
 		switch (point_type)
 		{
@@ -442,10 +438,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		case PointType::analog_input__	:
 		case PointType::analog_output__	:
 			return Point(point_type, 0.0);
-		case PointType::dataset__		:
-			return Point(point_type, static_cast< Dataset* >(nullptr));
-		case PointType::octet_string__:
-			return Point(point_type, static_cast< String* >(nullptr));
 		default :
 			return Point();
 		}

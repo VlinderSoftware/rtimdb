@@ -30,8 +30,8 @@ if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 endif()
 
 set(RTIMDB_CORE_SOURCES
-	core/database.cpp
-	core/database.hpp
+	core/datastore.cpp
+	core/datastore.hpp
 	core/details/cell.hpp
 	core/details/iterator.cpp
 	core/details/iterator.hpp
@@ -50,6 +50,7 @@ set(RTIMDB_OUTSTATION_SOURCES
 	outstation/database.cpp
 	outstation/database.hpp
 	outstation/details/crob.hpp
+	outstation/details/pointdescriptor.hpp
 	outstation/details/prologue.hpp
 	)
 set(RTIMDB_SOURCES
@@ -74,9 +75,8 @@ target_link_libraries(rtimdb_outstation rtimdb exceptions ${EXTRA_LIBS})
 set(TESTS
 	commandqueue
 	commandqueuemanagement
-	create_database
+	create_data_store
 	insertions
-	filtering
 	freezing
 	try_concurrent_transactions
 	try_freeze

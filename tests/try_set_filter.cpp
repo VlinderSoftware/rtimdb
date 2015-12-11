@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../core/database.hpp"
+#include "../core/datastore.hpp"
 
 using namespace Vlinder;
 using namespace Vlinder::RTIMDB;
@@ -25,7 +25,7 @@ using namespace std;
 
 int main()
 {
-	Database database;
+	DataStore database;
 	unsigned int exp_ai_index(0);
 	unsigned int exp_bi_index(0);
 

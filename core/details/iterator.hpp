@@ -19,7 +19,7 @@
 #include "../../exceptions.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core { 
-	class Database;
+	class DataStore;
 	struct Point;
 	namespace Details {
 	class RTIMDB_API Iterator : public std::iterator< std::input_iterator_tag, Point >
@@ -27,12 +27,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	public :
 		Iterator();
 		Iterator(
-			  Database *database
+			  DataStore *data_store
 			, Transaction const &transaction
 			, Locator const &locator
 			);
 		Iterator(
-			  Database *database
+			  DataStore *data_store
 			, std::pair < Transaction, Errors > const &maybe_transaction
 			, Locator const &locator
 			);
@@ -48,7 +48,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         Iterator operator++(int);
 
 	private:
-		Database *database_;
+		DataStore *data_store_;
 		Transaction transaction_;
 		bool at_end_;
 		Locator locator_;

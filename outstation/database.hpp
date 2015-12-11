@@ -16,6 +16,9 @@
 #include "details/prologue.hpp"
 #include "rtimdb_config.hpp"
 #include "commandqueue.hpp"
+#include "details/pointdescriptor.hpp"
+#include "../pointtype.hpp"
+#include "../core/datastore.hpp"
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
@@ -24,6 +27,16 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	public :
 		Database();
 		~Database();
+
+		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM);
+		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM);
+		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM);
+		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM);
+		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM);
+
+		void associate(Details::PointDescriptor const &point, unsigned int command_queue_id);
+		void sendCommand(Details::PointDescriptor const &point, Details::CROB const &crob);
+
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		unsigned int allocateCommandQueue();
 #endif
@@ -37,6 +50,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 
 		CommandQueue command_queues_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
 		std::atomic< bool > command_queue_allocations_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
+		Core::DataStore data_store_;
 	};
 }}}
 

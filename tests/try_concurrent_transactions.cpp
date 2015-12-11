@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../core/database.hpp"
+#include "../core/datastore.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
@@ -25,7 +25,7 @@ using namespace Vlinder::RTIMDB::Core;
 
 int main()
 {
-	Database database;
+	DataStore database;
 	unsigned int exp_ai_index(0);
 	unsigned int exp_bi_index(0);
 
@@ -166,27 +166,27 @@ int main()
 	}
 #endif
 
-	CHECK(false, first_transaction, PointType::binary_input__,  3, binary_);
-	CHECK(false, first_transaction, PointType::binary_input__,  5, binary_);
-	CHECK(false, first_transaction, PointType::binary_input__,  7, binary_);
-	CHECK(false, first_transaction, PointType::binary_input__, 13, binary_);
-	CHECK(false, first_transaction, PointType::binary_input__, 17, binary_);
+	CHECK(false, first_transaction, PointType::binary_input__,  3, bool_);
+	CHECK(false, first_transaction, PointType::binary_input__,  5, bool_);
+	CHECK(false, first_transaction, PointType::binary_input__,  7, bool_);
+	CHECK(false, first_transaction, PointType::binary_input__, 13, bool_);
+	CHECK(false, first_transaction, PointType::binary_input__, 17, bool_);
 
-	CHECK(0.0, first_transaction, PointType::analog_input__,  3, analog_);
-	CHECK(0.0, first_transaction, PointType::analog_input__,  5, analog_);
-	CHECK(0.0, first_transaction, PointType::analog_input__,  7, analog_);
-	CHECK(0.0, first_transaction, PointType::analog_input__, 13, analog_);
-	CHECK(0.0, first_transaction, PointType::analog_input__, 17, analog_);
+	CHECK(0.0, first_transaction, PointType::analog_input__,  3, double_);
+	CHECK(0.0, first_transaction, PointType::analog_input__,  5, double_);
+	CHECK(0.0, first_transaction, PointType::analog_input__,  7, double_);
+	CHECK(0.0, first_transaction, PointType::analog_input__, 13, double_);
+	CHECK(0.0, first_transaction, PointType::analog_input__, 17, double_);
 
 	// a read using the first transaction should get the new analogs and the old binaries
-	CHECK(false, second_transaction, PointType::binary_input__,  3, binary_);
-	CHECK(false, second_transaction, PointType::binary_input__,  5, binary_);
-	CHECK(false, second_transaction, PointType::binary_input__,  7, binary_);
-	CHECK(false, second_transaction, PointType::binary_input__, 13, binary_);
-	CHECK(false, second_transaction, PointType::binary_input__, 17, binary_);
+	CHECK(false, second_transaction, PointType::binary_input__,  3, bool_);
+	CHECK(false, second_transaction, PointType::binary_input__,  5, bool_);
+	CHECK(false, second_transaction, PointType::binary_input__,  7, bool_);
+	CHECK(false, second_transaction, PointType::binary_input__, 13, bool_);
+	CHECK(false, second_transaction, PointType::binary_input__, 17, bool_);
 
-	CHECK(  13.24, second_transaction, PointType::analog_input__,  3, analog_);
-	CHECK(  26.48, second_transaction, PointType::analog_input__,  5, analog_);
-	CHECK(  52.96, second_transaction, PointType::analog_input__,  7, analog_);
-	CHECK(104.192, second_transaction, PointType::analog_input__, 13, analog_);
+	CHECK(  13.24, second_transaction, PointType::analog_input__,  3, double_);
+	CHECK(  26.48, second_transaction, PointType::analog_input__,  5, double_);
+	CHECK(  52.96, second_transaction, PointType::analog_input__,  7, double_);
+	CHECK(104.192, second_transaction, PointType::analog_input__, 13, double_);
 } 

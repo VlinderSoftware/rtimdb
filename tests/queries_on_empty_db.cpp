@@ -10,14 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
- #include "../core/database.hpp"
+ #include "../core/datastore.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
 
 int tryIterateEmptyDB()
 {
-	Database db;
+	DataStore db;
 	if (db.begin() != db.end()) return 1;
 	if (db.end() != db.begin()) return 1;
 	if (!(db.begin() == db.end())) return 1;
@@ -27,7 +27,7 @@ int tryIterateEmptyDB()
 
 int tryReadFromEmptyDB()
 {
-	Database db;
+	DataStore db;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	bool caught(false);
 	try

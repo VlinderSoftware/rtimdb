@@ -12,30 +12,30 @@
  * limitations under the License. */
 #include "iterator.hpp"
 #include "locator.hpp"
-#include "../database.hpp"
+#include "../datastore.hpp"
 #include <utility>
 
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
     Iterator::Iterator()
-		: database_(0)
+		: data_store_(0)
 		, at_end_(true)
 	{ /* no-op */ }
     Iterator::Iterator(
-                  Database *database
+          DataStore *data_store
 		, Transaction const &transaction
 		, Locator const &locator
 		)
-		: database_(database)
+		: data_store_(data_store)
 		, transaction_(transaction)
 		, at_end_(PointType::_type_count__ == locator.first)
 		, locator_(locator)
 	{ /* no-op */ }
     Iterator::Iterator(
-          Database *database
+          DataStore *data_store
 		, std::pair < Transaction, Errors > const &maybe_transaction
 		, Locator const &locator
 		)
-		: database_(database)
+		: data_store_(data_store)
 		, transaction_(maybe_transaction.first)
 		, at_end_((Errors::no_error__ != maybe_transaction.second) || (PointType::_type_count__ == locator.first))
 		, locator_(locator)
@@ -46,7 +46,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
     bool Iterator::operator==(Iterator const &rhs) const
 	{
 		return at_end_ == rhs.at_end_
-			|| (   database_ == rhs.database_
+			|| (   data_store_ == rhs.data_store_
 				&& transaction_ == rhs.transaction_
 				&& locator_ == rhs.locator_
 			)
@@ -59,9 +59,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 
     Iterator& Iterator::operator++()
     {
-        if (database_)
+        if (data_store_)
         {
-            locator_ = database_->advance(locator_);
+            locator_ = data_store_->advance(locator_);
             at_end_ = (PointType::_type_count__ == locator_.first);
         }
         else

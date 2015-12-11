@@ -10,8 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_core_database_hpp
-#define vlinder_rtimdb_core_database_hpp
+#ifndef vlinder_rtimdb_core_datastore_hpp
+#define vlinder_rtimdb_core_datastore_hpp
 
 #include "../details/prologue.hpp"
 #include "../details/action.hpp"
@@ -25,13 +25,13 @@
 #include <utility>
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
-	class RTIMDB_API Database
+	class RTIMDB_API DataStore
 	{
 	public :
 		typedef Details::Iterator const_iterator;
 
-		Database();
-		~Database();
+		DataStore();
+		~DataStore();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		unsigned int insert(Point const &value);
@@ -81,8 +81,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		std::pair< Details::Transaction, Errors > freeze(RTIMDB_NOTHROW_PARAM_1) throw();
 
 	private :
-		Database(Database const&) = delete;
-		Database& operator=(Database const&) = delete;
+		DataStore(DataStore const&) = delete;
+		DataStore& operator=(DataStore const&) = delete;
 
 		void thaw(unsigned int frozen_version);
 

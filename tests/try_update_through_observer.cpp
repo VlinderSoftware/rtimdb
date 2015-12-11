@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../core/database.hpp"
+#include "../core/datastore.hpp"
 
 using namespace Vlinder;
 using namespace Vlinder::RTIMDB;
@@ -29,7 +29,7 @@ using namespace std;
 
 int main()
 {
-	Database database;
+	DataStore database;
 	unsigned int exp_ai_index(0);
 	unsigned int exp_bo_index(0);
 
@@ -46,12 +46,12 @@ int main()
 		, 0
 		, [&](RTIMDB::Details::Action action, Point new_val, Point old_val)
 			{
-				database.update(1, Point(PointType::binary_output__, !new_val.payload_.binary_));
+				database.update(1, Point(PointType::binary_output__, !new_val.payload_.bool_));
 			}
 		);
 	auto selection(database.select(PointType::binary_output__, 0));
 	database.operate(selection FIRST, PointType::binary_output__, 0, Point(PointType::binary_output__, true));
-	assert(!database.read(PointType::binary_output__, 1) FIRST_GET .payload_.binary_);
+	assert(!database.read(PointType::binary_output__, 1) FIRST_GET .payload_.bool_);
 	database.directOperate(0, Point(PointType::binary_output__, false));
-	assert(database.read(PointType::binary_output__, 1) FIRST_GET .payload_.binary_);
+	assert(database.read(PointType::binary_output__, 1) FIRST_GET .payload_.bool_);
 }

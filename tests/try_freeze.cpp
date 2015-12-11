@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../core/database.hpp"
+#include "../core/datastore.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
@@ -27,15 +27,15 @@ using namespace Vlinder::RTIMDB::Core;
 
 int main()
 {
-	Database database;
-	auto index(database.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
+	DataStore data_store;
+	auto index(data_store.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
 
-	auto transaction(database.freeze() DOT_FIRST);
-	database.update(index, Point(PointType::binary_input__, true));
-	auto frozen_value(database.read(transaction, PointType::binary_input__, index) DOT_FIRST);
+	auto transaction(data_store.freeze() DOT_FIRST);
+	data_store.update(index, Point(PointType::binary_input__, true));
+	auto frozen_value(data_store.read(transaction, PointType::binary_input__, index) DOT_FIRST);
 	assert(PointType::binary_input__ == frozen_value DEREF type_);
-	assert(false == frozen_value DEREF payload_.binary_);
-	frozen_value = database.read(PointType::binary_input__, index) DOT_FIRST;
+	assert(false == frozen_value DEREF payload_.bool_);
+	frozen_value = data_store.read(PointType::binary_input__, index) DOT_FIRST;
 	assert(PointType::binary_input__ == frozen_value DEREF type_);
-	assert(true == frozen_value DEREF payload_.binary_);
+	assert(true == frozen_value DEREF payload_.bool_);
 }

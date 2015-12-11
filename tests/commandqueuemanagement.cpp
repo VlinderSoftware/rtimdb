@@ -1,4 +1,5 @@
 #include "../outstation/database.hpp"
+#include "../outstation/details/crob.hpp"
 #include <stdexcept>
 
 #define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
@@ -57,10 +58,27 @@ int tryAllocateFreeAndAllocate()
 	return 0;
 }
 
+int trySendCommand()
+{
+	Database database;
+
+	// set up the simili scan task
+	assert(database.allocateCommandQueue()DOT_FIRST == 0);
+//	auto point(database.createPoint(1/*tag*/, Vlinder::RTIMDB::PointType::binary_output__, false));
+//	database.associate(point, 0/*command queue ID*/);
+
+	// protocol rx a crob for this point (for now we'll pretend mapping is done by magic)
+	Details::CROB crob(Details::CROB::operate_pulse_on__, false, Details::CROB::close__, 1, 0, 0);
+//	database.sendCommand(point, crob);
+
+	return 0;
+}
+
 int main()
 {
 	return 0
 		|| tryAllocateCommandQueue()
 		|| tryAllocateFreeAndAllocate()
+		|| trySendCommand()
 		;
 }

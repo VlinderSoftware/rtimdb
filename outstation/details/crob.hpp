@@ -32,6 +32,22 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 			, trip__
 		};
 
+		CROB(
+			  OpType op_type
+			, bool clear
+			, TripCloseCode tcc
+			, unsigned int count
+			, uint32_t on_time
+			, uint32_t off_time
+			)
+			: op_type_(op_type)
+			, clear_(clear)
+			, tcc_(tcc)
+			, count_(count)
+			, on_time_(on_time)
+			, off_time_(off_time)
+		{ /* no-op */ }
+
 		OpType op_type_;
 		bool clear_; // indicates to clear any pending commands for this point and execute only this one (execute nothing if op_type_ is operate_nul__)
 		TripCloseCode tcc_;

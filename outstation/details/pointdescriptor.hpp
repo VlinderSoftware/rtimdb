@@ -10,8 +10,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "point.hpp"
-#include <limits>
+#ifndef vlinder_rtimdb_outstation_details_pointdescriptor_hpp
+#define vlinder_rtimdb_outstation_details_pointdescriptor_hpp
 
-namespace Vlinder { namespace RTIMDB { namespace Core {
-}}}
+namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+	struct PointDescriptor
+	{
+		unsigned int associated_command_queue_;
+	};
+}}}}
+
+#endif
+
