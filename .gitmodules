@@ -4,3 +4,6 @@
 [submodule "cmake"]
 	path = cmake
 	url = ../cmake
+[submodule "meta"]
+	path = meta
+	url = ../meta

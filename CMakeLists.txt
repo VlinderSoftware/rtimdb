@@ -52,6 +52,7 @@ set(RTIMDB_OUTSTATION_SOURCES
 	outstation/details/crob.hpp
 	outstation/details/pointdescriptor.hpp
 	outstation/details/prologue.hpp
+	outstation/details/variant.hpp
 	)
 set(RTIMDB_SOURCES
 	details/action.hpp
