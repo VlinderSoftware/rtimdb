@@ -105,6 +105,11 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 			else throw std::logic_error("Type error");
 		}
 
+		unsigned int type() const noexcept
+		{
+			return type_;
+		}
+
 	private :
 		union Payload
 		{

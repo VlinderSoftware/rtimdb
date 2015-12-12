@@ -17,6 +17,8 @@ set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown 
 set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
 set(RTIMDB_MAX_COMMAND_QUEUE_COUNT					  2	CACHE STRING "Maximum number of command queues that can be used by the application")
 set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
+set(RTIMDB_MAX_TRANSITION_QUEUE_COUNT				  2	CACHE STRING "Maximum number of transition queues that can be used by the application")
+set(RTIMDB_TRANSITION_QUEUE_CAPACITY				256 CACHE STRING "Number of transitions that can be queued at any given time, per queue")
 
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
@@ -53,6 +55,12 @@ set(RTIMDB_OUTSTATION_SOURCES
 	outstation/details/crob.hpp
 	outstation/details/pointdescriptor.hpp
 	outstation/details/prologue.hpp
+	outstation/details/timestamp.hpp
+	outstation/details/transitionqueue.cpp
+	outstation/details/transitionqueue.hpp
+	outstation/details/transitionqueuetransaction.cpp
+	outstation/details/transitionqueuetransaction.hpp
+	outstation/details/transitiontransactionentry.hpp
 	outstation/details/variant.hpp
 	)
 set(RTIMDB_SOURCES
@@ -81,13 +89,14 @@ set(TESTS
 	insertions
 	freezing
 	optional
+	produce_transitions
+	queries_on_empty_db
 	try_concurrent_transactions
 	try_freeze
 	try_iterate
 	try_set_filter
 	try_register_observer
 	try_update_through_observer
-	queries_on_empty_db
 	)
 
 foreach (test

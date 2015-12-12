@@ -16,7 +16,9 @@
 #include "details/prologue.hpp"
 #include "rtimdb_config.hpp"
 #include "commandqueue.hpp"
+#include "details/transitionqueue.hpp"
 #include "details/pointdescriptor.hpp"
+#include "details/timestamp.hpp"
 #include "../pointtype.hpp"
 #include "../core/datastore.hpp"
 #include "../exceptions.hpp"
@@ -29,6 +31,27 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		Database();
 		~Database();
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+		unsigned int allocateCommandQueue();
+		unsigned int allocateTransitionQueue();
+
+		unsigned int createPoint(uintptr_t tag, PointType point_type, bool initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, int16_t initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, int32_t initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, float initial_value);
+		unsigned int createPoint(uintptr_t tag, PointType point_type, double initial_value);
+
+		void sendCommand(unsigned int point_id, Details::CROB const &crob);
+#endif
+		std::pair< unsigned int, bool > allocateCommandQueue(RTIMDB_NOTHROW_PARAM_1);
+		std::pair< unsigned int, bool > allocateTransitionQueue(RTIMDB_NOTHROW_PARAM_1);
+		CommandQueue& getCommandQueue(unsigned int command_queue_id) noexcept;
+		Details::TransitionQueue& getTransitionQueue(unsigned int transition_queue_id) noexcept;
+		void releaseCommandQueue(unsigned int command_queue_id) noexcept;
+		void releaseTransitionQueue(unsigned int transition_queue_id) noexcept;
+
 		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
@@ -40,12 +63,11 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		void associate(unsigned int point_id, unsigned int command_queue_id);
 		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 
-#ifdef RTIMDB_ALLOW_EXCEPTIONS
-		unsigned int allocateCommandQueue();
-#endif
-		std::pair< unsigned int, bool > allocateCommandQueue(RTIMDB_NOTHROW_PARAM_1);
-		CommandQueue& getCommandQueue(unsigned int command_queue_id);
-		void releaseCommandQueue(unsigned int command_queue_id) noexcept;
+		Details::TransitionQueueTransaction beginTransaction(unsigned int transition_queue_id, Details::Timestamp const &timestamp) noexcept;
+		void signalOverflow(unsigned int transition_queue_id) noexcept;
+		void commit(unsigned int transition_queue_id, Details::TransitionQueueTransaction const &transaction);
+
+		Errors update(RTIMDB_NOTHROW_PARAM_1) noexcept;
 
 	private :
 		Database(Database const&) = delete;
@@ -57,7 +79,10 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		std::atomic< unsigned int > next_point_id_;
 		CommandQueue command_queues_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
 		std::atomic< bool > command_queue_allocations_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
+		Details::TransitionQueue transition_queues_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
+		std::atomic< bool > transition_queue_allocations_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
 		Core::DataStore data_store_;
+		Details::Timestamp latest_timestamp_;
 	};
 }}}
 

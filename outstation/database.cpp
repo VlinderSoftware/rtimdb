@@ -21,10 +21,92 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	Database::Database()
 		: next_point_id_(0)
 	{
-		for_each(begin(command_queue_allocations_), end(command_queue_allocations_), [](decltype(command_queue_allocations_[0]) &allocation){ allocation = false; });
+		for_each(begin(command_queue_allocations_), end(command_queue_allocations_), [](decltype(command_queue_allocations_[0]) &allocation) { allocation = false; });
+		for_each(begin(transition_queue_allocations_), end(transition_queue_allocations_), [](decltype(transition_queue_allocations_[0]) &allocation) { allocation = false; });
 	}
 	Database::~Database()
 	{ /* no-op */ }
+
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	unsigned int Database::allocateCommandQueue()
+	{
+		auto result(allocateCommandQueue(nothrow));
+		if (!result.second)
+		{
+			throw bad_alloc();
+		}
+		else
+		{ /* no-op */ }
+		return result.first;
+	}
+	unsigned int Database::allocateTransitionQueue()
+	{
+		auto result(allocateTransitionQueue(nothrow));
+		if (!result.second)
+		{
+			throw bad_alloc();
+		}
+		else
+		{ /* no-op */ }
+		return result.first;
+	}
+
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, bool initial_value)		{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, int16_t initial_value)	{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, int32_t initial_value)	{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value)	{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value)	{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, float initial_value)	{ auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(uintptr_t tag, PointType point_type, double initial_value)   { auto result(createPoint(tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+#endif
+
+	std::pair< unsigned int, bool > Database::allocateCommandQueue(RTIMDB_NOTHROW_PARAM_1)
+	{
+		for (auto curr(begin(command_queue_allocations_)); curr != end(command_queue_allocations_); ++curr)
+		{
+			if (!curr->exchange(true))
+			{
+				return make_pair(distance(begin(command_queue_allocations_), curr), true);
+			}
+			else
+			{ /* already set */ }
+		}
+		return make_pair(0, false);
+	}
+	std::pair< unsigned int, bool > Database::allocateTransitionQueue(RTIMDB_NOTHROW_PARAM_1)
+	{
+		for (auto curr(begin(transition_queue_allocations_)); curr != end(transition_queue_allocations_); ++curr)
+		{
+			if (!curr->exchange(true))
+			{
+				return make_pair(distance(begin(transition_queue_allocations_), curr), true);
+			}
+			else
+			{ /* already set */ }
+		}
+		return make_pair(0, false);
+	}
+	void Database::releaseCommandQueue(unsigned int command_queue_id) noexcept
+	{
+		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(command_queue_allocations_) / sizeof(command_queue_allocations_[0])), "Different amount of allocations vs queues allocatable");
+		pre_condition(command_queue_id < (sizeof(command_queues_) / sizeof(command_queues_[0])));
+		pre_condition(command_queue_allocations_[command_queue_id]);
+		command_queue_allocations_[command_queue_id] = false;
+	}
+	CommandQueue& Database::getCommandQueue(unsigned int command_queue_id) noexcept
+	{
+		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(command_queue_allocations_) / sizeof(command_queue_allocations_[0])), "Different amount of allocations vs queues allocatable");
+		pre_condition(command_queue_id < (sizeof(command_queues_) / sizeof(command_queues_[0])));
+		pre_condition(command_queue_allocations_[command_queue_id]);
+		return command_queues_[command_queue_id];
+	}
+	Details::TransitionQueue& Database::getTransitionQueue(unsigned int transition_queue_id) noexcept
+	{
+		static_assert((sizeof(transition_queues_) / sizeof(transition_queues_[0])) == (sizeof(transition_queue_allocations_) / sizeof(transition_queue_allocations_[0])), "Different amount of allocations vs queues allocatable");
+		pre_condition(transition_queue_id < (sizeof(transition_queues_) / sizeof(transition_queues_[0])));
+		pre_condition(transition_queue_allocations_[transition_queue_id]);
+		return transition_queues_[transition_queue_id];
+	}
 
 	std::pair< unsigned int, Errors > Database::createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
@@ -92,47 +174,56 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		return command_queues_[point.associated_command_queue_].push(Command(crob) RTIMDB_NOTHROW_ARG) ? Errors::no_error__ : Errors::command_queue_full__;
 	}
 
-#ifdef RTIMDB_ALLOW_EXCEPTIONS
-	unsigned int Database::allocateCommandQueue()
+	Details::TransitionQueueTransaction Database::beginTransaction(unsigned int transition_queue_id, Details::Timestamp const &timestamp) noexcept
 	{
-		auto result(allocateCommandQueue(nothrow));
-		if (!result.second)
-		{
-			throw bad_alloc();
-		}
-		else
-		{ /* no-op */ }
-		return result.first;
+		return getTransitionQueue(transition_queue_id).beginTransaction(timestamp);
 	}
-#endif
+	void Database::signalOverflow(unsigned int transition_queue_id) noexcept
+	{
+		getTransitionQueue(transition_queue_id).signalOverflow();
+	}
+	void Database::commit(unsigned int transition_queue_id, Details::TransitionQueueTransaction const &transaction)
+	{
+		getTransitionQueue(transition_queue_id).commit(transaction);
+	}
 
-	std::pair< unsigned int, bool > Database::allocateCommandQueue(RTIMDB_NOTHROW_PARAM_1)
+	Errors Database::update(RTIMDB_NOTHROW_PARAM_1) noexcept
 	{
-		for (auto curr(begin(command_queue_allocations_)); curr != end(command_queue_allocations_); ++curr)
-		{
-			if (!curr->exchange(true))
-			{
-				return make_pair(distance(begin(command_queue_allocations_), curr), true);
-			}
-			else
-			{ /* already set */ }
-		}
-		return make_pair(0, false);
+		Errors retval(Errors::no_error__);
+		for_each(
+			  begin(transition_queues_)
+			, end(transition_queues_)
+			, [&](decltype(transition_queues_[0]) &transition_queue) {
+				for (auto transition_count(transition_queue.size()); (retval == Errors::no_error__) && transition_count; --transition_count)
+				{
+					auto transition(transition_queue.front(RTIMDB_NOTHROW_ARG_1));
+					post_condition(transition.second);
+					if (0 == transition.first.type()) // entry is a time stamp
+					{
+						latest_timestamp_ = transition.first.get< Details::Timestamp >();
+					}
+					else
+					{
+						invariant(1 == transition.first.type());
+						auto value(transition.first.get< Transition >());
+						Errors update_result(data_store_.update(value.system_id_, value.point_value_ RTIMDB_NOTHROW_ARG));
+						if (Errors::no_error__ != update_result)
+						{
+							transition_queue.pop(); // we'll have to pop it because there's no other way to get rid of it
+							retval = update_result;
+							return;
+						}
+						else
+						{ /* all is well */ }
+					}
+					transition_queue.pop();
+				}
+			  }
+			);
+
+		return retval;
 	}
-	void Database::releaseCommandQueue(unsigned int command_queue_id) noexcept
-	{
-		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(command_queue_allocations_) / sizeof(command_queue_allocations_[0])), "Different amount of allocations vs queues allocatable");
-		pre_condition(command_queue_id < (sizeof(command_queues_) / sizeof(command_queues_[0])));
-		pre_condition(command_queue_allocations_[command_queue_id]);
-		command_queue_allocations_[command_queue_id] = false;
-	}
-	CommandQueue& Database::getCommandQueue(unsigned int command_queue_id)
-	{
-		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(command_queue_allocations_) / sizeof(command_queue_allocations_[0])), "Different amount of allocations vs queues allocatable");
-		pre_condition(command_queue_id < (sizeof(command_queues_) / sizeof(command_queues_[0])));
-		pre_condition(command_queue_allocations_[command_queue_id]);
-		return command_queues_[command_queue_id];
-	}
+
 	std::pair< unsigned int, Errors > Database::createPoint_(uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept
 	{
 		Details::PointDescriptor descriptor(tag, point_type, data_store_id);
