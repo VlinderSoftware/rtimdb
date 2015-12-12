@@ -226,10 +226,10 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 #endif
 
-	pair< Details::Variant< Point >, Errors > DataStore::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	pair< Details::Optional< Point >, Errors > DataStore::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
-		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get() : Details::Variant< Point >(), fetch_result.second);
+		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get() : Details::Optional< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -247,10 +247,10 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	std::pair< Details::Variant< Point >, Errors > DataStore::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	std::pair< Details::Optional< Point >, Errors > DataStore::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
-		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(*transaction) : Details::Variant< Point >(), fetch_result.second);
+		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(*transaction) : Details::Optional< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS

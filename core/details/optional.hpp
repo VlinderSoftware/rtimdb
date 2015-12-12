@@ -10,8 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_core_details_variant_hpp
-#define vlinder_rtimdb_core_details_variant_hpp
+#ifndef vlinder_rtimdb_core_details_optional_hpp
+#define vlinder_rtimdb_core_details_optional_hpp
 
 #include <new>
 #include <utility>
@@ -19,19 +19,19 @@
 
 namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 	template < typename T >
-	class Variant
+	class Optional
 	{
 	public :
-		Variant()
+		Optional()
 			: empty_(true)
 			, p_(nullptr)
 		{ /* no-op */ }
-		~Variant()
+		~Optional()
 		{
 			clear();
 		}
 
-		Variant(T const &v)
+		Optional(T const &v)
 			: empty_(true)
 			, p_(nullptr)
 		{
@@ -39,7 +39,7 @@ namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 			empty_ = false;
 		}
 
-		Variant(Variant const &other)
+		Optional(Optional const &other)
 			: empty_(other.empty_)
 			, p_(nullptr)
 		{
@@ -51,12 +51,12 @@ namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 			{ /* nothing more to do */ }
 		}
 
-		Variant& operator=(Variant other)
+		Optional& operator=(Optional other)
 		{
 			return swap(other);
 		}
 
-		Variant& swap(Variant &other)
+		Optional& swap(Optional &other)
 		{
 			using std::swap;
 			if (empty_ && other.empty_)

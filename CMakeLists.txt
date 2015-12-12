@@ -39,7 +39,7 @@ set(RTIMDB_CORE_SOURCES
 	core/details/observer.hpp
 	core/details/selection.hpp
 	core/details/transaction.hpp
-	core/details/variant.hpp
+	core/details/optional.hpp
 	core/point.cpp
 	core/point.hpp
 	)
@@ -78,12 +78,12 @@ set(TESTS
 	create_data_store
 	insertions
 	freezing
+	optional
 	try_concurrent_transactions
 	try_freeze
 	try_iterate
 	try_set_filter
 	try_register_observer
-	try_variant
 	try_update_through_observer
 	queries_on_empty_db
 	)

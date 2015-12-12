@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
- #include "../core/details/variant.hpp"
+ #include "../core/details/optional.hpp"
 #include "../core/point.hpp"
 #include <cassert>
 
@@ -18,18 +18,18 @@ using namespace Vlinder::RTIMDB::Core;
 
 int tryCreateInstance()
 {
-	Details::Variant< Point > v;
+	Details::Optional< Point > v;
 	return v.empty() ? 0 : 1;
 }
 int tryNonEmptyInstance()
 {
 	Point p;
-	Details::Variant< Point > v(p);
+	Details::Optional< Point > v(p);
 
 	return v.empty() ? 1 : 0;
 }
 
-int tryCopyVariant()
+int tryCopyOptional()
 {
 	struct T
 	{
@@ -46,14 +46,14 @@ int tryCopyVariant()
 	};
 	bool f(false);
 	T t(f);
-	Details::Variant< T > v1(t);
+	Details::Optional< T > v1(t);
 	if (!f) return 1;
 	f = false;
-	Details::Variant< T > v2(t);
+	Details::Optional< T > v2(t);
 	return f ? 0 : 1;
 }
 
-int tryAssignVariant()
+int tryAssignOptional()
 {
 	struct T
 	{
@@ -70,10 +70,10 @@ int tryAssignVariant()
 	};
 	bool f(false);
 	T t(f);
-	Details::Variant< T > v1(t);
+	Details::Optional< T > v1(t);
 	if (!f) return 1;
 	f = false;
-	Details::Variant< T > v2;
+	Details::Optional< T > v2;
 	v2 = v1;
 	return f ? 0 : 1;
 }
@@ -83,7 +83,7 @@ int main()
 	return 0
 		|| tryCreateInstance()
 		|| tryNonEmptyInstance()
-		|| tryCopyVariant()
-		|| tryAssignVariant()
+		|| tryCopyOptional()
+		|| tryAssignOptional()
 		;
 }

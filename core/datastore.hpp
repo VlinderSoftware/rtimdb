@@ -20,7 +20,7 @@
 #include "details/cell.hpp"
 #include "../exceptions.hpp"
 #include "details/iterator.hpp"
-#include "details/variant.hpp"
+#include "details/optional.hpp"
 #include <memory>
 #include <utility>
 
@@ -69,11 +69,11 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Point read(PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Variant< Point >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< Point >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Point read(Details::Transaction transaction, PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Variant< Point >, Errors > read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< Point >, Errors > read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Details::Transaction freeze();
