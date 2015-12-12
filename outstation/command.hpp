@@ -15,6 +15,7 @@
 
 #include "details/prologue.hpp"
 #include "details/crob.hpp"
+#include "details/variant.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	struct Command
@@ -23,10 +24,20 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 			  nul__
 			, crob__
 		};
-		union Payload
-		{
-			Details::CROB crob_;
-		};
+		typedef Details::Variant< Details::CROB > Payload;
+
+		Command()
+			: type_(nul__)
+		{ /* no-op */ }
+		Command(Details::CROB const &crob)
+			: type_(crob__)
+			, payload_(crob)
+		{ /* no-op */ }
+
+		template < typename T > T get() const { return payload_.get< T >(); }
+
+		CommandType type_;
+		Payload payload_;
 	};
 }}}
 

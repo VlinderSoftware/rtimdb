@@ -26,6 +26,7 @@ endif()
 
 if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
     add_subdirectory(exceptions)
+    add_subdirectory(meta)
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endif()
 

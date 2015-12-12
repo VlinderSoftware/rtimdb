@@ -37,10 +37,10 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	unsigned int CommandQueue::size() const noexcept
 	{
 		// update the cache here
-		cached_tail_ = tail_.load(memory_order_acquire);
+		unsigned int tail(cached_tail_ = tail_.load(memory_order_acquire));
 		unsigned int head(head_.load(memory_order_relaxed));
-		if (head < cached_tail_) head += capacity();
-		return head - cached_tail_;
+		if (head > tail) tail += capacity();
+		return tail - head;
 	}
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Command&& CommandQueue::front() const

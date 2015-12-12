@@ -19,6 +19,7 @@
 #include "details/pointdescriptor.hpp"
 #include "../pointtype.hpp"
 #include "../core/datastore.hpp"
+#include "../exceptions.hpp"
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
@@ -28,14 +29,16 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		Database();
 		~Database();
 
-		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM);
-		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM);
-		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM);
-		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM);
-		std::pair< Details::PointDescriptor, bool > createPoint(uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM);
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 
-		void associate(Details::PointDescriptor const &point, unsigned int command_queue_id);
-		void sendCommand(Details::PointDescriptor const &point, Details::CROB const &crob);
+		void associate(unsigned int point_id, unsigned int command_queue_id);
+		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		unsigned int allocateCommandQueue();
@@ -48,6 +51,10 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		Database(Database const&) = delete;
 		Database& operator=(Database const&) = delete;
 
+		std::pair< unsigned int, Errors > createPoint_(uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept;
+
+		Details::PointDescriptor point_descriptors_[RTIMDB_POINT_COUNT];
+		std::atomic< unsigned int > next_point_id_;
 		CommandQueue command_queues_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
 		std::atomic< bool > command_queue_allocations_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
 		Core::DataStore data_store_;

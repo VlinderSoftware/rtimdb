@@ -24,10 +24,12 @@
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #	define RTIMDB_NOTHROW_PARAM_1 std::nothrow_t const&
 #	define RTIMDB_NOTHROW_PARAM , std::nothrow_t const&
+#	define RTIMDB_NOTHROW_ARG_1   std::nothrow
 #	define RTIMDB_NOTHROW_ARG   , std::nothrow
 #else
 #	define RTIMDB_NOTHROW_PARAM_1
 #	define RTIMDB_NOTHROW_PARAM
+#	define RTIMDB_NOTHROW_ARG_1
 #	define RTIMDB_NOTHROW_ARG
 #endif
 #ifdef RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION

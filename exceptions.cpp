@@ -38,6 +38,8 @@ namespace Vlinder { namespace RTIMDB {
 			throw ExpiredWhileFreezing("Expired while freezing");
 		case Errors::database_full__:
 			throw DatabaseFull("Database full");
+		case Errors::command_queue_full__:
+			throw CommandQueueFull("Command queue full");
 		default:
 			throw logic_error("Unknown error type");
 		}

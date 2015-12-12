@@ -32,6 +32,9 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 			, trip__
 		};
 
+		CROB()
+			: op_type_(operate_nul__)
+		{ /* no-op */ }
 		CROB(
 			  OpType op_type
 			, bool clear
