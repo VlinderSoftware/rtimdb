@@ -8,6 +8,26 @@ int main()
 {
 	Database database;
 
+	/* allocate 32 BIs, 8 BOs and 8 BIs */
+	for (unsigned int bi_index(0); bi_index < 32; ++bi_index)
+	{
+		auto result(database.createPoint(bi_index, PointType::binary_input__, false RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == result.second);
+		assert(result.first == bi_index);
+	}
+	for (unsigned int bo_index(0); bo_index < 8; ++bo_index)
+	{
+		auto result(database.createPoint(bo_index + 32, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == result.second);
+		assert(result.first == bo_index + 32);
+	}
+	for (unsigned int ai_index(0); ai_index < 8; ++ai_index)
+	{
+		auto result(database.createPoint(ai_index + 40, PointType::analog_input__, false RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == result.second);
+		assert(result.first == ai_index + 40);
+	}
+
 	auto transition_queue_id(database.allocateTransitionQueue(RTIMDB_NOTHROW_ARG_1));
 	assert(transition_queue_id.second);
 	assert(0 == transition_queue_id.first);
