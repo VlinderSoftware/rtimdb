@@ -250,7 +250,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	std::pair< Details::Optional< Point >, Errors > DataStore::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
-		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(*transaction) : Details::Optional< Point >(), fetch_result.second);
+		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(transaction.getVersion()) : Details::Optional< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -287,8 +287,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			if (which->compare_exchange_strong(exp, frozen_version))
 			{
 				auto deleter([this, frozen_version](void *p){ thaw(frozen_version); });
-				Details::Transaction retval(which, deleter);
-				freezeCells(*retval);
+				Details::Transaction retval(which, std::move(deleter));
+				freezeCells(retval.getVersion());
 				return make_pair(retval, Errors::no_error__);
 			}
 			else

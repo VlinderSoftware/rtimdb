@@ -16,8 +16,39 @@
 #include <memory>
 #include <atomic>
 
-namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
-	typedef std::shared_ptr< std::atomic< unsigned int > const > Transaction;
+namespace Vlinder { namespace RTIMDB { namespace Core { 
+	class DataStore;
+	namespace Details {
+	class Transaction
+	{
+	private : // friend-only API
+		template < typename Deleter >
+		Transaction(std::atomic< unsigned int > *version_to_guard, Deleter &&rollback)
+			: version_guard_(version_to_guard, std::move(rollback))
+		{ /* no-op */ }
+
+	public :
+		Transaction()
+		{ /* no-op */ }
+
+		bool operator==(Transaction const &other) const
+		{
+			return true
+				&& version_guard_ == other.version_guard_
+				;
+		}
+
+		unsigned int getVersion() const
+		{
+			return *version_guard_;
+		}
+
+	private :
+		typedef std::shared_ptr< std::atomic< unsigned int > const > VersionGuard;
+
+		VersionGuard version_guard_;
+		friend class DataStore;
+	};
 }}}}
 
 #endif
