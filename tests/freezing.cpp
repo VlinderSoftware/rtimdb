@@ -8,7 +8,7 @@ using namespace Vlinder::RTIMDB::Core;
 int tryTooManyFreezes()
 {
 	DataStore data_store;
-	vector< decltype(data_store.freeze()) > transactions;
+	vector< decltype(data_store.startTransaction()) > transactions;
 
 	bool caught(false);
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -17,7 +17,7 @@ int tryTooManyFreezes()
 #endif
 		while (!caught)
 		{
-			transactions.push_back(data_store.freeze());
+			transactions.push_back(data_store.startTransaction());
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 			caught = transactions.back().second == Errors::cannot_freeze__;
 #endif

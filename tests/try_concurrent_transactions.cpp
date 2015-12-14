@@ -128,7 +128,7 @@ int main()
 	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0)) DOT_FIRST); ++exp_ai_index;
 	assert(exp_ai_index == database.insert(Point(PointType::analog_input__, 0.0)) DOT_FIRST); ++exp_ai_index;
 
-	auto first_transaction_(database.freeze());
+	auto first_transaction_(database.startTransaction());
 	auto first_transaction(first_transaction_ DOT_FIRST);
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == first_transaction_.second);
@@ -137,7 +137,7 @@ int main()
 	assert(Errors::no_error__ == database.update( 5, Point(PointType::analog_input__,   26.48) RTIMDB_NOTHROW_ARG));
 	assert(Errors::no_error__ == database.update( 7, Point(PointType::analog_input__,   52.96) RTIMDB_NOTHROW_ARG));
 	assert(Errors::no_error__ == database.update(13, Point(PointType::analog_input__, 104.192) RTIMDB_NOTHROW_ARG));
-	auto second_transaction_(database.freeze());
+	auto second_transaction_(database.startTransaction());
 	auto second_transaction(second_transaction_ DOT_FIRST);
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == second_transaction_.second);

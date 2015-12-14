@@ -76,9 +76,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		std::pair< Details::Optional< Point >, Errors > read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Details::Transaction freeze();
+		Details::Transaction startTransaction();
 #endif
-		std::pair< Details::Transaction, Errors > freeze(RTIMDB_NOTHROW_PARAM_1) throw();
+		std::pair< Details::Transaction, Errors > startTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
 
 	private :
 		DataStore(DataStore const&) = delete;

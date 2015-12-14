@@ -73,7 +73,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 	DataStore::const_iterator DataStore::begin()
 	{
-		return Details::Iterator(this, freeze(), Details::Locator(getPointTypeAtOffset(0), 0));
+		return Details::Iterator(this, startTransaction(), Details::Locator(getPointTypeAtOffset(0), 0));
 	}
 
 	DataStore::const_iterator DataStore::end()
@@ -254,9 +254,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Details::Transaction DataStore::freeze()
+	Details::Transaction DataStore::startTransaction()
 	{
-		auto result(freeze(nothrow));
+		auto result(startTransaction(nothrow));
 		if (Errors::no_error__ == result.second)
 		{
 			return result.first;
@@ -268,7 +268,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	pair < Details::Transaction, Errors > DataStore::freeze(RTIMDB_NOTHROW_PARAM_1) throw()
+	pair < Details::Transaction, Errors > DataStore::startTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
 		unsigned int frozen_version(curr_version_);
 		// find an empty slot in freeze_indices_

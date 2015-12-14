@@ -32,7 +32,7 @@ int tryReadFromEmptyDB()
 	bool caught(false);
 	try
 	{
-		db.read(db.freeze(), PointType::binary_input__, 0);
+		db.read(db.startTransaction(), PointType::binary_input__, 0);
 	}
 	catch (UnknownPoint const &)
 	{
@@ -40,7 +40,7 @@ int tryReadFromEmptyDB()
 	}
 	return caught ? 0 : 1;
 #else
-	auto transaction(db.freeze());
+	auto transaction(db.startTransaction());
 	if (transaction.second != Errors::no_error__) return 1;
 	auto read_result(db.read(transaction.first, PointType::binary_input__, 0));
 	return read_result.second == Errors::unknown_point__ ? 0 : 1;

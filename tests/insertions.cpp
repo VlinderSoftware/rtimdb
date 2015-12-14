@@ -97,12 +97,12 @@ int tryInsertFreezeInsert()
 	DataStore data_store;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	data_store.insert(Point(point_type__, value__));
-	auto freeze_result(data_store.freeze());
+	auto freeze_result(data_store.startTransaction());
 	data_store.insert(Point(point_type__, value__));
 #else
 	auto insert_result(data_store.insert(Point(point_type__, value__)));
 	if (Errors::no_error__ != insert_result.second) return 1;
-	auto freeze_result(data_store.freeze());
+	auto freeze_result(data_store.startTransaction());
 	if (Errors::no_error__ != freeze_result.second) return 1;
 	auto insert_result2(data_store.insert(Point(point_type__, value__)));
 	if (Errors::no_error__ != insert_result2.second) return 1;
