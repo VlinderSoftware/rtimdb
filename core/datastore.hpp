@@ -71,14 +71,16 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #endif
 		std::pair< Details::Optional< Point >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Point read(Details::Transaction transaction, PointType type, unsigned int index) const;
+		Point read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Optional< Point >, Errors > read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< Point >, Errors > read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Details::Transaction startTransaction();
+		Details::ROTransaction startROTransaction();
 #endif
 		std::pair< Details::Transaction, Errors > startTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
+		std::pair< Details::ROTransaction, Errors > startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
 
 	private :
 		DataStore(DataStore const&) = delete;

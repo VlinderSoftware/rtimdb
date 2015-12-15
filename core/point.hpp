@@ -19,6 +19,8 @@
 #include "../pointtype.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
+	template < typename T > T getValue(Point const &point);
+
 	struct Point
 	{
 		enum CPPType {
@@ -95,6 +97,27 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			, cpp_type_(double__)
 		{
 			payload_.double_ = value;
+		}
+
+		bool operator==(Point const &other) const
+		{
+			return true
+				&& type_ == other.type_
+				&& cpp_type_ == other.cpp_type_
+				&& (false
+					|| ((cpp_type_ == bool__) && (getValue< bool >(*this) == getValue< bool >(other)))
+					|| ((cpp_type_ == u16__) && (getValue< uint16_t >(*this) == getValue< uint16_t >(other)))
+					|| ((cpp_type_ == s16__) && (getValue< int16_t >(*this) == getValue< int16_t >(other)))
+					|| ((cpp_type_ == u32__) && (getValue< uint32_t >(*this) == getValue< uint32_t >(other)))
+					|| ((cpp_type_ == s32__) && (getValue< int32_t >(*this) == getValue< int32_t >(other)))
+					|| ((cpp_type_ == float__) && (getValue< float >(*this) == getValue< float >(other)))
+					|| ((cpp_type_ == double__) && (getValue< double >(*this) == getValue< double >(other)))
+					)
+				;
+		}
+		bool operator!=(Point const &other) const
+		{
+			return !(*this == other);
 		}
 
 		PointType type_;

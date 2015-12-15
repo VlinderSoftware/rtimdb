@@ -73,7 +73,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 	DataStore::const_iterator DataStore::begin()
 	{
-		return Details::Iterator(this, startTransaction(), Details::Locator(getPointTypeAtOffset(0), 0));
+		return Details::Iterator(this, startROTransaction(), Details::Locator(getPointTypeAtOffset(0), 0));
 	}
 
 	DataStore::const_iterator DataStore::end()
@@ -233,7 +233,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Point DataStore::read(Details::Transaction transaction, PointType type, unsigned int index) const
+	Point DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const
 	{
 		auto result(read(transaction, type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -247,7 +247,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	std::pair< Details::Optional< Point >, Errors > DataStore::read(Details::Transaction transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	std::pair< Details::Optional< Point >, Errors > DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
 		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(transaction.getVersion()) : Details::Optional< Point >(), fetch_result.second);
@@ -259,7 +259,20 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		auto result(startTransaction(nothrow));
 		if (Errors::no_error__ == result.second)
 		{
-			return result.first;
+			return std::move(result.first);
+		}
+		else
+		{
+			throwException(result.second);
+		}
+		throw logic_error("Unreachable code");
+	}
+	Details::ROTransaction DataStore::startROTransaction()
+	{
+		auto result(startROTransaction(nothrow));
+		if (Errors::no_error__ == result.second)
+		{
+			return std::move(result.first);
 		}
 		else
 		{
@@ -289,11 +302,16 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 				auto deleter([this, frozen_version](void *p){ thaw(frozen_version); });
 				Details::Transaction retval(which, std::move(deleter));
 				freezeCells(retval.getVersion());
-				return make_pair(retval, Errors::no_error__);
+				return make_pair(std::move(retval), Errors::no_error__);
 			}
 			else
 			{ /* search again */ }
 		};
+	}
+	pair < Details::ROTransaction, Errors > DataStore::startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
+	{
+		auto result(startTransaction(RTIMDB_NOTHROW_ARG_1));
+		return std::make_pair(std::move(result.first.getROTransaction()), result.second);
 	}
 
 	void DataStore::thaw(unsigned int frozen_version)

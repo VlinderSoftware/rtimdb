@@ -28,12 +28,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Iterator();
 		Iterator(
 			  DataStore *data_store
-			, Transaction const &transaction
+			, ROTransaction const &transaction
 			, Locator const &locator
 			);
 		Iterator(
 			  DataStore *data_store
-			, std::pair < Transaction, Errors > const &maybe_transaction
+			, std::pair < ROTransaction, Errors > const &maybe_transaction
 			, Locator const &locator
 			);
 		Iterator(Iterator const &) = default;
@@ -49,7 +49,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 	private:
 		DataStore *data_store_;
-		Transaction transaction_;
+		ROTransaction transaction_;
 		bool at_end_;
 		Locator locator_;
 	};

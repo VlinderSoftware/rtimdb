@@ -30,7 +30,7 @@ int main()
 	DataStore data_store;
 	auto index(data_store.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
 
-	auto transaction(data_store.startTransaction() DOT_FIRST);
+	auto transaction(data_store.startROTransaction() DOT_FIRST);
 	data_store.update(index, Point(PointType::binary_input__, true));
 	auto frozen_value(data_store.read(transaction, PointType::binary_input__, index) DOT_FIRST);
 	assert(PointType::binary_input__ == frozen_value DEREF type_);

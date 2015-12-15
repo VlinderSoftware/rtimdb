@@ -22,7 +22,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	{ /* no-op */ }
     Iterator::Iterator(
           DataStore *data_store
-		, Transaction const &transaction
+		, ROTransaction const &transaction
 		, Locator const &locator
 		)
 		: data_store_(data_store)
@@ -32,7 +32,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	{ /* no-op */ }
     Iterator::Iterator(
           DataStore *data_store
-		, std::pair < Transaction, Errors > const &maybe_transaction
+		, std::pair < ROTransaction, Errors > const &maybe_transaction
 		, Locator const &locator
 		)
 		: data_store_(data_store)
