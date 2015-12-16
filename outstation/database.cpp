@@ -190,36 +190,43 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	Errors Database::update(RTIMDB_NOTHROW_PARAM_1) noexcept
 	{
 		Errors retval(Errors::no_error__);
-		for_each(
-			  begin(transition_queues_)
-			, end(transition_queues_)
-			, [&](decltype(transition_queues_[0]) &transition_queue) {
-				for (auto transition_count(transition_queue.size()); (retval == Errors::no_error__) && transition_count; --transition_count)
+		auto transaction(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
+		bool first(true);
+		for (auto transition_queue(begin(transition_queues_)); end(transition_queues_); ++transition_queue)
+		{
+			for (auto transition_count(transition_queue->size()); (retval == Errors::no_error__) && transition_count; --transition_count)
+			{
+				auto transition(transition_queue->front(RTIMDB_NOTHROW_ARG_1));
+				post_condition(transition.second);
+				if (0 == transition.first.type()) // entry is a time stamp
 				{
-					auto transition(transition_queue.front(RTIMDB_NOTHROW_ARG_1));
-					post_condition(transition.second);
-					if (0 == transition.first.type()) // entry is a time stamp
+					latest_timestamp_[transition_queue - transition_queues_] = transition.first.get< Details::Timestamp >();
+					if (!first)
 					{
-						latest_timestamp_ = transition.first.get< Details::Timestamp >();
+						Errors commit_result(data_store_.commit(transaction.first RTIMDB_NOTHROW_ARG));
+						//TODO check commit result and create event queue entries
+						transaction = std::move(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
 					}
 					else
-					{
-						invariant(1 == transition.first.type());
-						auto value(transition.first.get< Transition >());
-						Errors update_result(data_store_.update(value.system_id_, value.point_value_ RTIMDB_NOTHROW_ARG));
-						if (Errors::no_error__ != update_result)
-						{
-							transition_queue.pop(); // we'll have to pop it because there's no other way to get rid of it
-							retval = update_result;
-							return;
-						}
-						else
-						{ /* all is well */ }
-					}
-					transition_queue.pop();
+					{ /* this is the first transition */ }
 				}
-			  }
-			);
+				else
+				{
+					first = false;
+					invariant(1 == transition.first.type());
+					auto value(transition.first.get< Transition >());
+					Errors update_result(data_store_.update(transaction.first, value.system_id_, value.point_value_ RTIMDB_NOTHROW_ARG));
+					if (Errors::no_error__ != update_result)
+					{
+						transition_queue->pop(); // we'll have to pop it because there's no other way to get rid of it
+						return update_result;
+					}
+					else
+					{ /* all is well */ }
+				}
+				transition_queue->pop();
+			}
+		}
 
 		return retval;
 	}

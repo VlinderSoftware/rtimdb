@@ -43,6 +43,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void update(unsigned int index, Point new_value);
+		void update(Details::Transaction &transaction, unsigned int index, Point new_value);
 		void write(unsigned int index, Point new_value);
 		Details::Selection select(PointType type, unsigned int index);
 		void operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value);
@@ -51,6 +52,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		void freezeAndClear(PointType type, unsigned int index);
 #endif
 		Errors update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(Details::Transaction &transaction, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
 		Errors write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
 		std::pair< Details::Selection, Errors > select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
 		Errors operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
@@ -78,9 +80,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Details::Transaction startTransaction();
 		Details::ROTransaction startROTransaction();
+		void commit(Details::Transaction &transaction);
 #endif
 		std::pair< Details::Transaction, Errors > startTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
+		Errors commit(Details::Transaction &transaction RTIMDB_NOTHROW_PARAM);
 		std::pair< Details::ROTransaction, Errors > startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
+
 
 	private :
 		DataStore(DataStore const&) = delete;

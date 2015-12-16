@@ -15,7 +15,7 @@
 #include <cstring>
 #include <atomic>
 #include "exceptions/contract.hpp"
-
+#include "details/bubblesort.hpp"
 using namespace std;
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
@@ -83,8 +83,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	void DataStore::update(unsigned int index, Point new_value)															{ throwException(update(index, new_value, nothrow)); }
+	void DataStore::update(Details::Transaction &transaction, unsigned int index, Point new_value)						{ throwException(update(transaction, index, new_value, nothrow)); }
 	void DataStore::write(unsigned int index, Point new_value)															{ throwException(write(index, new_value, nothrow)); }
-	Details::Selection DataStore::select(PointType type, unsigned int index)												{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
+	Details::Selection DataStore::select(PointType type, unsigned int index)											{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
 	void DataStore::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value)	{ throwException(operate(selection, type, index, new_value, nothrow)); }
 	void DataStore::directOperate(unsigned int index, Point new_value)													{ throwException(directOperate(index, new_value, nothrow)); }
 	void DataStore::freeze(PointType type, unsigned int index)															{ throwException(freeze(type, index, nothrow)); }
@@ -93,16 +94,15 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 	Errors DataStore::update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
-		auto fetch_result(fetch(new_value.type_, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(RTIMDB::Details::Action::update__, new_value);
-		}
-		else
-		{
-			return fetch_result.second;
-		}
+		auto transaction(startTransaction(RTIMDB_NOTHROW_ARG_1));
+		if (transaction.second != Errors::no_error__) return transaction.second;
+		auto result(update(transaction.first, index, new_value RTIMDB_NOTHROW_ARG));
+		if (result != Errors::no_error__) return result;
+		return commit(transaction.first RTIMDB_NOTHROW_ARG);
+	}
+	Errors DataStore::update(Details::Transaction &transaction, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
+	{
+		return transaction.push(index, new_value);
 	}
 	Errors DataStore::write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
@@ -267,6 +267,11 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		}
 		throw logic_error("Unreachable code");
 	}
+	void DataStore::commit(Details::Transaction &transaction)
+	{
+		auto result(commit(transaction, nothrow));
+		throwException(result);
+	}
 	Details::ROTransaction DataStore::startROTransaction()
 	{
 		auto result(startROTransaction(nothrow));
@@ -283,7 +288,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #endif
 	pair < Details::Transaction, Errors > DataStore::startTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
-		unsigned int frozen_version(curr_version_);
+		unsigned int frozen_version(curr_version_++);
 		// find an empty slot in freeze_indices_
 		while (true)
 		{
@@ -307,6 +312,123 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			else
 			{ /* search again */ }
 		};
+	}
+	Errors DataStore::commit(Details::Transaction &transaction RTIMDB_NOTHROW_PARAM)
+	{
+		using namespace std;
+		Errors retval(Errors::no_error__);
+		// three phases:
+		// phase   I: sort out which of the transitions in the transaction actually change something
+		// phase  II: sort the transitions (in-place) so the locks are always in the same order
+		// phase III: lock affected cells; fail if version changed or already locked
+		// phase  IV: change the affected cells
+		// phase   V: unlock the affected cells
+		// let's go
+
+		// phase I
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (Errors::no_error__ == retval)
+				{
+					auto read_result(read(transaction, entry.value_.type_, entry.point_id_ RTIMDB_NOTHROW_ARG));
+					retval = read_result.second;
+					if (Errors::no_error__ != retval) return;
+					entry.transact_state_ = (*read_result.first == entry.value_) ? 0 : 1;
+				}
+				else
+				{ /* some error occurred, can't continue */ }
+			  }
+			);
+		// phase II
+		// why bubble sort, you ask? Bubble sort is very efficient (linear time) if everything is already sorted, which is likely to be the case most of the time
+		if (Errors::no_error__ == retval)
+		{
+			Details::bubbleSort(
+				  transaction.begin()
+				, transaction.end()
+				, [](decltype(transaction.entries_[0]) const &lhs, decltype(transaction.entries_[0]) const &rhs) -> bool {
+					if (lhs.value_.type_ < rhs.value_.type_) return true;
+					if (lhs.point_id_ < rhs.point_id_) return true;
+					return false;
+				  }
+				);
+		}
+		else
+		{ /* something went wrong */
+			return retval;
+		}
+		// phase III
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (Errors::no_error__ == retval)
+				{
+					if (entry.transact_state_)
+					{
+						auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+						if (Errors::no_error__ == fetch_result.second)
+						{
+							if ((*fetch_result.first)->lock(transaction.getVersion()))
+							{
+								entry.transact_state_ = 2;
+							}
+							else
+							{
+								retval = Errors::transaction_failed__;
+							}
+						}
+						else
+						{
+							retval = fetch_result.second;
+						}
+					}
+					else
+					{ /* don't transact this one */ }
+				}
+				else
+				{ /* some error occurred, can't continue */ }
+			  }
+			);
+		
+	// as of here, this function cannot fail (though any failure that occurs before this may still be returned)
+		// phase IV
+		if (Errors::no_error__ == retval)
+		{
+			for_each(
+				  transaction.begin()
+				, transaction.end()
+				, [&](decltype(transaction.entries_[0]) &entry){
+					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+					assert(Errors::no_error__ == fetch_result.second);
+					entry.value_.version_ = transaction.getVersion();
+					auto set_result((*fetch_result.first)->set(RTIMDB::Details::Action::update__, entry.value_));
+					assert(Errors::no_error__ == set_result);
+				  }
+				);
+		}
+		else
+		{ /* something went wrong */ }
+
+		// phase V
+		for_each(
+			  transaction.rbegin()
+			, transaction.rend()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (entry.transact_state_ >= 2)
+				{
+					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+					assert(Errors::no_error__ == fetch_result.second);
+					(*fetch_result.first)->unlock();
+				}
+				else
+				{ /* didn't transact this one */ }
+			  }
+			);
+
+		return Errors::no_error__;
 	}
 	pair < Details::ROTransaction, Errors > DataStore::startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
 	{

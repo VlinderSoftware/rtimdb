@@ -19,6 +19,7 @@
 #include "../pointtype.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
+	struct Point;
 	template < typename T > T getValue(Point const &point);
 
 	struct Point

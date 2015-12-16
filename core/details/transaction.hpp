@@ -15,6 +15,8 @@
 
 #include <memory>
 #include <atomic>
+#include "../../exceptions.hpp"
+#include "../point.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core { 
 	class DataStore;
@@ -69,6 +71,22 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		}
 
 	private : // friend-only API
+		struct Entry
+		{
+			Entry()
+				: point_id_(-1)
+			{ /* no-op */ }
+			Entry(unsigned int point_id, Point value)
+				: point_id_(point_id)
+				, value_(value)
+				, transact_state_(0)
+			{ /* no-op */ }
+
+			unsigned int point_id_;
+			Point value_;
+			unsigned int transact_state_;
+		};
+
 		template < typename Deleter >
 		Transaction(std::atomic< unsigned int > *version_to_guard, Deleter &&rollback)
 			: ROTransaction(version_to_guard, std::move(rollback))
@@ -77,12 +95,16 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 		Errors push(unsigned int point_id, Point const &new_value)
 		{
-			
+			if (next_entry_ == sizeof(entries_) / sizeof(entries_[0])) return Errors::too_many_transitions__;
+			entries_[next_entry_++] = std::move(Entry(point_id, new_value));
+			return Errors::no_error__;
 		}
 
+		Entry* begin() { return entries_; }
+		Entry* end() { return entries_ + next_entry_; }
+		std::reverse_iterator< Entry* > rbegin() { return std::reverse_iterator< Entry* >(entries_ + next_entry_); }
+		std::reverse_iterator< Entry* > rend() { return std::reverse_iterator< Entry* >(entries_); }
 	private :
-		typedef std::pair< unsigned int/* point ID */, Point /* value */ > Entry;
-
 		Entry entries_[RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION];
 		unsigned int next_entry_;
 		

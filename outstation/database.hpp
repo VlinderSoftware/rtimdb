@@ -82,7 +82,8 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		Details::TransitionQueue transition_queues_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
 		std::atomic< bool > transition_queue_allocations_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
 		Core::DataStore data_store_;
-		Details::Timestamp latest_timestamp_;
+		Details::Timestamp latest_timestamp_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
+
 	};
 }}}
 

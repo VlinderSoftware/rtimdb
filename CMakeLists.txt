@@ -19,6 +19,7 @@ set(RTIMDB_MAX_COMMAND_QUEUE_COUNT					  2	CACHE STRING "Maximum number of comma
 set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
 set(RTIMDB_MAX_TRANSITION_QUEUE_COUNT				  2	CACHE STRING "Maximum number of transition queues that can be used by the application")
 set(RTIMDB_TRANSITION_QUEUE_CAPACITY				256 CACHE STRING "Number of transitions that can be queued at any given time, per queue")
+set(RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION			200 CACHE STRING "Maximum number of transitions that can be expected to occur in a single transaction.")
 
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
@@ -35,6 +36,7 @@ endif()
 set(RTIMDB_CORE_SOURCES
 	core/datastore.cpp
 	core/datastore.hpp
+	core/details/bubblesort.hpp
 	core/details/cell.hpp
 	core/details/iterator.cpp
 	core/details/iterator.hpp

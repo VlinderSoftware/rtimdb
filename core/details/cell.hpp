@@ -32,6 +32,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		Cell()
 			: next_selection_id_(0)
 			, observer_([](RTIMDB::Details::Action, Point, Point){})
+			, lock_flag_(false)
 		{
 			std::for_each(std::begin(frozen_versions_), std::end(frozen_versions_), [](decltype(frozen_versions_[0]) &frozen_version){ frozen_version = 0; });
 		}
@@ -39,11 +40,17 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		{ /* no-op */ }
 
 		Cell(Cell &&cell)
+			: next_selection_id_(std::move(cell.next_selection_id_))
+			, observer_(std::move(cell.observer_))
+			, lock_flag_(std::move(cell.lock_flag_))
 		{
 			std::move(begin(cell.values_), end(cell.values_), begin(values_));
 		}
 		Cell& operator=(Cell &&cell)
 		{
+			next_selection_id_ = std::move(cell.next_selection_id_);
+			observer_ = std::move(cell.observer_);
+			lock_flag_ = std::move(cell.lock_flag_);
 			std::move(begin(cell.values_), end(cell.values_), begin(values_));
 			return *this;
 		}
@@ -191,6 +198,25 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			return Errors::no_error__;
 		}
 
+		bool lock(unsigned int version)
+		{
+			if (lock_flag_.exchange(true)) return false;
+			if (getCurrentVersion() > version)
+			{
+				lock_flag_ = false;
+				return false;
+			}
+			else
+			{ /* succeeded */ }
+
+			return true;
+		}
+
+		void unlock()
+		{
+			lock_flag_ = false;
+		}
+
 	private:
 		Cell(Cell const&) = delete;
 		Cell& operator=(Cell const&) = delete;
@@ -203,7 +229,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			// find the highest version that's frozen
 			unsigned int highest_frozen_version(0);
 			std::for_each(
-				begin(frozen_versions_)
+				  begin(frozen_versions_)
 				, end(frozen_versions_)
 				, [&](std::atomic< unsigned int > const &frozen_version)
 					{
@@ -298,6 +324,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		Point default_clear_value_;
 		Observer observer_;
 		std::mutex observer_lock_;
+		std::atomic< bool > lock_flag_;
 	};
 }}}}
 

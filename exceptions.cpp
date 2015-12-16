@@ -40,6 +40,10 @@ namespace Vlinder { namespace RTIMDB {
 			throw DatabaseFull("Database full");
 		case Errors::command_queue_full__:
 			throw CommandQueueFull("Command queue full");
+		case Errors::too_many_transitions__ :
+			throw TooManyTransitions("Too many transitions for a single transaction");
+		case Errors::transaction_failed__:
+			throw TransactionFailed("Transaction failed");
 		default:
 			throw logic_error("Unknown error type");
 		}
