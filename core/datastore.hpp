@@ -44,29 +44,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void update(unsigned int index, Point new_value);
 		void update(Details::Transaction &transaction, unsigned int index, Point new_value);
-		void write(unsigned int index, Point new_value);
-		Details::Selection select(PointType type, unsigned int index);
-		void operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value);
-		void directOperate(unsigned int index, Point new_value);
-		void freeze(PointType type, unsigned int index);
-		void freezeAndClear(PointType type, unsigned int index);
 #endif
 		Errors update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
 		Errors update(Details::Transaction &transaction, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
-		Errors write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
-		std::pair< Details::Selection, Errors > select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
-		Errors operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
-		Errors directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
-		Errors freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
-		Errors freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw();
-
-#ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter);
-		void registerObserver(PointType type, unsigned int index, Details::Observer const &observer);
-#endif
-		Errors registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM);
-		Errors registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM);
-
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Point read(PointType type, unsigned int index) const;
@@ -106,9 +86,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Errors lockCells(Details::Transaction &transaction) noexcept;
 		void applyChanges(Details::Transaction &transaction) noexcept;
 		void unlockCells(Details::Transaction &transaction) noexcept;
-
-		static std::function< bool(RTIMDB::Details::Action, Point, Point) > getDefaultFilter(PointType point_type);
-		static Point getClearValue(PointType point_type);
 
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		unsigned int start_index_[static_cast< unsigned int >(PointType::_type_count__) + 1];

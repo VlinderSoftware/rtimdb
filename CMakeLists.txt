@@ -96,9 +96,6 @@ set(TESTS
 	try_concurrent_transactions
 	try_freeze
 	try_iterate
-	try_set_filter
-	try_register_observer
-	try_update_through_observer
 	)
 
 foreach (test

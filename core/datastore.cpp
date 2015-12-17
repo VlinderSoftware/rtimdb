@@ -57,11 +57,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		auto target_end(begin(points_) + last_index + 1);
 		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
-		auto set_result((*points_[next_index]).set(RTIMDB::Details::Action::update__, value));
+		auto set_result((*points_[next_index]).set(value));
 		if (Errors::no_error__ != set_result) return make_pair(-1, set_result);
-
-		(*points_[next_index]).registerFilter(getDefaultFilter(value.type_));
-		(*points_[next_index]).setDefaultClearValue(getClearValue(value.type_));
 
 		dismiss = true;
 		// as of this, cannot fail
@@ -84,12 +81,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	void DataStore::update(unsigned int index, Point new_value)															{ throwException(update(index, new_value, nothrow)); }
 	void DataStore::update(Details::Transaction &transaction, unsigned int index, Point new_value)						{ throwException(update(transaction, index, new_value, nothrow)); }
-	void DataStore::write(unsigned int index, Point new_value)															{ throwException(write(index, new_value, nothrow)); }
-	Details::Selection DataStore::select(PointType type, unsigned int index)											{ auto result(select(type, index, nothrow)); throwException(result.second); return result.first; }
-	void DataStore::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value)	{ throwException(operate(selection, type, index, new_value, nothrow)); }
-	void DataStore::directOperate(unsigned int index, Point new_value)													{ throwException(directOperate(index, new_value, nothrow)); }
-	void DataStore::freeze(PointType type, unsigned int index)															{ throwException(freeze(type, index, nothrow)); }
-	void DataStore::freezeAndClear(PointType type, unsigned int index)													{ throwException(freezeAndClear(type, index, nothrow)); }
 #endif
 
 	Errors DataStore::update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
@@ -103,111 +94,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	Errors DataStore::update(Details::Transaction &transaction, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
 	{
 		return transaction.push(index, new_value);
-	}
-	Errors DataStore::write(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(new_value.type_, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(RTIMDB::Details::Action::write__, new_value);
-		}
-		else
-		{
-			return fetch_result.second;
-		}
-	}
-	std::pair< Details::Selection, Errors > DataStore::select(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(type, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			return (*fetch_result.first)->select();
-		}
-		else
-		{
-			return std::make_pair(Details::Selection(), fetch_result.second);
-		}
-	}
-	Errors DataStore::operate(Details::Selection const &selection, PointType type, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(type, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->operate(selection, new_value);
-		}
-		else
-		{
-			return fetch_result.second;
-		}
-	}
-	Errors DataStore::directOperate(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(new_value.type_, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			new_value.version_ = ++curr_version_;
-			return (*fetch_result.first)->set(RTIMDB::Details::Action::direct_operate__, new_value);
-		}
-		else
-		{
-			return fetch_result.second;
-		}
-	}
-	Errors DataStore::freeze(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(type, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			return (*fetch_result.first)->freeze();
-		}
-		else
-		{
-			return fetch_result.second;
-		}
-	}
-	Errors DataStore::freezeAndClear(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) throw()
-	{
-		auto fetch_result(fetch(type, index));
-		if (Errors::no_error__ == fetch_result.second)
-		{
-			return (*fetch_result.first)->freezeAndClear();
-		}
-		else
-		{
-			return fetch_result.second;
-		}
-	}
-
-#ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void DataStore::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter)
-	{
-		throwException(registerFilter(type, index, std::move(filter), nothrow));
-	}
-#endif
-	Errors DataStore::registerFilter(PointType type, unsigned int index, std::function< bool(RTIMDB::Details::Action, Point, Point) > filter RTIMDB_NOTHROW_PARAM)
-	{
-		auto cell(fetch(type, index));
-		if (Errors::no_error__ != cell.second) return cell.second;
-		(*cell.first)->registerFilter(std::move(filter));
-		return Errors::no_error__;
-	}
-
-#ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void DataStore::registerObserver(PointType type, unsigned int index, Details::Observer const &observer)
-	{
-		auto cell(fetch(type, index));
-		throwException(cell.second);
-		(*cell.first)->registerObserver(observer);
-	}
-#endif
-	Errors DataStore::registerObserver(PointType type, unsigned int index, Details::Observer const &observer RTIMDB_NOTHROW_PARAM)
-	{
-		auto cell(fetch(type, index));
-		if (Errors::no_error__ != cell.second) return cell.second;
-		(*cell.first)->registerObserver(observer);
-		return Errors::no_error__;
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -345,8 +231,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		}
 		else
 		{ /* something went wrong */ }
-		
-
 
 		return Errors::no_error__;
 	}
@@ -554,7 +438,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 				auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
 				assert(Errors::no_error__ == fetch_result.second);
 				entry.value_.version_ = transaction.getVersion();
-				auto set_result((*fetch_result.first)->set(RTIMDB::Details::Action::update__, entry.value_));
+				auto set_result((*fetch_result.first)->set(entry.value_));
 				assert(Errors::no_error__ == set_result);
 			  }
 			);
@@ -576,41 +460,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 				{ /* didn't transact this one */ }
 			  }
 			);
-	}
-
-	/*static */std::function< bool(RTIMDB::Details::Action, Point, Point) > DataStore::getDefaultFilter(PointType point_type)
-	{
-		// install the default filter
-		switch (point_type)
-		{
-		case PointType::binary_input__:
-			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return false; };
-		case PointType::counter__:
-		case PointType::analog_input__:
-			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return ((action == RTIMDB::Details::Action::freeze__) || (action == RTIMDB::Details::Action::freeze_and_clear__)); };
-		case PointType::binary_output__:
-		case PointType::analog_output__:
-			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return ((action == RTIMDB::Details::Action::select__) || (action == RTIMDB::Details::Action::operate__) || (action == RTIMDB::Details::Action::direct_operate__)); };
-		default:
-			return [](RTIMDB::Details::Action action, Point new_value, Point old_value) -> bool { return true; };
-		}
-	}
-
-	/*static */Point DataStore::getClearValue(PointType point_type)
-	{
-		switch (point_type)
-		{
-		case PointType::binary_input__  :
-		case PointType::binary_output__	:
-			return Point(point_type, false);
-		case PointType::counter__		:
-			return Point(point_type, 0U);
-		case PointType::analog_input__	:
-		case PointType::analog_output__	:
-			return Point(point_type, 0.0);
-		default :
-			return Point();
-		}
 	}
 }}}
 

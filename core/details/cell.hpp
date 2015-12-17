@@ -30,9 +30,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	{
 	public :
 		Cell()
-			: next_selection_id_(0)
-			, observer_([](RTIMDB::Details::Action, Point, Point){})
-			, lock_flag_(false)
+			: lock_flag_(false)
 		{
 			std::for_each(std::begin(frozen_versions_), std::end(frozen_versions_), [](decltype(frozen_versions_[0]) &frozen_version){ frozen_version = 0; });
 		}
@@ -40,16 +38,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		{ /* no-op */ }
 
 		Cell(Cell &&cell)
-			: next_selection_id_(std::move(cell.next_selection_id_))
-			, observer_(std::move(cell.observer_))
-			, lock_flag_(std::move(cell.lock_flag_))
+			: lock_flag_(std::move(cell.lock_flag_))
 		{
 			std::move(begin(cell.values_), end(cell.values_), begin(values_));
 		}
 		Cell& operator=(Cell &&cell)
 		{
-			next_selection_id_ = std::move(cell.next_selection_id_);
-			observer_ = std::move(cell.observer_);
 			lock_flag_ = std::move(cell.lock_flag_);
 			std::move(begin(cell.values_), end(cell.values_), begin(values_));
 			return *this;
@@ -60,19 +54,15 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			return get_(max_version);
 		}
-		Errors set(RTIMDB::Details::Action action, Point const &point)
+		Errors set(Point const &point)
 		{
-			using RTIMDB::Details::Action;
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
 			Point current(get_());
-			if (((point.type_ == current.type_) || (PointType::_type_count__ == current.type_)) && ((action == Action::update__) || filter_(action, point, current)))
+			if ((point.type_ == current.type_) || (PointType::_type_count__ == current.type_))
 			{
 				auto prev_value(get_());
 				*target = point;
-				values_lock.unlock();
-				std::unique_lock< decltype(observer_lock_) > observer_lock(observer_lock_);
-				observer_(action, point, prev_value);
 				return Errors::no_error__;
 			}
 			else
@@ -114,88 +104,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		{
 			auto which(find(begin(frozen_versions_), end(frozen_versions_), frozen_version));
 			*which = 0;
-		}
-
-		void registerFilter(std::function< bool(RTIMDB::Details::Action, Point, Point) > &&filter)
-		{
-			filter_ = std::move(filter);
-		}
-
-		std::pair< Details::Selection, Errors > select()
-		{
-			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
-			auto makeRelease([](unsigned int select_id) -> std::function< void(Details::Selection_*) >{ return [select_id](Details::Selection_ *selection) -> void{ if (selection) { unsigned int exp(select_id); selection->id_.compare_exchange_strong(exp, 0); }};});
-			unsigned int exp(0);
-			unsigned int selection_id(next_selection_id_++);
-			if (selection_.id_.compare_exchange_strong(exp, selection_id))
-			{
-				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::no_error__);
-			}
-			else if (duplicate_selection_policy__ == RTIMDB::Details::DuplicateSelectionPolicy::replace_selection__)
-			{
-				selection_.id_ = selection_id;
-				return std::make_pair(std::make_pair(Details::Selection::first_type(&selection_, makeRelease(selection_id)), selection_id), Errors::duplicate_selection__);
-			}
-			else
-			{
-				return std::make_pair(Details::Selection(), Errors::duplicate_selection__);
-			}
-		}
-		Errors operate(Details::Selection const &selection, Point new_value)
-		{
-			std::unique_lock< decltype(select_operate_lock_) > select_operate_lock(select_operate_lock_);
-			if ((selection.first.get() == &selection_) && (selection.second == selection.first->id_))
-			{
-				auto set_result(set(RTIMDB::Details::Action::operate__, new_value));
-				return set_result;
-			}
-			return Errors::operate_without_select__;
-		}
-		Errors freeze()
-		{
-			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
-			auto current_value(get_());
-			if (filter_(RTIMDB::Details::Action::freeze__, current_value, current_value))
-			{
-				return freeze(getCurrentVersion());
-			}
-			else
-			{
-				return Errors::not_allowed__;
-			}
-		}
-		Errors freezeAndClear()
-		{
-			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
-			auto current_value(get_());
-			if (filter_(RTIMDB::Details::Action::freeze_and_clear__, default_clear_value_, current_value))
-			{
-				Errors retval(freeze(getCurrentVersion()));
-				if (Errors::no_error__ == retval)
-				{
-					auto target(fetchAvailableSlot());
-					*target = default_clear_value_;
-				}
-				else
-				{ /* failed to freeze */ }
-				return retval;
-			}
-			else
-			{
-				return Errors::not_allowed__;
-			}
-		}
-
-		void setDefaultClearValue(Point &&default_clear_value)
-		{
-			default_clear_value_ = std::move(default_clear_value);
-		}
-
-		Errors registerObserver(Observer const &observer)
-		{
-			std::unique_lock< decltype(observer_lock_) > observer_lock(observer_lock_);
-			observer_= observer;
-			return Errors::no_error__;
 		}
 
 		bool lock(unsigned int version)
@@ -317,13 +225,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		Point values_[cell_size__];
 		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
-		std::function< bool(RTIMDB::Details::Action, Point, Point) > filter_;
-		Details::Selection_ selection_;
-		std::atomic< unsigned int > next_selection_id_;
-		std::mutex select_operate_lock_;
-		Point default_clear_value_;
-		Observer observer_;
-		std::mutex observer_lock_;
 		std::atomic< bool > lock_flag_;
 	};
 }}}}
