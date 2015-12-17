@@ -191,9 +191,9 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	{
 		Errors retval(Errors::no_error__);
 		auto transaction(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
-		bool first(true);
-		for (auto transition_queue(begin(transition_queues_)); end(transition_queues_); ++transition_queue)
+		for (auto transition_queue(begin(transition_queues_)); transition_queue != end(transition_queues_); ++transition_queue)
 		{
+			bool first(true);
 			for (auto transition_count(transition_queue->size()); (retval == Errors::no_error__) && transition_count; --transition_count)
 			{
 				auto transition(transition_queue->front(RTIMDB_NOTHROW_ARG_1));

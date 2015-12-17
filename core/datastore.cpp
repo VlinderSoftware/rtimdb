@@ -316,7 +316,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	Errors DataStore::commit(Details::Transaction &transaction RTIMDB_NOTHROW_PARAM)
 	{
 		using namespace std;
-		Errors retval(Errors::no_error__);
 		// three phases:
 		// phase   I: sort out which of the transitions in the transaction actually change something
 		// phase  II: sort the transitions (in-place) so the locks are always in the same order
@@ -326,107 +325,28 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		// let's go
 
 		// phase I
-		for_each(
-			  transaction.begin()
-			, transaction.end()
-			, [&](decltype(transaction.entries_[0]) &entry){
-				if (Errors::no_error__ == retval)
-				{
-					auto read_result(read(transaction, entry.value_.type_, entry.point_id_ RTIMDB_NOTHROW_ARG));
-					retval = read_result.second;
-					if (Errors::no_error__ != retval) return;
-					entry.transact_state_ = (*read_result.first == entry.value_) ? 0 : 1;
-				}
-				else
-				{ /* some error occurred, can't continue */ }
-			  }
-			);
+		Errors retval(tagTransitions(transaction));
 		// phase II
-		// why bubble sort, you ask? Bubble sort is very efficient (linear time) if everything is already sorted, which is likely to be the case most of the time
 		if (Errors::no_error__ == retval)
 		{
-			Details::bubbleSort(
-				  transaction.begin()
-				, transaction.end()
-				, [](std::remove_reference< decltype(transaction.entries_[0]) >::type const &lhs, std::remove_reference< decltype(transaction.entries_[0]) >::type const &rhs) -> bool {
-					if (lhs.value_.type_ < rhs.value_.type_) return true;
-					if (lhs.point_id_ < rhs.point_id_) return true;
-					return false;
-				  }
-				);
-		}
-		else
-		{ /* something went wrong */
-			return retval;
-		}
-		// phase III
-		for_each(
-			  transaction.begin()
-			, transaction.end()
-			, [&](decltype(transaction.entries_[0]) &entry){
-				if (Errors::no_error__ == retval)
-				{
-					if (entry.transact_state_)
-					{
-						auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
-						if (Errors::no_error__ == fetch_result.second)
-						{
-							if ((*fetch_result.first)->lock(transaction.getVersion()))
-							{
-								entry.transact_state_ = 2;
-							}
-							else
-							{
-								retval = Errors::transaction_failed__;
-							}
-						}
-						else
-						{
-							retval = fetch_result.second;
-						}
-					}
-					else
-					{ /* don't transact this one */ }
-				}
-				else
-				{ /* some error occurred, can't continue */ }
-			  }
-			);
-		
-	// as of here, this function cannot fail (though any failure that occurs before this may still be returned)
-		// phase IV
-		if (Errors::no_error__ == retval)
-		{
-			for_each(
-				  transaction.begin()
-				, transaction.end()
-				, [&](decltype(transaction.entries_[0]) &entry){
-					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
-					assert(Errors::no_error__ == fetch_result.second);
-					entry.value_.version_ = transaction.getVersion();
-					auto set_result((*fetch_result.first)->set(RTIMDB::Details::Action::update__, entry.value_));
-					assert(Errors::no_error__ == set_result);
-				  }
-				);
+			sortTransitions(transaction);
+			// phase III
+			retval = lockCells(transaction);
+			// as of here, this function cannot fail (though any failure that occurs before this may still be returned)
+			// phase IV
+			if (Errors::no_error__ == retval)
+			{
+				applyChanges(transaction);
+			}
+			else
+			{ /* something went wrong */ }
+			// phase V
+			unlockCells(transaction);
 		}
 		else
 		{ /* something went wrong */ }
+		
 
-		// phase V
-		for_each(
-			  transaction.rbegin()
-			, transaction.rend()
-			, [&](decltype(transaction.entries_[0]) &entry){
-				if (entry.transact_state_ >= 2)
-				{
-					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
-					assert(Errors::no_error__ == fetch_result.second);
-					(*fetch_result.first)->unlock();
-				}
-				else
-				{ /* didn't transact this one */ }
-			  }
-			);
 
 		return Errors::no_error__;
 	}
@@ -547,6 +467,116 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         { /* nothing more to be done */ }
         return new_location;
     }
+
+	Errors DataStore::tagTransitions(Details::Transaction &transaction) noexcept
+	{
+		using namespace std;
+		Errors retval(Errors::no_error__);
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (Errors::no_error__ == retval)
+				{
+					auto read_result(read(transaction, entry.value_.type_, entry.point_id_ RTIMDB_NOTHROW_ARG));
+					retval = read_result.second;
+					if (Errors::no_error__ != retval) return;
+					entry.transact_state_ = (*read_result.first == entry.value_) ? 0 : 1;
+				}
+				else
+				{ /* some error occurred, can't continue */ }
+			  }
+			);
+		return retval;
+	}
+
+	void DataStore::sortTransitions(Details::Transaction &transaction) noexcept
+	{
+		// why bubble sort, you ask? Bubble sort is very efficient (linear time) if everything is already sorted, which is likely to be the case most of the time
+		Details::bubbleSort(
+			  transaction.begin()
+			, transaction.end()
+			, [](std::remove_reference< decltype(transaction.entries_[0]) >::type const &lhs, std::remove_reference< decltype(transaction.entries_[0]) >::type const &rhs) -> bool {
+				if (lhs.value_.type_ < rhs.value_.type_) return true;
+				if (lhs.point_id_ < rhs.point_id_) return true;
+				return false;
+				}
+			);
+	}
+
+	Errors DataStore::lockCells(Details::Transaction &transaction) noexcept
+	{
+		using namespace std;
+		Errors retval(Errors::no_error__);
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (Errors::no_error__ == retval)
+				{
+					if (entry.transact_state_)
+					{
+						auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+						if (Errors::no_error__ == fetch_result.second)
+						{
+							if ((*fetch_result.first)->lock(transaction.getVersion()))
+							{
+								entry.transact_state_ = 2;
+							}
+							else
+							{
+								retval = Errors::transaction_failed__;
+							}
+						}
+						else
+						{
+							retval = fetch_result.second;
+						}
+					}
+					else
+					{ /* don't transact this one */ }
+				}
+				else
+				{ /* some error occurred, can't continue */ }
+			  }
+			);
+
+		return retval;
+	}
+
+	void DataStore::applyChanges(Details::Transaction &transaction) noexcept
+	{
+		using namespace std;
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+				assert(Errors::no_error__ == fetch_result.second);
+				entry.value_.version_ = transaction.getVersion();
+				auto set_result((*fetch_result.first)->set(RTIMDB::Details::Action::update__, entry.value_));
+				assert(Errors::no_error__ == set_result);
+			  }
+			);
+	}
+
+	void DataStore::unlockCells(Details::Transaction &transaction) noexcept
+	{
+		for_each(
+			  transaction.rbegin()
+			, transaction.rend()
+			, [&](decltype(transaction.entries_[0]) &entry){
+				if (entry.transact_state_ >= 2)
+				{
+					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
+					assert(Errors::no_error__ == fetch_result.second);
+					(*fetch_result.first)->unlock();
+				}
+				else
+				{ /* didn't transact this one */ }
+			  }
+			);
+	}
 
 	/*static */std::function< bool(RTIMDB::Details::Action, Point, Point) > DataStore::getDefaultFilter(PointType point_type)
 	{

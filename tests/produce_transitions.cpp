@@ -68,7 +68,7 @@ int main()
 	 * and start by making sure its view of the system is up to date. In that case, there is only one
 	 * event queue -- but it may well be subscribed to all points in the system. */
 	Errors update_result(database.update(RTIMDB_NOTHROW_ARG_1));
-	assert(Errors::unknown_point__ == update_result); // because we didn't register any points for this test..
+	assert(Errors::no_error__ == update_result);
 
 	return 0;
 }

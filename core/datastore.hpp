@@ -86,7 +86,6 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Errors commit(Details::Transaction &transaction RTIMDB_NOTHROW_PARAM);
 		std::pair< Details::ROTransaction, Errors > startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw();
 
-
 	private :
 		DataStore(DataStore const&) = delete;
 		DataStore& operator=(DataStore const&) = delete;
@@ -100,6 +99,13 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         unsigned int getPointOffset(PointType point_type, unsigned int index) const;
         PointType getPointTypeAtOffset(unsigned int offset) const;
 		Details::Locator advance(Details::Locator const &curr_location) const;
+
+		// commit phases
+		Errors tagTransitions(Details::Transaction &transaction) noexcept;
+		void sortTransitions(Details::Transaction &transaction) noexcept;
+		Errors lockCells(Details::Transaction &transaction) noexcept;
+		void applyChanges(Details::Transaction &transaction) noexcept;
+		void unlockCells(Details::Transaction &transaction) noexcept;
 
 		static std::function< bool(RTIMDB::Details::Action, Point, Point) > getDefaultFilter(PointType point_type);
 		static Point getClearValue(PointType point_type);
