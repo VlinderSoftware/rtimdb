@@ -16,6 +16,7 @@
 #include "details/prologue.hpp"
 #include <cstdint>
 #include <atomic>
+#include <stdexcept>
 #include "../pointtype.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
@@ -52,50 +53,50 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		{ /* no-op */ }
 		Point(PointType type, bool value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(bool__)
+			, version_(version)
 		{
 			payload_.bool_ = value;
 		}
 		Point(PointType type, int16_t value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(s16__)
+			, version_(version)
 		{
 			payload_.s16_ = value;
 		}
 		Point(PointType type, int32_t value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(s32__)
+			, version_(version)
 		{
 			payload_.s32_ = value;
 		}
 		Point(PointType type, uint16_t value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(u16__)
+			, version_(version)
 		{
 			payload_.u16_ = value;
 		}
 		Point(PointType type, uint32_t value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(u32__)
+			, version_(version)
 		{
 			payload_.u32_ = value;
 		}
 		Point(PointType type, float value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(float__)
+			, version_(version)
 		{
 			payload_.float_ = value;
 		}
 		Point(PointType type, double value, unsigned int version = 0) throw()
 			: type_(type)
-			, version_(version)
 			, cpp_type_(double__)
+			, version_(version)
 		{
 			payload_.double_ = value;
 		}
@@ -123,8 +124,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 
 		PointType type_;
 		CPPType cpp_type_;
-		Payload payload_;
 		unsigned int version_;
+		Payload payload_;
 	};
 
 	template < typename T > T getValue(Point const &point)
@@ -145,6 +146,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			return T(point.payload_.float_);
 		case Point::double__:
 			return T(point.payload_.double_);
+		case Point::none__ :
+			throw std::logic_error("Cannot get the value of a non-assigned point");
 		}
 		return T(0);
 	}

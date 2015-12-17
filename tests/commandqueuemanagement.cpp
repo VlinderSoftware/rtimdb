@@ -28,6 +28,7 @@ int tryAllocateCommandQueue()
 	try
 	{
 		auto result = database.allocateCommandQueue();
+		(void)result;
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 		caught = !result.second;
 #endif

@@ -52,7 +52,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		typedef std::shared_ptr< std::atomic< unsigned int > const > VersionGuard;
 
 		VersionGuard version_guard_;
-		friend class DataStore;
+		friend class Core::DataStore;
 	};
 	class Transaction : public ROTransaction
 	{
@@ -104,11 +104,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Entry* end() { return entries_ + next_entry_; }
 		std::reverse_iterator< Entry* > rbegin() { return std::reverse_iterator< Entry* >(entries_ + next_entry_); }
 		std::reverse_iterator< Entry* > rend() { return std::reverse_iterator< Entry* >(entries_); }
+
 	private :
 		Entry entries_[RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION];
 		unsigned int next_entry_;
 		
-		friend class DataStore;
+		friend class Core::DataStore;
 	};
 }}}}
 

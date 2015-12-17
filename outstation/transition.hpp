@@ -15,6 +15,7 @@
 
 #include "details/variant.hpp"
 #include "../core/point.hpp"
+#include <limits>
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	struct Transition
