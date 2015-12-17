@@ -348,7 +348,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			Details::bubbleSort(
 				  transaction.begin()
 				, transaction.end()
-				, [](typename std::remove_reference< decltype(transaction.entries_[0]) >::type const &lhs, typename std::remove_reference< decltype(transaction.entries_[0]) >::type const &rhs) -> bool {
+				, [](std::remove_reference< decltype(transaction.entries_[0]) >::type const &lhs, std::remove_reference< decltype(transaction.entries_[0]) >::type const &rhs) -> bool {
 					if (lhs.value_.type_ < rhs.value_.type_) return true;
 					if (lhs.point_id_ < rhs.point_id_) return true;
 					return false;
