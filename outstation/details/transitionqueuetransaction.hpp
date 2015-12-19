@@ -13,12 +13,12 @@
 #ifndef vlinder_rtimdb_outstation_details_transitionqueuetransaction_hpp
 #define vlinder_rtimdb_outstation_details_transitionqueuetransaction_hpp
 
-#include "prologue.hpp"
+#include "../../details/prologue.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
 	class TransitionQueue;
 	struct TransitionTransactionEntry;
-	class RTIMDB_OUTSTATION_API TransitionQueueTransaction
+	class RTIMDB_API TransitionQueueTransaction
 	{
 	public :
 		~TransitionQueueTransaction();

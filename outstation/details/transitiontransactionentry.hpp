@@ -13,13 +13,13 @@
 #ifndef vlinder_rtimdb_outstation_details_transitiontransactionentry_hpp
 #define vlinder_rtimdb_outstation_details_transitiontransactionentry_hpp
 
-#include "prologue.hpp"
+#include "../../details/prologue.hpp"
 #include "variant.hpp"
 #include "../transition.hpp"
 #include "timestamp.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
-	struct RTIMDB_OUTSTATION_API TransitionTransactionEntry : Variant< Timestamp, Transition >
+	struct RTIMDB_API TransitionTransactionEntry : Variant< Timestamp, Transition >
 	{
 		typedef Variant< Timestamp, Transition > super;
 

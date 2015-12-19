@@ -56,7 +56,6 @@ set(RTIMDB_OUTSTATION_SOURCES
 	outstation/database.hpp
 	outstation/details/crob.hpp
 	outstation/details/pointdescriptor.hpp
-	outstation/details/prologue.hpp
 	outstation/details/timestamp.hpp
 	outstation/details/transitionqueue.cpp
 	outstation/details/transitionqueue.hpp
@@ -77,12 +76,9 @@ set(RTIMDB_SOURCES
 add_library(rtimdb SHARED
 	${RTIMDB_CORE_SOURCES}
 	${RTIMDB_SOURCES}
-	)
-add_library(rtimdb_outstation SHARED
 	${RTIMDB_OUTSTATION_SOURCES}
 	)
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
-target_link_libraries(rtimdb_outstation rtimdb exceptions ${EXTRA_LIBS})
 
 set(TESTS
 	commandqueue
@@ -102,31 +98,23 @@ foreach (test
 	${TESTS}
 	)
 	add_executable(test_${test} tests/${test}.cpp)
-	target_link_libraries(test_${test} rtimdb_outstation rtimdb)
+	target_link_libraries(test_${test} rtimdb)
 	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
 endforeach (test)
 foreach (test_config 1 2 3 4)
 	add_library(rtimdb_cfg_${test_config} SHARED
 		${RTIMDB_CORE_SOURCES}
 		${RTIMDB_SOURCES}
-		)
-	add_library(rtimdb_outstation_cfg_${test_config} SHARED
 		${RTIMDB_OUTSTATION_SOURCES}
 		)
 	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
-	target_link_libraries(rtimdb_outstation_cfg_${test_config} rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
+	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
 	if (MSVC)
 		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
 	else()
 		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
 	endif()
-	if (MSVC)
-		set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
-	else()
-		set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
-	endif()
 	set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_EXPORTS")
-	set_target_properties(rtimdb_outstation_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_outstation_EXPORTS")
 
 	foreach (test
 		${TESTS}
@@ -137,7 +125,7 @@ foreach (test_config 1 2 3 4)
 		else()
 			set_target_properties(test_cfg${test_config}_${test} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
 		endif()
-		target_link_libraries(test_cfg${test_config}_${test} rtimdb_outstation_cfg_${test_config} rtimdb_cfg_${test_config})
+		target_link_libraries(test_cfg${test_config}_${test} rtimdb_cfg_${test_config})
 		add_test(test_cfg${test_config}_${test} ${EXECUTABLE_OUTPUT_PATH}/test_cfg${test_config}_${test})
 	endforeach (test)
 endforeach(test_config)

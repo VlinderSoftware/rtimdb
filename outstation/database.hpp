@@ -25,7 +25,7 @@
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
-	class RTIMDB_OUTSTATION_API Database
+	class RTIMDB_API Database
 	{
 	public :
 		Database();

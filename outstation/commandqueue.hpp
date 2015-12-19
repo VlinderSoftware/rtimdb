@@ -22,7 +22,7 @@
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	class Database;
-	class RTIMDB_OUTSTATION_API CommandQueue
+	class RTIMDB_API CommandQueue
 	{
 	public :
 		enum CommandQueueErrors {

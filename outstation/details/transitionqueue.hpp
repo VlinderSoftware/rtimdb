@@ -25,7 +25,7 @@
 #include "transitiontransactionentry.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
-	class RTIMDB_OUTSTATION_API TransitionQueue
+	class RTIMDB_API TransitionQueue
 	{
 	public :
 		enum TransitionQueueErrors {
