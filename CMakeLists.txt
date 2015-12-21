@@ -48,20 +48,20 @@ set(RTIMDB_CORE_SOURCES
 	core/point.hpp
 	)
 set(RTIMDB_OUTSTATION_SOURCES
-	outstation/command.hpp
-	outstation/commandqueue.cpp
-	outstation/commandqueue.hpp
-	outstation/database.cpp
-	outstation/database.hpp
-	outstation/details/crob.hpp
-	outstation/details/pointdescriptor.hpp
-	outstation/details/timestamp.hpp
-	outstation/details/transitionqueue.cpp
-	outstation/details/transitionqueue.hpp
-	outstation/details/transitionqueuetransaction.cpp
-	outstation/details/transitionqueuetransaction.hpp
-	outstation/details/transitiontransactionentry.hpp
-	outstation/details/variant.hpp
+	command.hpp
+	commandqueue.cpp
+	commandqueue.hpp
+	database.cpp
+	database.hpp
+	details/crob.hpp
+	details/pointdescriptor.hpp
+	details/timestamp.hpp
+	details/transitionqueue.cpp
+	details/transitionqueue.hpp
+	details/transitionqueuetransaction.cpp
+	details/transitionqueuetransaction.hpp
+	details/transitiontransactionentry.hpp
+	details/variant.hpp
 	)
 set(RTIMDB_SOURCES
 	details/action.hpp

@@ -10,8 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_database_hpp
-#define vlinder_rtimdb_outstation_database_hpp
+#ifndef vlinder_rtimdb_database_hpp
+#define vlinder_rtimdb_database_hpp
 
 #include "details/prologue.hpp"
 #include "rtimdb_config.hpp"
@@ -24,7 +24,7 @@
 #include "../exceptions.hpp"
 #include <atomic>
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
+namespace Vlinder { namespace RTIMDB {
 	class RTIMDB_API Database
 	{
 	public :
@@ -100,7 +100,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		Producer producers_[RTIMDB_MAX_PRODUCER_COUNT];
 		std::atomic< bool > producer_allocations_[RTIMDB_MAX_PRODUCER_COUNT];
 	};
-}}}
+}}
 
 #endif
 

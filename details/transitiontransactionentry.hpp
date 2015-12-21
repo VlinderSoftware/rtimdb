@@ -10,34 +10,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_command_hpp
-#define vlinder_rtimdb_outstation_command_hpp
+#ifndef vlinder_rtimdb_details_transitiontransactionentry_hpp
+#define vlinder_rtimdb_details_transitiontransactionentry_hpp
 
-#include "details/prologue.hpp"
-#include "details/crob.hpp"
-#include "details/variant.hpp"
+#include "prologue.hpp"
+#include "variant.hpp"
+#include "../transition.hpp"
+#include "timestamp.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
-	struct Command
+namespace Vlinder { namespace RTIMDB { namespace Details {
+	struct RTIMDB_API TransitionTransactionEntry : Variant< Timestamp, Transition >
 	{
-		enum CommandType {
-			  nul__
-			, crob__
-		};
-		typedef Details::Variant< Details::CROB > Payload;
+		typedef Variant< Timestamp, Transition > super;
 
-		Command()
-			: type_(nul__)
+		TransitionTransactionEntry()
 		{ /* no-op */ }
-		Command(Details::CROB const &crob)
-			: type_(crob__)
-			, payload_(crob)
+		template < typename T >
+		TransitionTransactionEntry(T const &v)
+			: super(v)
 		{ /* no-op */ }
-
-		template < typename T > T get() const { return payload_.get< T >(); }
-
-		CommandType type_;
-		Payload payload_;
 	};
 }}}
 

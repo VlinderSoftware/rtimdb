@@ -10,10 +10,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_details_transitionqueue_hpp
-#define vlinder_rtimdb_outstation_details_transitionqueue_hpp
+#ifndef vlinder_rtimdb_details_transitionqueue_hpp
+#define vlinder_rtimdb_details_transitionqueue_hpp
 
-#include "details/prologue.hpp"
+#include "prologue.hpp"
 #include "exceptions/exception.hpp"
 #include "../transition.hpp"
 #include "rtimdb_config.hpp"
@@ -24,7 +24,7 @@
 #include "variant.hpp"
 #include "transitiontransactionentry.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	class RTIMDB_API TransitionQueue
 	{
 	public :
@@ -66,7 +66,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 
 		mutable std::atomic< bool > overflow_;
 	};
-}}}}
+}}}
 
 #endif
 

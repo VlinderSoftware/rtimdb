@@ -10,12 +10,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_details_transitionqueuetransaction_hpp
-#define vlinder_rtimdb_outstation_details_transitionqueuetransaction_hpp
+#ifndef vlinder_rtimdb_details_transitionqueuetransaction_hpp
+#define vlinder_rtimdb_details_transitionqueuetransaction_hpp
 
-#include "../../details/prologue.hpp"
+#include "../details/prologue.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	class TransitionQueue;
 	struct TransitionTransactionEntry;
 	class RTIMDB_API TransitionQueueTransaction
@@ -41,7 +41,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 
 		friend class TransitionQueue;
 	};
-}}}}
+}}}
 
 #endif
 

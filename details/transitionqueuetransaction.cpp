@@ -14,7 +14,7 @@
  #include "exceptions/contract.hpp"
  #include "transitiontransactionentry.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	TransitionQueueTransaction::~TransitionQueueTransaction()
 	{ /* no-op */ }
 
@@ -46,6 +46,6 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 		, tail_(tail)
 		, initial_tail_(tail)
 	{ /* no-op */ }
-}}}}
+}}}
 
 

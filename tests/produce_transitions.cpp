@@ -1,4 +1,4 @@
-#include "../outstation/database.hpp"
+#include "../database.hpp"
 
 #undef assert
 #define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
@@ -12,7 +12,7 @@
 #define DOT_FIRST	.first
 #endif
 
-using namespace Vlinder::RTIMDB::Outstation;
+using namespace Vlinder::RTIMDB;
 using Vlinder::RTIMDB::PointType;
 using Vlinder::RTIMDB::Errors;
 

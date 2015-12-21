@@ -17,7 +17,7 @@
 
 using namespace std;
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
+namespace Vlinder { namespace RTIMDB {
 	Database::Database()
 		: next_point_id_(0)
 	{
@@ -208,6 +208,6 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		point_descriptors_[point_id] = descriptor;
 		return make_pair(point_id, Errors::no_error__);
 	}
-}}}
+}}
 
 

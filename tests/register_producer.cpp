@@ -1,11 +1,10 @@
-#include "../outstation/database.hpp"
+#include "../database.hpp"
 
-using namespace Vlinder::RTIMDB::Outstation;
+using namespace Vlinder::RTIMDB;
 
 int main()
 {
 	Database database;
 
 	auto registration(database.registerProducer());
-
 }

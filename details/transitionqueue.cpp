@@ -15,7 +15,7 @@
 
 using namespace std;
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	TransitionQueue::TransitionQueue()
 		: head_(0)
 		, tail_(0)
@@ -119,41 +119,6 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 	{
 		return overflow_.exchange(false);
 	}
-
-//#ifdef RTIMDB_ALLOW_EXCEPTIONS
-//	void CommandQueue::push(Command const &command)
-//	{
-//		if (!push(command, nothrow))
-//		{
-//			throw QueueFull("Push failed - queue full");
-//		}
-//	}
-//#endif
-//	bool CommandQueue::push(Command const &command RTIMDB_NOTHROW_PARAM) noexcept
-//	{
-//		unsigned int tail(tail_.load(memory_order_relaxed));
-//		unsigned int head(cached_head_);
-//		if (((tail + 1) % capacity()) == head)
-//		{
-//			cached_head_ = head = head_.load(memory_order_acquire);
-//		}
-//		else
-//		{ /* front can only increase since the last time we read it, which means we can only get
-//		   * more space to push into.
-//		   * If we still have space left from the last time we read, we don't have to read again. */
-//		}
-//		if ((tail + 1) % capacity() == head)
-//		{
-//			overflow_ = true;
-//			return false;
-//		}
-//		else
-//		{ /* not full */ }
-//		commands_[tail] = command;
-//		tail_.store((tail + 1) % capacity(), memory_order_release);
-//
-//		return true;
-//	}
-}}}}
+}}}
 
 

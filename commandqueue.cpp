@@ -14,7 +14,7 @@
 
 using namespace std;
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
+namespace Vlinder { namespace RTIMDB {
 	CommandQueue::CommandQueue()
 		: head_(0)
 		, tail_(0)
@@ -128,6 +128,6 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 
 		return true;
 	}
-}}}
+}}
 
 

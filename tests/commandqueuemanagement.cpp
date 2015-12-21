@@ -1,5 +1,5 @@
-#include "../outstation/database.hpp"
-#include "../outstation/details/crob.hpp"
+#include "../database.hpp"
+#include "../details/crob.hpp"
 #include "../exceptions.hpp"
 #include <stdexcept>
 
@@ -17,7 +17,6 @@
 
 using namespace std;
 using namespace Vlinder::RTIMDB;
-using namespace Vlinder::RTIMDB::Outstation;
 
 int tryAllocateCommandQueue()
 {
@@ -75,7 +74,7 @@ int trySendCommand()
 ;	assert(point.second == Errors::no_error__);
 
 	// protocol rx a crob for this point (for now we'll pretend mapping is done by magic)
-	Outstation::Details::CROB crob(Outstation::Details::CROB::operate_pulse_on__, false, Outstation::Details::CROB::close__, 1, 0, 0);
+	Details::CROB crob(Details::CROB::operate_pulse_on__, false, Details::CROB::close__, 1, 0, 0);
 	auto result(database.sendCommand(point.first, crob RTIMDB_NOTHROW_ARG));
 	assert(Errors::no_error__ == result);
 
@@ -86,7 +85,7 @@ int trySendCommand()
 	auto queue_front(queue.front(RTIMDB_NOTHROW_ARG_1));
 	assert(queue_front.second);
 	assert(Command::crob__ == queue_front.first.type_);
-	auto da_crob(queue_front.first.get< Outstation::Details::CROB >());
+	auto da_crob(queue_front.first.get< Details::CROB >());
 	assert(crob.clear_ == da_crob.clear_);
 	assert(crob.count_ == da_crob.count_);
 	assert(crob.off_time_ == da_crob.off_time_);

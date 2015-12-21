@@ -10,12 +10,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_details_pointdescriptor_hpp
-#define vlinder_rtimdb_outstation_details_pointdescriptor_hpp
+#ifndef vlinder_rtimdb_details_pointdescriptor_hpp
+#define vlinder_rtimdb_details_pointdescriptor_hpp
 
-#include "../../pointtype.hpp"
+#include "../pointtype.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	struct PointDescriptor
 	{
 		PointDescriptor() noexcept
@@ -37,7 +37,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 		unsigned int data_store_id_;
 		unsigned int producer_id_;
 	};
-}}}}
+}}}
 
 #endif
 

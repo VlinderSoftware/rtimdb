@@ -10,7 +10,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "../outstation/commandqueue.hpp"
+#include "../commandqueue.hpp"
 #include <stdexcept>
 
 #define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
@@ -25,7 +25,7 @@
 #endif
 
 using namespace std;
-using namespace Vlinder::RTIMDB::Outstation;
+using namespace Vlinder::RTIMDB;
 
 int tryCreateInstance()
 {

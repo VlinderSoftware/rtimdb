@@ -10,28 +10,36 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_details_timestamp_hpp
-#define vlinder_rtimdb_outstation_details_timestamp_hpp
+#ifndef vlinder_rtimdb_command_hpp
+#define vlinder_rtimdb_command_hpp
 
 #include "details/prologue.hpp"
-#include <cstdint>
+#include "details/crob.hpp"
+#include "details/variant.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
-	struct Timestamp
+namespace Vlinder { namespace RTIMDB {
+	struct Command
 	{
-		Timestamp()
-			: high_(0)
-			, low_(0)
+		enum CommandType {
+			  nul__
+			, crob__
+		};
+		typedef Details::Variant< Details::CROB > Payload;
+
+		Command()
+			: type_(nul__)
 		{ /* no-op */ }
-		Timestamp(uint16_t high, uint32_t low)
-			: high_(high)
-			, low_(low)
+		Command(Details::CROB const &crob)
+			: type_(crob__)
+			, payload_(crob)
 		{ /* no-op */ }
 
-		uint16_t high_;
-		uint32_t low_;
+		template < typename T > T get() const { return payload_.get< T >(); }
+
+		CommandType type_;
+		Payload payload_;
 	};
-}}}}
+}}
 
 #endif
 

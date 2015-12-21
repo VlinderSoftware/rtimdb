@@ -10,13 +10,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_details_crob_hpp
-#define vlinder_rtimdb_outstation_details_crob_hpp
+#ifndef vlinder_rtimdb_details_crob_hpp
+#define vlinder_rtimdb_details_crob_hpp
 
-#include "details/prologue.hpp"
+#include "prologue.hpp"
 #include <cstdint>
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
+namespace Vlinder { namespace RTIMDB { namespace Details {
 	struct CROB
 	{
 		enum OpType {
@@ -58,7 +58,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details 
 		uint32_t on_time_;
 		uint32_t off_time_;
 	};
-}}}}
+}}}
 
 #endif
 

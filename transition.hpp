@@ -10,14 +10,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_transition_hpp
-#define vlinder_rtimdb_outstation_transition_hpp
+#ifndef vlinder_rtimdb_transition_hpp
+#define vlinder_rtimdb_transition_hpp
 
 #include "details/variant.hpp"
 #include "../core/point.hpp"
 #include <limits>
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
+namespace Vlinder { namespace RTIMDB {
 	struct Transition
 	{
 		Transition()
@@ -34,7 +34,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 		unsigned int system_id_;
 		Core::Point point_value_;
 	};
-}}}
+}}
 
 #endif
 

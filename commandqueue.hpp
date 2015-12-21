@@ -10,8 +10,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_outstation_commandqueue_hpp
-#define vlinder_rtimdb_outstation_commandqueue_hpp
+#ifndef vlinder_rtimdb_commandqueue_hpp
+#define vlinder_rtimdb_commandqueue_hpp
 
 #include "details/prologue.hpp"
 #include "exceptions/exception.hpp"
@@ -20,7 +20,7 @@
 #include <stdexcept>
 #include <atomic>
 
-namespace Vlinder { namespace RTIMDB { namespace Outstation {
+namespace Vlinder { namespace RTIMDB {
 	class Database;
 	class RTIMDB_API CommandQueue
 	{
@@ -66,7 +66,7 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 
 		friend class Database;
 	};
-}}}
+}}
 
 #endif
 
