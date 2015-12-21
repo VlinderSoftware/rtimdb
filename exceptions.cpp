@@ -44,6 +44,8 @@ namespace Vlinder { namespace RTIMDB {
 			throw TooManyTransitions("Too many transitions for a single transaction");
 		case Errors::transaction_failed__:
 			throw TransactionFailed("Transaction failed");
+		case Errors::allocation_error__ :
+			throw AllocationError("Allocation error");
 		default:
 			throw logic_error("Unknown error type");
 		}

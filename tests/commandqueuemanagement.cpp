@@ -1,5 +1,6 @@
 #include "../outstation/database.hpp"
 #include "../outstation/details/crob.hpp"
+#include "../exceptions.hpp"
 #include <stdexcept>
 
 #undef assert
@@ -20,24 +21,26 @@ using namespace Vlinder::RTIMDB::Outstation;
 
 int tryAllocateCommandQueue()
 {
-	static_assert(RTIMDB_MAX_COMMAND_QUEUE_COUNT == 2, "This test is written for two queues. Please contact support@vlinder.ca if you need help for a different max. number of queues");
+	static_assert(RTIMDB_MAX_PRODUCER_COUNT == 2, "This test is written for two queues. Please contact support@vlinder.ca if you need help for a different max. number of queues");
 	Database database;
-	assert(database.allocateCommandQueue()DOT_FIRST == 0);
-	assert(database.allocateCommandQueue()DOT_FIRST == 1);
+	assert(database.registerProducer()DOT_FIRST != nullptr);
+	assert(database.registerProducer()DOT_FIRST != nullptr);
 	bool caught(false);
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
 	try
 	{
-		auto result = database.allocateCommandQueue();
+#endif
+		auto result = database.registerProducer();
 		(void)result;
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
-		caught = !result.second;
-#endif
-
+		caught = result.second != Errors::no_error__;
+#else
 	}
-	catch (bad_alloc const &)
+	catch (Vlinder::RTIMDB::AllocationError const &)
 	{
 		caught = true;
 	}
+#endif
 	assert(caught);
 
 	return 0;
@@ -45,18 +48,18 @@ int tryAllocateCommandQueue()
 
 int tryAllocateFreeAndAllocate()
 {
-	static_assert(RTIMDB_MAX_COMMAND_QUEUE_COUNT == 2, "This test is written for two queues. Please contact support@vlinder.ca if you need help for a different max. number of queues");
+	static_assert(RTIMDB_MAX_PRODUCER_COUNT == 2, "This test is written for two queues. Please contact support@vlinder.ca if you need help for a different max. number of queues");
 	Database database;
-	assert(database.allocateCommandQueue()DOT_FIRST == 0);
-	assert(database.allocateCommandQueue()DOT_FIRST == 1);
-	database.releaseCommandQueue(0);
-	assert(database.allocateCommandQueue()DOT_FIRST == 0);
-	database.releaseCommandQueue(1);
-	assert(database.allocateCommandQueue()DOT_FIRST == 1);
-	database.releaseCommandQueue(1);
-	database.releaseCommandQueue(0);
-	assert(database.allocateCommandQueue()DOT_FIRST == 0);
-	assert(database.allocateCommandQueue()DOT_FIRST == 1);
+	auto producer1(database.registerProducer()DOT_FIRST); assert(producer1 != nullptr);
+	auto producer2(database.registerProducer()DOT_FIRST); assert(producer2 != nullptr);
+	database.unregisterProducer(producer1);
+	assert(database.registerProducer()DOT_FIRST == producer1);
+	database.unregisterProducer(producer2);
+	assert(database.registerProducer()DOT_FIRST == producer2);
+	database.unregisterProducer(producer2);
+	database.unregisterProducer(producer1);
+	assert(database.registerProducer()DOT_FIRST == producer1);
+	assert(database.registerProducer()DOT_FIRST == producer2);
 
 	return 0;
 }
@@ -66,11 +69,10 @@ int trySendCommand()
 	Database database;
 
 	// set up the simili scan task
-	auto allocation_result(database.allocateCommandQueue(RTIMDB_NOTHROW_ARG_1));
-	assert(allocation_result.second);
-	auto point(database.createPoint(1/*tag*/, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
-	assert(point.second == Errors::no_error__);
-	database.associate(point.first, allocation_result.first);
+	auto allocation_result(database.registerProducer(RTIMDB_NOTHROW_ARG_1));
+	assert(allocation_result.second == Errors::no_error__);
+	auto point(database.createPoint(allocation_result.first, 1/*tag*/, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
+;	assert(point.second == Errors::no_error__);
 
 	// protocol rx a crob for this point (for now we'll pretend mapping is done by magic)
 	Outstation::Details::CROB crob(Outstation::Details::CROB::operate_pulse_on__, false, Outstation::Details::CROB::close__, 1, 0, 0);

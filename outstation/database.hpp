@@ -28,62 +28,77 @@ namespace Vlinder { namespace RTIMDB { namespace Outstation {
 	class RTIMDB_API Database
 	{
 	public :
+		struct Producer
+		{
+			Producer()
+				: transition_queue_id_(-1)
+				, command_queue_id_(-1)
+			{ /* no-op */ }
+			Producer(
+				  unsigned int transition_queue_id
+				, unsigned int command_queue_id
+				)
+				: transition_queue_id_(transition_queue_id)
+				, command_queue_id_(command_queue_id)
+			{ /* no-op */ }
+			unsigned int transition_queue_id_;
+			unsigned int command_queue_id_;
+		};
+
 		Database();
 		~Database();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		unsigned int allocateCommandQueue();
-		unsigned int allocateTransitionQueue();
-
-		unsigned int createPoint(uintptr_t tag, PointType point_type, bool initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, int16_t initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, int32_t initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, float initial_value);
-		unsigned int createPoint(uintptr_t tag, PointType point_type, double initial_value);
+		Producer const *registerProducer();
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value);
+		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value);
 
 		void sendCommand(unsigned int point_id, Details::CROB const &crob);
 #endif
-		std::pair< unsigned int, bool > allocateCommandQueue(RTIMDB_NOTHROW_PARAM_1);
-		std::pair< unsigned int, bool > allocateTransitionQueue(RTIMDB_NOTHROW_PARAM_1);
-		CommandQueue& getCommandQueue(unsigned int command_queue_id) noexcept;
-		Details::TransitionQueue& getTransitionQueue(unsigned int transition_queue_id) noexcept;
-		void releaseCommandQueue(unsigned int command_queue_id) noexcept;
-		void releaseTransitionQueue(unsigned int transition_queue_id) noexcept;
+		std::pair< Producer const *, Errors > registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept;
+		void unregisterProducer(Producer const *producer) noexcept;
 
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 
-		void associate(unsigned int point_id, unsigned int command_queue_id);
 		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 
-		Details::TransitionQueueTransaction beginTransaction(unsigned int transition_queue_id, Details::Timestamp const &timestamp) noexcept;
-		void signalOverflow(unsigned int transition_queue_id) noexcept;
-		void commit(unsigned int transition_queue_id, Details::TransitionQueueTransaction const &transaction);
+		Details::TransitionQueueTransaction beginTransaction(Producer const *producer, Details::Timestamp const &timestamp) noexcept;
+		void signalOverflow(Producer const *producer) noexcept;
+		void commit(Producer const *producer, Details::TransitionQueueTransaction const &transaction);
 
 		Errors update(RTIMDB_NOTHROW_PARAM_1) noexcept;
+
+		CommandQueue& getCommandQueue(Producer const *producer) noexcept;
+		Details::TransitionQueue& getTransitionQueue(Producer const *producer) noexcept;
 
 	private :
 		Database(Database const&) = delete;
 		Database& operator=(Database const&) = delete;
 
-		std::pair< unsigned int, Errors > createPoint_(uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept;
+		std::pair< unsigned int, bool > allocateProducer() noexcept;
+		void releaseProducer(unsigned int producer_id) noexcept;
+
+		std::pair< unsigned int, Errors > createPoint_(Producer const *producer, uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept;
 
 		Details::PointDescriptor point_descriptors_[RTIMDB_POINT_COUNT];
 		std::atomic< unsigned int > next_point_id_;
-		CommandQueue command_queues_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
-		std::atomic< bool > command_queue_allocations_[RTIMDB_MAX_COMMAND_QUEUE_COUNT];
-		Details::TransitionQueue transition_queues_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
-		std::atomic< bool > transition_queue_allocations_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
+		CommandQueue command_queues_[RTIMDB_MAX_PRODUCER_COUNT];
+		Details::TransitionQueue transition_queues_[RTIMDB_MAX_PRODUCER_COUNT];
 		Core::DataStore data_store_;
-		Details::Timestamp latest_timestamp_[RTIMDB_MAX_TRANSITION_QUEUE_COUNT];
-
+		Details::Timestamp latest_timestamp_[RTIMDB_MAX_PRODUCER_COUNT];
+		Producer producers_[RTIMDB_MAX_PRODUCER_COUNT];
+		std::atomic< bool > producer_allocations_[RTIMDB_MAX_PRODUCER_COUNT];
 	};
 }}}
 

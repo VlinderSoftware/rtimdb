@@ -15,9 +15,8 @@ set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of co
 set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
 set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
 set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
-set(RTIMDB_MAX_COMMAND_QUEUE_COUNT					  2	CACHE STRING "Maximum number of command queues that can be used by the application")
 set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
-set(RTIMDB_MAX_TRANSITION_QUEUE_COUNT				  2	CACHE STRING "Maximum number of transition queues that can be used by the application")
+set(RTIMDB_MAX_PRODUCER_COUNT						  2	CACHE STRING "Maximum number of producers in the application")
 set(RTIMDB_TRANSITION_QUEUE_CAPACITY				256 CACHE STRING "Number of transitions that can be queued at any given time, per queue")
 set(RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION			200 CACHE STRING "Maximum number of transitions that can be expected to occur in a single transaction.")
 
@@ -89,6 +88,7 @@ set(TESTS
 	optional
 	produce_transitions
 	queries_on_empty_db
+	register_producer
 	try_concurrent_transactions
 	try_freeze
 	try_iterate

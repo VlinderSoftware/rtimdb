@@ -1,5 +1,17 @@
 #include "../outstation/database.hpp"
 
+#undef assert
+#define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+#define DOT_FIRST
+#define FIRST
+#define FIRST_GET
+#else
+#define FIRST .first
+#define FIRST_GET .first.get()
+#define DOT_FIRST	.first
+#endif
+
 using namespace Vlinder::RTIMDB::Outstation;
 using Vlinder::RTIMDB::PointType;
 using Vlinder::RTIMDB::Errors;
@@ -8,31 +20,30 @@ int main()
 {
 	Database database;
 
+	auto producer(database.registerProducer());
+
 	/* allocate 32 BIs, 8 BOs and 8 BIs */
 	for (unsigned int bi_index(0); bi_index < 32; ++bi_index)
 	{
-		auto result(database.createPoint(bi_index, PointType::binary_input__, false RTIMDB_NOTHROW_ARG));
+		auto result(database.createPoint(producer DOT_FIRST, bi_index, PointType::binary_input__, false RTIMDB_NOTHROW_ARG));
 		assert(Errors::no_error__ == result.second);
 		assert(result.first == bi_index);
 	}
 	for (unsigned int bo_index(0); bo_index < 8; ++bo_index)
 	{
-		auto result(database.createPoint(bo_index + 32, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
+		auto result(database.createPoint(producer DOT_FIRST, bo_index + 32, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
 		assert(Errors::no_error__ == result.second);
 		assert(result.first == bo_index + 32);
 	}
 	for (unsigned int ai_index(0); ai_index < 8; ++ai_index)
 	{
-		auto result(database.createPoint(ai_index + 40, PointType::analog_input__, false RTIMDB_NOTHROW_ARG));
+		auto result(database.createPoint(producer DOT_FIRST, ai_index + 40, PointType::analog_input__, false RTIMDB_NOTHROW_ARG));
 		assert(Errors::no_error__ == result.second);
 		assert(result.first == ai_index + 40);
 	}
 
-	auto transition_queue_id(database.allocateTransitionQueue(RTIMDB_NOTHROW_ARG_1));
-	assert(transition_queue_id.second);
-	assert(0 == transition_queue_id.first);
 	Details::Timestamp timestamp;
-	auto transaction(database.beginTransaction(transition_queue_id.first, timestamp));
+	auto transaction(database.beginTransaction(producer DOT_FIRST, timestamp));
 	static_assert(RTIMDB_TRANSITION_QUEUE_CAPACITY == 256, "This test is written for a transition queue of 256 entries. If you need help with other sizes, please contact support@vlinder.ca");
 	assert(transaction.size() == 254);
 
@@ -42,7 +53,7 @@ int main()
 	 * anything did change, the database will see the change and create the appropriate events. */
 	if (transaction.size() < 48) // not enough space for all of our points - signal an overflow
 	{
-		database.signalOverflow(transition_queue_id.first);
+		database.signalOverflow(producer DOT_FIRST);
 	}
 	else
 	{
@@ -58,7 +69,7 @@ int main()
 		{
 			transaction[ai_index + 40/* offset for the BOs */] = Transition(ai_index, PointType::analog_input__, 0.0f); // we're pretending - so we don't care about the value much for now
 		}
-		database.commit(transition_queue_id.first, transaction);
+		database.commit(producer DOT_FIRST, transaction);
 	}
 
 	/* now, let's pretend we're a communications task. Typically, we'll want to update the status of

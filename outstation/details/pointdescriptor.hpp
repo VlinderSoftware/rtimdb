@@ -18,38 +18,24 @@
 namespace Vlinder { namespace RTIMDB { namespace Outstation { namespace Details {
 	struct PointDescriptor
 	{
-		PointDescriptor()
+		PointDescriptor() noexcept
 			: point_type_(PointType::_type_count__)
 		{ /* no-op */ }
-		PointDescriptor(uintptr_t tag, PointType point_type, unsigned int data_store_id)
+		PointDescriptor(uintptr_t tag, PointType point_type, unsigned int data_store_id, unsigned int producer_id) noexcept
 			: tag_(tag)
 			, point_type_(point_type)
 			, data_store_id_(data_store_id)
-			, associated_command_queue_(std::numeric_limits< unsigned int >::max())
+			, producer_id_(producer_id)
 		{ /* no-op */ }
-		PointDescriptor(PointDescriptor const &other)
-			: tag_(other.tag_)
-			, point_type_(other.point_type_)
-			, data_store_id_(other.data_store_id_)
-			, associated_command_queue_(other.associated_command_queue_.load())
-		{ /* no-op */ }
-		PointDescriptor& operator=(PointDescriptor other)
-		{
-			return swap(other);
-		}
-		PointDescriptor& swap(PointDescriptor &other)
-		{
-			std::swap(tag_, other.tag_);
-			std::swap(point_type_, other.point_type_);
-			std::swap(data_store_id_, other.data_store_id_);
-			associated_command_queue_.store(other.associated_command_queue_.exchange(associated_command_queue_.load()));
-			return *this;
-		}
+		PointDescriptor(PointDescriptor const &other) = default;
+		PointDescriptor& operator=(PointDescriptor const &other) = default;
+		PointDescriptor(PointDescriptor &&other) = default;
+		PointDescriptor& operator=(PointDescriptor &&other) = default;
 
 		uintptr_t tag_;
 		PointType point_type_;
 		unsigned int data_store_id_;
-		std::atomic< unsigned int > associated_command_queue_;
+		unsigned int producer_id_;
 	};
 }}}}
 
