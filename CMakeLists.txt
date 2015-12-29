@@ -55,6 +55,7 @@ set(RTIMDB_OUTSTATION_SOURCES
 	database.hpp
 	details/crob.hpp
 	details/pointdescriptor.hpp
+	details/producer.hpp
 	details/timestamp.hpp
 	details/transitionqueue.cpp
 	details/transitionqueue.hpp

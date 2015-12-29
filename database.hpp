@@ -19,37 +19,21 @@
 #include "details/transitionqueue.hpp"
 #include "details/pointdescriptor.hpp"
 #include "details/timestamp.hpp"
-#include "../pointtype.hpp"
-#include "../core/datastore.hpp"
-#include "../exceptions.hpp"
+#include "details/producer.hpp"
+#include "pointtype.hpp"
+#include "core/datastore.hpp"
+#include "exceptions.hpp"
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB {
 	class RTIMDB_API Database
 	{
 	public :
-		struct Producer
-		{
-			Producer()
-				: transition_queue_id_(-1)
-				, command_queue_id_(-1)
-			{ /* no-op */ }
-			Producer(
-				  unsigned int transition_queue_id
-				, unsigned int command_queue_id
-				)
-				: transition_queue_id_(transition_queue_id)
-				, command_queue_id_(command_queue_id)
-			{ /* no-op */ }
-			unsigned int transition_queue_id_;
-			unsigned int command_queue_id_;
-		};
-
 		Database();
 		~Database();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Producer const *registerProducer();
+		Details::Producer const *registerProducer();
 		unsigned int createPoint(Details::Producer const *producer, PointType point_type, bool initial_value);
 		unsigned int createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value);
 		unsigned int createPoint(Details::Producer const *producer, PointType point_type, int32_t initial_value);
@@ -60,8 +44,8 @@ namespace Vlinder { namespace RTIMDB {
 
 		void sendCommand(unsigned int point_id, Details::CROB const &crob);
 #endif
-		std::pair< Producer const *, Errors > registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept;
-		void unregisterProducer(Producer const *producer) noexcept;
+		std::pair< Details::Producer const *, Errors > registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept;
+		void unregisterProducer(Details::Producer const *producer) noexcept;
 
 		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
@@ -73,14 +57,14 @@ namespace Vlinder { namespace RTIMDB {
 
 		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 
-		Details::TransitionQueueTransaction beginTransaction(Producer const *producer, Details::Timestamp const &timestamp) noexcept;
-		void signalOverflow(Producer const *producer) noexcept;
-		void commit(Producer const *producer, Details::TransitionQueueTransaction const &transaction);
+		Details::TransitionQueueTransaction beginTransaction(Details::Producer const *producer, Details::Timestamp const &timestamp) noexcept;
+		void signalOverflow(Details::Producer const *producer) noexcept;
+		void commit(Details::Producer const *producer, Details::TransitionQueueTransaction const &transaction);
 
 		Errors update(RTIMDB_NOTHROW_PARAM_1) noexcept;
 
-		CommandQueue& getCommandQueue(Producer const *producer) noexcept;
-		Details::TransitionQueue& getTransitionQueue(Producer const *producer) noexcept;
+		CommandQueue& getCommandQueue(Details::Producer const *producer) noexcept;
+		Details::TransitionQueue& getTransitionQueue(Details::Producer const *producer) noexcept;
 
 	private :
 		Database(Database const&) = delete;
@@ -89,7 +73,7 @@ namespace Vlinder { namespace RTIMDB {
 		std::pair< unsigned int, bool > allocateProducer() noexcept;
 		void releaseProducer(unsigned int producer_id) noexcept;
 
-		std::pair< unsigned int, Errors > createPoint_(Producer const *producer, uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept;
+		std::pair< unsigned int, Errors > createPoint_(Details::Producer const *producer, PointType point_type, unsigned int data_store_id) noexcept;
 
 		Details::PointDescriptor point_descriptors_[RTIMDB_POINT_COUNT];
 		std::atomic< unsigned int > next_point_id_;
@@ -97,7 +81,7 @@ namespace Vlinder { namespace RTIMDB {
 		Details::TransitionQueue transition_queues_[RTIMDB_MAX_PRODUCER_COUNT];
 		Core::DataStore data_store_;
 		Details::Timestamp latest_timestamp_[RTIMDB_MAX_PRODUCER_COUNT];
-		Producer producers_[RTIMDB_MAX_PRODUCER_COUNT];
+		Details::Producer producers_[RTIMDB_MAX_PRODUCER_COUNT];
 		std::atomic< bool > producer_allocations_[RTIMDB_MAX_PRODUCER_COUNT];
 	};
 }}

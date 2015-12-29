@@ -27,7 +27,7 @@ namespace Vlinder { namespace RTIMDB {
 	{ /* no-op */ }
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Database::Producer const * Database::registerProducer() { auto result(registerProducer(nothrow)); throwException(result.second); return result.first; }
+	Details::Producer const * Database::registerProducer() { auto result(registerProducer(nothrow)); throwException(result.second); return result.first; }
 
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, bool initial_value)		{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
@@ -38,13 +38,13 @@ namespace Vlinder { namespace RTIMDB {
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, double initial_value)   { auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 #endif
 
-	std::pair< Database::Producer const *, Errors > Database::registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept
+	std::pair< Details::Producer const *, Errors > Database::registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept
 	{
 		for (auto curr(begin(producer_allocations_)); curr != end(producer_allocations_); ++curr)
 		{
 			if (!curr->exchange(true))
 			{
-				producers_[distance(producer_allocations_, curr)] = Producer(distance(producer_allocations_, curr), distance(producer_allocations_, curr));
+				producers_[distance(producer_allocations_, curr)] = Details::Producer(distance(producer_allocations_, curr), distance(producer_allocations_, curr));
 				return make_pair(producers_ + distance(producer_allocations_, curr), Errors::no_error__);
 			}
 			else
@@ -52,7 +52,7 @@ namespace Vlinder { namespace RTIMDB {
 		}
 		return make_pair(nullptr, Errors::allocation_error__);
 	}
-	void Database::unregisterProducer(Database::Producer const *producer) noexcept
+	void Database::unregisterProducer(Details::Producer const *producer) noexcept
 	{
 		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(producer_allocations_) / sizeof(producer_allocations_[0])), "Different amount of allocations vs producers allocatable");
 		static_assert((sizeof(transition_queues_) / sizeof(transition_queues_[0])) == (sizeof(producer_allocations_) / sizeof(producer_allocations_[0])), "Different amount of allocations vs producers allocatable");
@@ -61,7 +61,7 @@ namespace Vlinder { namespace RTIMDB {
 		pre_condition(producer_allocations_[producer_id]);
 		producer_allocations_[producer_id] = false;
 	}
-	CommandQueue& Database::getCommandQueue(Producer const *producer) noexcept
+	CommandQueue& Database::getCommandQueue(Details::Producer const *producer) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < (producers_ + (sizeof(producers_) / sizeof(producers_[0])))));
 		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(producer_allocations_) / sizeof(producer_allocations_[0])), "Different amount of allocations vs queues allocatable");
@@ -69,7 +69,7 @@ namespace Vlinder { namespace RTIMDB {
 		pre_condition(producer_allocations_[producer->command_queue_id_]);
 		return command_queues_[producer->command_queue_id_];
 	}
-	Details::TransitionQueue& Database::getTransitionQueue(Producer const *producer) noexcept
+	Details::TransitionQueue& Database::getTransitionQueue(Details::Producer const *producer) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < (producers_ + (sizeof(producers_) / sizeof(producers_[0])))));
 		static_assert((sizeof(transition_queues_) / sizeof(transition_queues_[0])) == (sizeof(producer_allocations_) / sizeof(producer_allocations_[0])), "Different amount of allocations vs queues allocatable");
@@ -144,15 +144,15 @@ namespace Vlinder { namespace RTIMDB {
 		return command_queues_[point.producer_id_].push(Command(crob) RTIMDB_NOTHROW_ARG) ? Errors::no_error__ : Errors::command_queue_full__;
 	}
 
-	Details::TransitionQueueTransaction Database::beginTransaction(Producer const *producer, Details::Timestamp const &timestamp) noexcept
+	Details::TransitionQueueTransaction Database::beginTransaction(Details::Producer const *producer, Details::Timestamp const &timestamp) noexcept
 	{
 		return getTransitionQueue(producer).beginTransaction(timestamp);
 	}
-	void Database::signalOverflow(Producer const *producer) noexcept
+	void Database::signalOverflow(Details::Producer const *producer) noexcept
 	{
 		getTransitionQueue(producer).signalOverflow();
 	}
-	void Database::commit(Producer const *producer, Details::TransitionQueueTransaction const &transaction)
+	void Database::commit(Details::Producer const *producer, Details::TransitionQueueTransaction const &transaction)
 	{
 		getTransitionQueue(producer).commit(transaction);
 	}
