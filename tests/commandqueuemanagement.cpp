@@ -70,8 +70,8 @@ int trySendCommand()
 	// set up the simili scan task
 	auto allocation_result(database.registerProducer(RTIMDB_NOTHROW_ARG_1));
 	assert(allocation_result.second == Errors::no_error__);
-	auto point(database.createPoint(allocation_result.first, 1/*tag*/, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
-;	assert(point.second == Errors::no_error__);
+	auto point(database.createPoint(allocation_result.first, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
+	assert(point.second == Errors::no_error__);
 
 	// protocol rx a crob for this point (for now we'll pretend mapping is done by magic)
 	Details::CROB crob(Details::CROB::operate_pulse_on__, false, Details::CROB::close__, 1, 0, 0);

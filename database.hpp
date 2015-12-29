@@ -50,26 +50,26 @@ namespace Vlinder { namespace RTIMDB {
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Producer const *registerProducer();
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value);
-		unsigned int createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, bool initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, int32_t initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, uint16_t initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, uint32_t initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, float initial_value);
+		unsigned int createPoint(Details::Producer const *producer, PointType point_type, double initial_value);
 
 		void sendCommand(unsigned int point_id, Details::CROB const &crob);
 #endif
 		std::pair< Producer const *, Errors > registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept;
 		void unregisterProducer(Producer const *producer) noexcept;
 
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept;
-		std::pair< unsigned int, Errors > createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept;
+		std::pair< unsigned int, Errors > createPoint(Details::Producer const *producer, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept;
 
 		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 

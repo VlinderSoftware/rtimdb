@@ -21,9 +21,8 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		PointDescriptor() noexcept
 			: point_type_(PointType::_type_count__)
 		{ /* no-op */ }
-		PointDescriptor(uintptr_t tag, PointType point_type, unsigned int data_store_id, unsigned int producer_id) noexcept
-			: tag_(tag)
-			, point_type_(point_type)
+		PointDescriptor(PointType point_type, unsigned int data_store_id, unsigned int producer_id) noexcept
+			: point_type_(point_type)
 			, data_store_id_(data_store_id)
 			, producer_id_(producer_id)
 		{ /* no-op */ }
@@ -32,7 +31,6 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		PointDescriptor(PointDescriptor &&other) = default;
 		PointDescriptor& operator=(PointDescriptor &&other) = default;
 
-		uintptr_t tag_;
 		PointType point_type_;
 		unsigned int data_store_id_;
 		unsigned int producer_id_;

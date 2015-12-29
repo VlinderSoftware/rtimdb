@@ -29,13 +29,13 @@ namespace Vlinder { namespace RTIMDB {
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Database::Producer const * Database::registerProducer() { auto result(registerProducer(nothrow)); throwException(result.second); return result.first; }
 
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value)		{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value)	{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value)	{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value)	{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value)	{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value)	{ auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value)   { auto result(createPoint(producer, tag, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, bool initial_value)		{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, int32_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, uint16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, uint32_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, float initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, double initial_value)   { auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 #endif
 
 	std::pair< Database::Producer const *, Errors > Database::registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept
@@ -78,61 +78,61 @@ namespace Vlinder { namespace RTIMDB {
 		return transition_queues_[producer->transition_queue_id_];
 	}
 
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Producer const *producer, uintptr_t tag, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::Point point(point_type, initial_value);
 		auto result(data_store_.insert(point RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, tag, point_type, result.first);
+		return createPoint_(producer, point_type, result.first);
 	}
 
 	Errors Database::sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM)
@@ -201,9 +201,9 @@ namespace Vlinder { namespace RTIMDB {
 		return retval;
 	}
 
-	std::pair< unsigned int, Errors > Database::createPoint_(Producer const *producer, uintptr_t tag, PointType point_type, unsigned int data_store_id) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint_(Details::Producer const *producer, PointType point_type, unsigned int data_store_id) noexcept
 	{
-		Details::PointDescriptor descriptor(tag, point_type, data_store_id, producer - producers_);
+		Details::PointDescriptor descriptor(point_type, data_store_id, producer - producers_);
 		unsigned int point_id(next_point_id_++);
 		point_descriptors_[point_id] = descriptor;
 		return make_pair(point_id, Errors::no_error__);
