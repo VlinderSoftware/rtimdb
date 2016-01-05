@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <stdexcept>
 #include "exceptions/contract.hpp"
+#include "details/eventclass.hpp"
 
 using namespace std;
 
@@ -22,12 +23,14 @@ namespace Vlinder { namespace RTIMDB {
 		: next_point_id_(0)
 	{
 		for_each(begin(producer_allocations_), end(producer_allocations_), [](decltype(producer_allocations_[0]) &allocation) { allocation = false; });
+		for_each(begin(consumer_allocations_), end(consumer_allocations_), [](decltype(consumer_allocations_[0]) &allocation) { allocation = false; });
 	}
 	Database::~Database()
 	{ /* no-op */ }
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	Details::Producer const * Database::registerProducer() { auto result(registerProducer(nothrow)); throwException(result.second); return result.first; }
+	Details::Consumer* Database::registerConsumer() { auto result(registerConsumer(nothrow)); throwException(result.second); return result.first; }
 
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, bool initial_value)		{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, int16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
@@ -52,6 +55,20 @@ namespace Vlinder { namespace RTIMDB {
 		}
 		return make_pair(nullptr, Errors::allocation_error__);
 	}
+	std::pair< Details::Consumer*, Errors > Database::registerConsumer(RTIMDB_NOTHROW_PARAM_1) noexcept
+	{
+		for (auto curr(begin(consumer_allocations_)); curr != end(consumer_allocations_); ++curr)
+		{
+			if (!curr->exchange(true))
+			{
+				consumers_[distance(consumer_allocations_, curr)].reset();
+				return make_pair(consumers_ + distance(consumer_allocations_, curr), Errors::no_error__);
+			}
+			else
+			{ /* already set */ }
+		}
+		return make_pair(nullptr, Errors::allocation_error__);
+	}
 	void Database::unregisterProducer(Details::Producer const *producer) noexcept
 	{
 		static_assert((sizeof(command_queues_) / sizeof(command_queues_[0])) == (sizeof(producer_allocations_) / sizeof(producer_allocations_[0])), "Different amount of allocations vs producers allocatable");
@@ -60,6 +77,13 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int const producer_id(producer - producers_);
 		pre_condition(producer_allocations_[producer_id]);
 		producer_allocations_[producer_id] = false;
+	}
+	void Database::unregisterConsumer(Details::Consumer const *consumer) noexcept
+	{
+		pre_condition((consumer >= consumers_) && (consumer < (consumers_ + (sizeof(consumers_) / sizeof(consumers_[0])))));
+		unsigned int const consumer_id(consumer - consumers_);
+		pre_condition(consumer_allocations_[consumer_id]);
+		consumer_allocations_[consumer_id] = false;
 	}
 	CommandQueue& Database::getCommandQueue(Details::Producer const *producer) noexcept
 	{
@@ -157,12 +181,15 @@ namespace Vlinder { namespace RTIMDB {
 		getTransitionQueue(producer).commit(transaction);
 	}
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	void Database::update() { throwException(update(nothrow)); }
+#endif
 	Errors Database::update(RTIMDB_NOTHROW_PARAM_1) noexcept
 	{
 		Errors retval(Errors::no_error__);
-		auto transaction(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
 		for (auto transition_queue(begin(transition_queues_)); transition_queue != end(transition_queues_); ++transition_queue)
 		{
+			auto transaction(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
 			bool first(true);
 			for (auto transition_count(transition_queue->size()); (retval == Errors::no_error__) && transition_count; --transition_count)
 			{
@@ -173,8 +200,7 @@ namespace Vlinder { namespace RTIMDB {
 					latest_timestamp_[transition_queue - transition_queues_] = transition.first.get< Details::Timestamp >();
 					if (!first)
 					{
-						Errors commit_result(data_store_.commit(transaction.first RTIMDB_NOTHROW_ARG));
-						//TODO check commit result and create event queue entries
+						retval = commitTransaction(latest_timestamp_[transition_queue - transition_queues_], transaction.first);
 						transaction = std::move(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
 					}
 					else
@@ -194,8 +220,11 @@ namespace Vlinder { namespace RTIMDB {
 					else
 					{ /* all is well */ }
 				}
+				/* If committing the transaction fails for some reason, the transition is lost. This can only happen if some other 
+				 * producer also procudes transitions for points included in this transaction, which is not allowed. */
 				transition_queue->pop();
 			}
+			if (Errors::no_error__ == retval) retval = commitTransaction(latest_timestamp_[transition_queue - transition_queues_], transaction.first);
 		}
 
 		return retval;
@@ -207,6 +236,50 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int point_id(next_point_id_++);
 		point_descriptors_[point_id] = descriptor;
 		return make_pair(point_id, Errors::no_error__);
+	}
+
+	Errors Database::commitTransaction(Details::Timestamp const &timestamp, Core::Details::Transaction &transaction) noexcept
+	{
+		Errors commit_result(data_store_.commit(transaction RTIMDB_NOTHROW_ARG));
+		if (Errors::no_error__ != commit_result) return commit_result;
+		for_each(
+			  transaction.begin()
+			, transaction.end()
+			, [&](decltype(*(transaction.begin())) entry){
+				if ((Errors::no_error__ == commit_result) && (decltype(entry.transact_state_)::transacted__ == entry.transact_state_))
+				{
+					commit_result = dispatch(timestamp, entry.point_id_, entry.value_);
+				}
+				else
+				{ /* not transacted, or something went horribly wrong */ }
+			  }
+			);
+
+		return commit_result;
+	}
+
+	Errors Database::dispatch(Details::Timestamp const &timestamp, unsigned int id, Core::Point const &value) noexcept
+	{
+		Errors retval(Errors::no_error__);
+		for_each(
+			  begin(consumers_)
+			, end(consumers_)
+			, [&](remove_reference< decltype(*begin(consumers_)) >::type &consumer) {
+				if (Errors::no_error__ == retval)
+				{
+					auto mapping(consumer.findMapping(value.type_, id));
+					if (mapping && (Details::EventClass::class_0__ != mapping->event_class_))
+					{
+						retval = consumer.event_queues_[static_cast< unsigned int >(mapping->event_class_) - 1].push(Details::Event(timestamp, value, id) RTIMDB_NOTHROW_ARG);
+					}
+					else
+					{ /* Point not mapped for this consumer */ }
+				}
+				else
+				{ /* something went wrong */ }
+			  }
+			);
+		return retval;
 	}
 }}
 

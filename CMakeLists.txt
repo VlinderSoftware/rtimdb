@@ -17,9 +17,10 @@ set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown 
 set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
 set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
 set(RTIMDB_MAX_PRODUCER_COUNT						  2	CACHE STRING "Maximum number of producers in the application")
+set(RTIMDB_MAX_CONSUMER_COUNT						  2	CACHE STRING "Maximum number of consumer in the application")
 set(RTIMDB_TRANSITION_QUEUE_CAPACITY				256 CACHE STRING "Number of transitions that can be queued at any given time, per queue")
 set(RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION			200 CACHE STRING "Maximum number of transitions that can be expected to occur in a single transaction.")
-
+set(RTIMDB_EVENT_QUEUE_CAPACITY						 64 CACHE STRING "Maximum number of events, per event class")
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
 if (HAVE_ATOMIC_LIB)
@@ -53,7 +54,13 @@ set(RTIMDB_OUTSTATION_SOURCES
 	commandqueue.hpp
 	database.cpp
 	database.hpp
+	details/consumer.cpp
+	details/consumer.hpp
 	details/crob.hpp
+	details/event.hpp
+	details/eventclass.hpp
+	details/eventqueue.cpp
+	details/eventqueue.hpp
 	details/pointdescriptor.hpp
 	details/producer.hpp
 	details/timestamp.hpp
@@ -83,6 +90,7 @@ target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 set(TESTS
 	commandqueue
 	commandqueuemanagement
+	consumer
 	create_data_store
 	insertions
 	freezing

@@ -33,6 +33,8 @@ namespace Vlinder {	namespace RTIMDB {
 		, too_many_transitions__
 		, transaction_failed__
 		, allocation_error__
+		, mapping_full__
+		, queue_full__
 		};
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::unknown_point__ > UnknownPoint;
@@ -47,6 +49,8 @@ namespace Vlinder {	namespace RTIMDB {
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::too_many_transitions__ > TooManyTransitions;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::transaction_failed__ > TransactionFailed;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::allocation_error__ > AllocationError;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::mapping_full__ > MappingFull;
+	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::queue_full__ > QueueFull;
 
 	RTIMDB_API void throwException(Errors error);
 #endif

@@ -46,6 +46,11 @@ namespace Vlinder { namespace RTIMDB {
 			throw TransactionFailed("Transaction failed");
 		case Errors::allocation_error__ :
 			throw AllocationError("Allocation error");
+		case Errors::mapping_full__ :
+			throw MappingFull("Mapping full");
+		case Errors::queue_full__ :
+			throw QueueFull("Queue full");
+
 		default:
 			throw logic_error("Unknown error type");
 		}
