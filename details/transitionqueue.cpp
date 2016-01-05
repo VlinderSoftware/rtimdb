@@ -33,12 +33,12 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		if ((tail + 1) % capacity() == head)
 		{
 			overflow_ = true;
-			return TransitionQueueTransaction(nullptr, 0, 0, 0);
+			return TransitionQueueTransaction(nullptr, 0, 0, 0, nullptr);
 		}
 		else
 		{ /* not full */ }
 		transitions_[tail] = timestamp;
-		return TransitionQueueTransaction(transitions_, capacity(), head, tail + 1);
+		return TransitionQueueTransaction(transitions_, capacity(), head, tail + 1, this);
 	}
 	void TransitionQueue::commit(TransitionQueueTransaction const &transaction) noexcept
 	{

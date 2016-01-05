@@ -13,6 +13,7 @@
  #include "transitionqueuetransaction.hpp"
  #include "exceptions/contract.hpp"
  #include "transitiontransactionentry.hpp"
+ #include "../database.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	TransitionQueueTransaction::~TransitionQueueTransaction()
@@ -30,6 +31,22 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		tail_ = (index + 1) % queue_size_;
 		return transitions_[index];
 	}
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+	void TransitionQueueTransaction::add(Transition &&transition) { throwException(add(std::move(transition), std::nothrow)); }
+#endif
+	Errors TransitionQueueTransaction::add(Transition &&transition RTIMDB_NOTHROW_PARAM) noexcept
+	{
+		if (size() == next_index_) return Errors::too_many_transitions__;
+		auto index(next_index_++);
+		index = (index + initial_tail_) % queue_size_;
+		tail_ = (index + 1) % queue_size_;
+		transitions_[index] = std::move(transition);
+		return Errors::no_error__;
+	}
+	void TransitionQueueTransaction::commit()
+	{
+		queue_->commit(*this);
+	}
 
 	unsigned int TransitionQueueTransaction::size() const noexcept
 	{
@@ -39,12 +56,14 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return (head - tail) - 1;
 	}
 
-	TransitionQueueTransaction::TransitionQueueTransaction(TransitionTransactionEntry *transitions, unsigned int queue_size, unsigned int head, unsigned int tail)
+	TransitionQueueTransaction::TransitionQueueTransaction(TransitionTransactionEntry *transitions, unsigned int queue_size, unsigned int head, unsigned int tail, TransitionQueue *queue)
 		: transitions_(transitions)
 		, queue_size_(queue_size)
 		, head_(head)
 		, tail_(tail)
 		, initial_tail_(tail)
+		, next_index_(0)
+		, queue_(queue)
 	{ /* no-op */ }
 }}}
 

@@ -13,9 +13,12 @@
 #ifndef vlinder_rtimdb_details_transitionqueuetransaction_hpp
 #define vlinder_rtimdb_details_transitionqueuetransaction_hpp
 
-#include "../details/prologue.hpp"
+#include "prologue.hpp"
+#include "../exceptions.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
+namespace Vlinder { namespace RTIMDB { 
+	struct Transition;
+namespace Details {
 	class TransitionQueue;
 	struct TransitionTransactionEntry;
 	class RTIMDB_API TransitionQueueTransaction
@@ -27,10 +30,16 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		TransitionQueueTransaction& operator=(TransitionQueueTransaction const&) = default;
 
 		TransitionTransactionEntry& operator[](unsigned int index) noexcept;
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+		void add(Transition &&transition);
+#endif
+		Errors add(Transition &&transition RTIMDB_NOTHROW_PARAM) noexcept;
+		void commit();
+
 		unsigned int size() const noexcept;
 
 	private : // friends-only API
-		TransitionQueueTransaction(TransitionTransactionEntry *transitions, unsigned int queue_size, unsigned int head, unsigned int tail);
+		TransitionQueueTransaction(TransitionTransactionEntry *transitions, unsigned int queue_size, unsigned int head, unsigned int tail, TransitionQueue *queue);
 
 	private :
 		TransitionTransactionEntry *transitions_;
@@ -38,6 +47,8 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		unsigned int head_;
 		unsigned int tail_;
 		unsigned int initial_tail_;
+		unsigned int next_index_;
+		TransitionQueue *queue_;
 
 		friend class TransitionQueue;
 	};
