@@ -365,7 +365,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 					auto read_result(read(transaction, entry.value_.type_, entry.point_id_ RTIMDB_NOTHROW_ARG));
 					retval = read_result.second;
 					if (Errors::no_error__ != retval) return;
-					entry.transact_state_ = (*read_result.first == entry.value_) ? 0 : 1;
+					entry.transact_state_ = (*read_result.first == entry.value_) ? decltype(entry.transact_state_)::unchanged__ : decltype(entry.transact_state_)::value_changed__;
 				}
 				else
 				{ /* some error occurred, can't continue */ }
@@ -398,14 +398,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			, [&](decltype(transaction.entries_[0]) &entry){
 				if (Errors::no_error__ == retval)
 				{
-					if (entry.transact_state_)
+					if (entry.transact_state_ == decltype(entry.transact_state_)::value_changed__)
 					{
 						auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
 						if (Errors::no_error__ == fetch_result.second)
 						{
 							if ((*fetch_result.first)->lock(transaction.getVersion()))
 							{
-								entry.transact_state_ = 2;
+								entry.transact_state_ = decltype(entry.transact_state_)::pended__;
 							}
 							else
 							{
@@ -450,11 +450,12 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			  transaction.rbegin()
 			, transaction.rend()
 			, [&](decltype(transaction.entries_[0]) &entry){
-				if (entry.transact_state_ >= 2)
+				if (entry.transact_state_ == decltype(entry.transact_state_)::pended__)
 				{
 					auto fetch_result(fetch(entry.value_.type_, entry.point_id_));
 					assert(Errors::no_error__ == fetch_result.second);
 					(*fetch_result.first)->unlock();
+					entry.transact_state_ = decltype(entry.transact_state_)::transacted__;
 				}
 				else
 				{ /* didn't transact this one */ }

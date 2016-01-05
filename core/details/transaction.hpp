@@ -18,7 +18,9 @@
 #include "../../exceptions.hpp"
 #include "../point.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Core { 
+namespace Vlinder { namespace RTIMDB { 
+	class Database;
+	namespace Core { 
 	class DataStore;
 	namespace Details {
 	class Iterator;
@@ -73,18 +75,25 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	private : // friend-only API
 		struct Entry
 		{
+			enum struct TransactState {
+				  initial__
+				, unchanged__
+				, value_changed__
+				, pended__
+				, transacted__
+			};
 			Entry()
 				: point_id_(-1)
 			{ /* no-op */ }
 			Entry(unsigned int point_id, Point value)
 				: point_id_(point_id)
 				, value_(value)
-				, transact_state_(0)
+				, transact_state_(TransactState::initial__)
 			{ /* no-op */ }
 
 			unsigned int point_id_;
 			Point value_;
-			unsigned int transact_state_;
+			TransactState transact_state_;
 		};
 
 		template < typename Deleter >
@@ -109,6 +118,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		Entry entries_[RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION];
 		unsigned int next_entry_;
 		
+		friend class RTIMDB::Database;
 		friend class Core::DataStore;
 	};
 }}}}
