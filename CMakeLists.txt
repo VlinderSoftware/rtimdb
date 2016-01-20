@@ -88,6 +88,7 @@ add_library(rtimdb SHARED
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 
 set(TESTS
+	bubblesort
 	commandqueue
 	commandqueuemanagement
 	consumer

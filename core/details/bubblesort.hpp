@@ -25,8 +25,9 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			swapped = false;
 			It curr(beg);
 			It prev(curr++);
-			while ((curr != end) && !swapped)
+			while (curr != end)
 			{
+				// the predicate is less-than, but we want a stable sort, so we only swap if rhs < lhs
 				if (cmp(*curr, *prev))
 				{
 					swap(*prev, *curr);
