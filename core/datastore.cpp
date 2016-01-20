@@ -382,7 +382,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			, transaction.end()
 			, [](std::remove_reference< decltype(transaction.entries_[0]) >::type const &lhs, std::remove_reference< decltype(transaction.entries_[0]) >::type const &rhs) -> bool {
 				if (lhs.value_.type_ < rhs.value_.type_) return true;
-				if (lhs.point_id_ < rhs.point_id_) return true;
+				if ((lhs.value_.type_ == rhs.value_.type_) && (lhs.point_id_ < rhs.point_id_)) return true;
 				return false;
 				}
 			);
