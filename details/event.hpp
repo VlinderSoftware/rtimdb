@@ -22,14 +22,16 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Event()
 			: id_(std::numeric_limits< decltype(id_) >::max())
 		{ /* no-op */ }
-		Event(Timestamp const &timestamp, Core::Point const &value, unsigned int id)
+		Event(Timestamp const &timestamp, Core::Point const &value, unsigned int id, uintptr_t tag)
 			: timestamp_(timestamp)
 			, value_(value)
 			, id_(id)
+			, tag_(tag)
 		{ /* no-op */ }
 		Timestamp timestamp_;
 		Core::Point value_;
 		unsigned int id_;
+		uintptr_t tag_;
 	};
 }}}
 

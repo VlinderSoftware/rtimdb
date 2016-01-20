@@ -270,7 +270,7 @@ namespace Vlinder { namespace RTIMDB {
 					auto mapping(consumer.findMapping(value.type_, id));
 					if (mapping && (Details::EventClass::class_0__ != mapping->event_class_))
 					{
-						retval = consumer.event_queues_[static_cast< unsigned int >(mapping->event_class_) - 1].push(Details::Event(timestamp, value, id) RTIMDB_NOTHROW_ARG);
+						retval = consumer.event_queues_[static_cast< unsigned int >(mapping->event_class_) - 1].push(Details::Event(timestamp, value, id, mapping->tag_) RTIMDB_NOTHROW_ARG);
 					}
 					else
 					{ /* Point not mapped for this consumer */ }
