@@ -21,6 +21,7 @@
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
+	class Events;
 	class RTIMDB_API EventQueue
 	{
 	public :
@@ -56,6 +57,8 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		mutable unsigned int cached_tail_;
 
 		mutable std::atomic< bool > overflow_;
+
+		friend class Events;
 	};
 }}}
 

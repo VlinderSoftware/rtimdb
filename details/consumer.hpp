@@ -18,6 +18,7 @@
 #include "../pointtype.hpp"
 #include <utility>
 #include "eventqueue.hpp"
+#include "events.hpp"
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
@@ -39,6 +40,8 @@ namespace Details {
 		std::pair< EventClass, Errors > getEventClass(PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) const noexcept;
 
 		bool eventsAvailable(EventClass event_class) const noexcept;
+		unsigned int getEventCount(EventClass event_class) const noexcept;
+		Events getEvents(EventClass event_class) noexcept;
 
 	private : // friend-only API
 		struct Mapping

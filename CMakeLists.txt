@@ -61,6 +61,8 @@ set(RTIMDB_OUTSTATION_SOURCES
 	details/eventclass.hpp
 	details/eventqueue.cpp
 	details/eventqueue.hpp
+	details/events.cpp
+	details/events.hpp
 	details/pointdescriptor.hpp
 	details/producer.hpp
 	details/timestamp.hpp

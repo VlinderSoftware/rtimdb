@@ -87,7 +87,7 @@ int updateDatabase()
 	transaction.add(Transition(0, PointType::binary_input__, false));
 	transaction.add(Transition(1, PointType::binary_input__, false));
 	transaction.add(Transition(2, PointType::binary_input__, false));
-	transaction.add(Transition(3, PointType::binary_input__,  true));
+	transaction.add(Transition(3, PointType::binary_input__, true));
 	transaction.add(Transition(4, PointType::binary_input__, false));
 	transaction.add(Transition(5, PointType::binary_input__, false));
 	transaction.add(Transition(6, PointType::binary_input__, false));
@@ -103,7 +103,7 @@ int updateDatabase()
 
 	consumer.first->setEventClass(USER_MAPPING(USER_MAPPING_BI, 72), EventClass::class_1__);
 	// producer creates transitions -- one point changes (which happens to be the one mapped by the consumer)
-	transaction = database.beginTransaction(producer.first, Timestamp(1, 2));
+	transaction = database.beginTransaction(producer.first, Timestamp(1, 3));
 	transaction.add(Transition(0, PointType::binary_input__, false));
 	transaction.add(Transition(1, PointType::binary_input__, false));
 	transaction.add(Transition(2, PointType::binary_input__, false));
@@ -120,6 +120,21 @@ int updateDatabase()
 	assert(consumer.first->eventsAvailable(EventClass::class_1__));
 	assert(!consumer.first->eventsAvailable(EventClass::class_2__));
 	assert(!consumer.first->eventsAvailable(EventClass::class_3__));
+
+	// get class 1 events
+	assert(1 == consumer.first->getEventCount(EventClass::class_1__));
+	auto events(consumer.first->getEvents(EventClass::class_1__));
+	assert(events.size() == 1);
+	auto event = events[0];
+	// pretend we sent it over the wire and got a confirmation back
+	events.confirm(1);
+	assert(event.timestamp_.high_ == 1);
+	assert(event.timestamp_.low_ == 3);
+	assert(event.value_.type_ == PointType::binary_input__);
+	assert(event.id_ == 3);
+	assert(event.tag_ == USER_MAPPING(USER_MAPPING_BI, 72));
+	assert(event.value_.cpp_type_ == decltype(event.value_.cpp_type_)::bool__);
+	assert(event.value_.payload_.bool_ == false);
 
 	return 0;
 }

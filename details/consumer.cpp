@@ -62,6 +62,17 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return !event_queues_[static_cast< unsigned int >(event_class) - 1/* offset for class 0 */].empty();
 	}
 
+	unsigned int Consumer::getEventCount(EventClass event_class) const noexcept
+	{
+		if (event_class == EventClass::class_0__) 0;
+		static_assert(EventClass::class_3__ == EventClass::class_count__, "unexpected value for EventClass enumerators");
+		return event_queues_[static_cast< unsigned int >(event_class) - 1/* offset for class 0 */].size();
+	}
+	Events Consumer::getEvents(EventClass event_class) noexcept
+	{
+		return Events(event_queues_[static_cast< unsigned int >(event_class) - 1/* offset for class 0 */]);
+	}
+
 	void Consumer::reset()
 	{
 		next_mapping_entry_ = 0;
