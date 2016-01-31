@@ -17,8 +17,11 @@
 #include "../exceptions.hpp"
 #include "../pointtype.hpp"
 #include <utility>
+#include <mutex>
+#include <condition_variable>
 #include "eventqueue.hpp"
 #include "events.hpp"
+#include "pollresult.hpp"
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
@@ -43,6 +46,13 @@ namespace Details {
 		unsigned int getEventCount(EventClass event_class) const noexcept;
 		Events getEvents(EventClass event_class) noexcept;
 
+#ifdef RTIMDB_ALLOW_EXCEPTIONS
+		PollResult poll(PollDescriptor const &poll_descriptor);
+#endif
+		std::pair< PollResult, Errors > poll(PollDescriptor const &poll_descriptor RTIMDB_NOTHROW_PARAM) noexcept;
+
+		unsigned int getMappingSize() const noexcept { return next_mapping_entry_; }
+
 	private : // friend-only API
 		struct Mapping
 		{
@@ -62,10 +72,15 @@ namespace Details {
 			EventClass event_class_;
 		};
 		
-		void reset();
+		void reset(Database *database);
 
 		Mapping const* findMapping(PointType point_type, unsigned int system_id) const noexcept;
 		Mapping* findMapping(PointType point_type, unsigned int system_id) noexcept;
+
+		void setCommitted(unsigned int committed_version) noexcept;
+		void awaitTransactionDone(unsigned int transaction_version) const noexcept;
+
+		Core::Point getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
 
 	private :
 		Mapping const* findMapping(uintptr_t tag) const noexcept;
@@ -74,8 +89,13 @@ namespace Details {
 		Mapping mappings_[RTIMDB_POINT_COUNT];
 		unsigned int next_mapping_entry_;
 		EventQueue event_queues_[static_cast< unsigned int >(EventClass::class_count__)];
+		Database *database_;
+		unsigned int committed_version_;
+		mutable std::mutex committed_version_sem_mutex_;
+		mutable std::condition_variable committed_version_sem_cv_;
 
 		friend class RTIMDB::Database;
+		friend class PollResult;
 	};
 }}}
 

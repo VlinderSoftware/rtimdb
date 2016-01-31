@@ -80,6 +80,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         PointType getPointTypeAtOffset(unsigned int offset) const;
 		Details::Locator advance(Details::Locator const &curr_location) const;
 
+		std::pair< Details::Transaction, Errors > startTransaction_(bool write_enable) throw();
+
 		// commit phases
 		Errors tagTransitions(Details::Transaction &transaction) noexcept;
 		void sortTransitions(Details::Transaction &transaction) noexcept;

@@ -59,11 +59,16 @@ set(RTIMDB_OUTSTATION_SOURCES
 	details/crob.hpp
 	details/event.hpp
 	details/eventclass.hpp
+	details/eventiterator.cpp
+	details/eventiterator.hpp
 	details/eventqueue.cpp
 	details/eventqueue.hpp
 	details/events.cpp
 	details/events.hpp
 	details/pointdescriptor.hpp
+	details/polldescriptor.hpp
+	details/pollresult.cpp
+	details/pollresult.hpp
 	details/producer.hpp
 	details/timestamp.hpp
 	details/transitionqueue.cpp

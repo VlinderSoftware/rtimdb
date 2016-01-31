@@ -29,7 +29,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return tail - head;
 	}
 
-	Event Events::operator[](unsigned int index) const noexcept
+	Event const &Events::operator[](unsigned int index) const noexcept
 	{
 		index = (index + head_) % capacity_;
 		return events_[index];
@@ -43,6 +43,14 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		if (count > curr_size) count = curr_size;
 		head = (head + count) % capacity_;
 		head_.store(head, std::memory_order_release);
+	}
+	Events::const_iterator Events::begin() const noexcept
+	{
+		return Events::const_iterator(this, size());
+	}
+	Events::const_iterator Events::end() const noexcept
+	{
+		return Events::const_iterator();
 	}
 }}}
 

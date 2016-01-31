@@ -20,7 +20,7 @@ using namespace std;
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
 	DataStore::DataStore()
-		: curr_version_(1)
+		: curr_version_(1) // start at 1 so we don't start frozen
 		, next_cell_(0)
 	{
 		for_each(std::begin(frozen_versions_), std::end(frozen_versions_), [](decltype(frozen_versions_[0]) &frozen_version){ frozen_version = 0; });
@@ -174,30 +174,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 #endif
 	pair < Details::Transaction, Errors > DataStore::startTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
-		unsigned int frozen_version(curr_version_++);
-		// find an empty slot in freeze_indices_
-		while (true)
-		{
-			using std::begin;
-			using std::end;
-			auto which(find(begin(frozen_versions_), end(frozen_versions_), 0));
-			if (end(frozen_versions_) == which)
-			{
-				return make_pair(Details::Transaction(), Errors::cannot_freeze__);
-			}
-			else
-			{ /* try to CAS */ }
-			unsigned int exp(0);
-			if (which->compare_exchange_strong(exp, frozen_version))
-			{
-				auto deleter([this, frozen_version](void *p){ thaw(frozen_version); });
-				Details::Transaction retval(which, std::move(deleter));
-				freezeCells(retval.getVersion());
-				return make_pair(std::move(retval), Errors::no_error__);
-			}
-			else
-			{ /* search again */ }
-		};
+		return startTransaction_(true);
 	}
 	Errors DataStore::commit(Details::Transaction &transaction RTIMDB_NOTHROW_PARAM)
 	{
@@ -236,7 +213,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 	pair < Details::ROTransaction, Errors > DataStore::startROTransaction(RTIMDB_NOTHROW_PARAM_1) throw()
 	{
-		auto result(startTransaction(RTIMDB_NOTHROW_ARG_1));
+		auto result(startTransaction_(false));
 		return std::make_pair(std::move(result.first.getROTransaction()), result.second);
 	}
 
@@ -351,6 +328,36 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
         { /* nothing more to be done */ }
         return new_location;
     }
+
+	pair < Details::Transaction, Errors > DataStore::startTransaction_(bool write_enable) throw()
+	{
+		unsigned int frozen_version;
+		if (write_enable) frozen_version = ++curr_version_;
+		else frozen_version = curr_version_;
+		// find an empty slot in freeze_indices_
+		while (true)
+		{
+			using std::begin;
+			using std::end;
+			auto which(find(begin(frozen_versions_), end(frozen_versions_), 0));
+			if (end(frozen_versions_) == which)
+			{
+				return make_pair(Details::Transaction(), Errors::cannot_freeze__);
+			}
+			else
+			{ /* try to CAS */ }
+			unsigned int exp(0);
+			if (which->compare_exchange_strong(exp, frozen_version))
+			{
+				auto deleter([this, frozen_version](void *p) { thaw(frozen_version); });
+				Details::Transaction retval(which, std::move(deleter));
+				freezeCells(retval.getVersion());
+				return make_pair(std::move(retval), Errors::no_error__);
+			}
+			else
+			{ /* search again */ }
+		}
+	}
 
 	Errors DataStore::tagTransitions(Details::Transaction &transaction) noexcept
 	{

@@ -25,6 +25,7 @@
 #include "core/datastore.hpp"
 #include "exceptions.hpp"
 #include <atomic>
+#include <mutex>
 
 namespace Vlinder { namespace RTIMDB {
 	namespace Core { namespace Details { class Transaction; } }
@@ -46,6 +47,8 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int createPoint(Details::Producer const *producer, PointType point_type, double initial_value);
 
 		void sendCommand(unsigned int point_id, Details::CROB const &crob);
+
+		Core::Details::ROTransaction beginTransaction(Details::Consumer *consumer);
 #endif
 		std::pair< Details::Producer const *, Errors > registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept;
 		std::pair< Details::Consumer*, Errors > registerConsumer(RTIMDB_NOTHROW_PARAM_1) noexcept;
@@ -62,6 +65,7 @@ namespace Vlinder { namespace RTIMDB {
 
 		Errors sendCommand(unsigned int point_id, Details::CROB const &crob RTIMDB_NOTHROW_PARAM);
 
+		std::pair< Core::Details::ROTransaction, Errors > beginTransaction(Details::Consumer *consumer RTIMDB_NOTHROW_PARAM) noexcept;
 		Details::TransitionQueueTransaction beginTransaction(Details::Producer const *producer, Details::Timestamp const &timestamp) noexcept;
 		void signalOverflow(Details::Producer const *producer) noexcept;
 		void commit(Details::Producer const *producer, Details::TransitionQueueTransaction const &transaction);
@@ -73,6 +77,8 @@ namespace Vlinder { namespace RTIMDB {
 
 		CommandQueue& getCommandQueue(Details::Producer const *producer) noexcept;
 		Details::TransitionQueue& getTransitionQueue(Details::Producer const *producer) noexcept;
+
+		std::pair< Core::Details::Optional< Core::Point >, Errors > read(Core::Details::ROTransaction const &transaction, PointType point_type, unsigned int system_id) const noexcept;
 
 	private :
 		Database(Database const&) = delete;
@@ -92,6 +98,7 @@ namespace Vlinder { namespace RTIMDB {
 		Details::Consumer consumers_[RTIMDB_MAX_CONSUMER_COUNT];
 		std::atomic< bool > producer_allocations_[RTIMDB_MAX_PRODUCER_COUNT];
 		std::atomic< bool > consumer_allocations_[RTIMDB_MAX_CONSUMER_COUNT];
+		std::mutex update_lock_;
 	};
 }}
 

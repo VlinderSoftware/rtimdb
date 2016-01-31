@@ -17,6 +17,7 @@
 #include "../core/point.hpp"
 #include "timestamp.hpp"
 #include <limits>
+#include "eventiterator.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	struct Event;
@@ -24,11 +25,16 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 	class RTIMDB_API Events
 	{
 	public :
+		typedef EventIterator const_iterator;
+
 		Events(EventQueue &queue);
 
 		unsigned int size() const noexcept;
-		Event operator[](unsigned int index) const noexcept;
+		Event const &operator[](unsigned int index) const noexcept;
 		void confirm(unsigned int count = std::numeric_limits< unsigned int >::max()) noexcept;
+
+		const_iterator begin() const noexcept;
+		const_iterator end() const noexcept;
 
 	private :
 		Event *events_;

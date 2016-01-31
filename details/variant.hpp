@@ -96,7 +96,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			: type_(-1)
 		{ /* no-op */ }
 		template < typename T >
-		Variant(T const &v)
+		explicit Variant(T const &v)
 			: type_(Vlinder::Meta::IndexOf< typename Vlinder::Meta::MakeTypeList<
 			   T1, T2, T3, T4, T5, T6, T7, T8, T9
 			, T10, T11, T12, T13, T14, T15, T16, T17

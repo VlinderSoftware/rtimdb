@@ -139,6 +139,149 @@ int updateDatabase()
 	return 0;
 }
 
+int classPoll()
+{
+	Database database;
+
+	/* initialization phase */
+	auto producer(database.registerProducer(RTIMDB_NOTHROW_ARG_1));
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+	database.createPoint(producer.first, PointType::binary_input__, false);
+
+	auto consumer(database.registerConsumer(RTIMDB_NOTHROW_ARG_1));
+	assert(consumer.second == Errors::no_error__);
+	consumer.first->mapPoint(USER_MAPPING(USER_MAPPING_BI, 72), PointType::binary_input__, 3);
+
+	// first consumer poll - an integrity poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__, EventClass::class_0__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 1);
+	}
+
+	// producer creates transitions -- one point changes (which happens to be the one mapped by the consumer)
+	auto transaction(database.beginTransaction(producer.first, Timestamp(1, 2)));
+	transaction.add(Transition(0, PointType::binary_input__, false));
+	transaction.add(Transition(1, PointType::binary_input__, false));
+	transaction.add(Transition(2, PointType::binary_input__, false));
+	transaction.add(Transition(3, PointType::binary_input__, true));
+	transaction.add(Transition(4, PointType::binary_input__, false));
+	transaction.add(Transition(5, PointType::binary_input__, false));
+	transaction.add(Transition(6, PointType::binary_input__, false));
+	transaction.add(Transition(7, PointType::binary_input__, false));
+	transaction.commit();
+	
+	database.update(); // always update the database before polling
+	// event poll - class not set yet, so no events
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 0);
+	}
+	// an integrity poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__, EventClass::class_0__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 1);
+	}
+
+	consumer.first->setEventClass(USER_MAPPING(USER_MAPPING_BI, 72), EventClass::class_1__);
+	// producer creates transitions -- one point changes (which happens to be the one mapped by the consumer)
+	transaction = database.beginTransaction(producer.first, Timestamp(1, 3));
+	transaction.add(Transition(0, PointType::binary_input__, false));
+	transaction.add(Transition(1, PointType::binary_input__, false));
+	transaction.add(Transition(2, PointType::binary_input__, false));
+	transaction.add(Transition(3, PointType::binary_input__, false));
+	transaction.add(Transition(4, PointType::binary_input__, false));
+	transaction.add(Transition(5, PointType::binary_input__, false));
+	transaction.add(Transition(6, PointType::binary_input__, false));
+	transaction.add(Transition(7, PointType::binary_input__, false));
+	transaction.commit();
+
+	database.update(); // always update the database before polling
+	// event poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 1);
+	}
+	// an integrity poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__, EventClass::class_0__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 2);
+	}
+
+	// add another event without confirming - a new poll should get the new events
+	transaction = database.beginTransaction(producer.first, Timestamp(1, 4));
+	transaction.add(Transition(0, PointType::binary_input__, false));
+	transaction.add(Transition(1, PointType::binary_input__, false));
+	transaction.add(Transition(2, PointType::binary_input__, false));
+	transaction.add(Transition(3, PointType::binary_input__, true));
+	transaction.add(Transition(4, PointType::binary_input__, false));
+	transaction.add(Transition(5, PointType::binary_input__, false));
+	transaction.add(Transition(6, PointType::binary_input__, false));
+	transaction.add(Transition(7, PointType::binary_input__, false));
+	transaction.commit();
+
+	database.update(); // always update the database before polling
+	// event poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 2);
+		// read the events, but don't confirm them
+		auto event1(poll_result.first[0]);
+		auto event2(poll_result.first[1]);
+		assert(event1.type() == 0);
+		assert(event1.get< Event >().id_ == 3);
+		assert(event1.get< Event >().timestamp_.high_ == 1);
+		assert(event1.get< Event >().timestamp_.low_ == 3);
+		assert(event1.get< Event >().value_.type_ == PointType::binary_input__);
+		assert(!event1.get< Event >().value_.payload_.bool_);
+		assert(event2.type() == 0);
+		assert(event2.get< Event >().id_ == 3);
+		assert(event2.get< Event >().timestamp_.high_ == 1);
+		assert(event2.get< Event >().timestamp_.low_ == 4);
+		assert(event2.get< Event >().value_.type_ == PointType::binary_input__);
+		assert(event2.get< Event >().value_.payload_.bool_);
+	}
+	// an integrity poll
+	{
+		auto poll_result(consumer.first->poll(PollDescriptor(EventClass::class_1__, EventClass::class_2__, EventClass::class_3__, EventClass::class_0__) RTIMDB_NOTHROW_ARG));
+		assert(Errors::no_error__ == poll_result.second);
+		assert(poll_result.first.size() == 3);
+		auto event1(poll_result.first[0]);
+		auto event2(poll_result.first[1]);
+		auto static3(poll_result.first[2]);
+		assert(event1.type() == 0);
+		assert(event1.get< Event >().id_ == 3);
+		assert(event1.get< Event >().timestamp_.high_ == 1);
+		assert(event1.get< Event >().timestamp_.low_ == 3);
+		assert(event1.get< Event >().value_.type_ == PointType::binary_input__);
+		assert(!event1.get< Event >().value_.payload_.bool_);
+		assert(event2.type() == 0);
+		assert(event2.get< Event >().id_ == 3);
+		assert(event2.get< Event >().timestamp_.high_ == 1);
+		assert(event2.get< Event >().timestamp_.low_ == 4);
+		assert(event2.get< Event >().value_.type_ == PointType::binary_input__);
+		assert(event2.get< Event >().value_.payload_.bool_);
+		assert(static3.type() == 1);
+		assert(static3.get< Core::Point >().type_ == PointType::binary_input__);
+		assert(static3.get< Core::Point >().payload_.bool_);
+		poll_result.first.confirm();
+	}
+
+
+	return 0;
+}
+
 int main()
 {
 	return 0
@@ -146,5 +289,6 @@ int main()
 		|| createMapping()
 		|| setEventClass()
 		|| updateDatabase()
+		|| classPoll()
 		;
 }

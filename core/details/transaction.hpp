@@ -20,6 +20,7 @@
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
+	namespace Details { class PollResult; }
 	namespace Core { 
 	class DataStore;
 	namespace Details {
@@ -55,6 +56,7 @@ namespace Vlinder { namespace RTIMDB {
 
 		VersionGuard version_guard_;
 		friend class Core::DataStore;
+		friend class RTIMDB::Details::PollResult; // needs access to getVersion
 	};
 	class Transaction : public ROTransaction
 	{

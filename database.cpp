@@ -39,6 +39,8 @@ namespace Vlinder { namespace RTIMDB {
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, uint32_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, float initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
 	unsigned int Database::createPoint(Details::Producer const *producer, PointType point_type, double initial_value)   { auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+
+	Core::Details::ROTransaction Database::beginTransaction(Details::Consumer *consumer) { auto result(beginTransaction(consumer, nothrow)); throwException(result.second); return result.first; }
 #endif
 
 	std::pair< Details::Producer const *, Errors > Database::registerProducer(RTIMDB_NOTHROW_PARAM_1) noexcept
@@ -61,7 +63,7 @@ namespace Vlinder { namespace RTIMDB {
 		{
 			if (!curr->exchange(true))
 			{
-				consumers_[distance(consumer_allocations_, curr)].reset();
+				consumers_[distance(consumer_allocations_, curr)].reset(this);
 				return make_pair(consumers_ + distance(consumer_allocations_, curr), Errors::no_error__);
 			}
 			else
@@ -100,6 +102,11 @@ namespace Vlinder { namespace RTIMDB {
 		pre_condition(producer->transition_queue_id_ < (sizeof(transition_queues_) / sizeof(transition_queues_[0])));
 		pre_condition(producer_allocations_[producer->transition_queue_id_]);
 		return transition_queues_[producer->transition_queue_id_];
+	}
+
+	std::pair< Core::Details::Optional< Core::Point >, Errors > Database::read(Core::Details::ROTransaction const &transaction, PointType point_type, unsigned int system_id) const noexcept
+	{
+		return data_store_.read(transaction, point_type, system_id RTIMDB_NOTHROW_ARG);
 	}
 
 	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept
@@ -168,6 +175,11 @@ namespace Vlinder { namespace RTIMDB {
 		return command_queues_[point.producer_id_].push(Command(crob) RTIMDB_NOTHROW_ARG) ? Errors::no_error__ : Errors::command_queue_full__;
 	}
 
+	pair< Core::Details::ROTransaction, Errors > Database::beginTransaction(Details::Consumer *consumer RTIMDB_NOTHROW_PARAM) noexcept
+	{
+		return data_store_.startROTransaction(RTIMDB_NOTHROW_ARG_1);
+	}
+
 	Details::TransitionQueueTransaction Database::beginTransaction(Details::Producer const *producer, Details::Timestamp const &timestamp) noexcept
 	{
 		return getTransitionQueue(producer).beginTransaction(timestamp);
@@ -186,9 +198,11 @@ namespace Vlinder { namespace RTIMDB {
 #endif
 	Errors Database::update(RTIMDB_NOTHROW_PARAM_1) noexcept
 	{
+		lock_guard< decltype(update_lock_) > update_lock(update_lock_);
 		Errors retval(Errors::no_error__);
 		for (auto transition_queue(begin(transition_queues_)); transition_queue != end(transition_queues_); ++transition_queue)
 		{
+			if (transition_queue->empty()) continue; // to avoid needlessly starting a transaction
 			auto transaction(data_store_.startTransaction(RTIMDB_NOTHROW_ARG_1));
 			bool first(true);
 			for (auto transition_count(transition_queue->size()); (retval == Errors::no_error__) && transition_count; --transition_count)
@@ -253,6 +267,13 @@ namespace Vlinder { namespace RTIMDB {
 				else
 				{ /* not transacted, or something went horribly wrong */ }
 			  }
+			);
+		for_each(
+			  begin(consumers_)
+			, end(consumers_)
+			, [&transaction](decltype(*begin(consumers_)) &consumer) {
+					consumer.setCommitted(transaction.getVersion());
+				}
 			);
 
 		return commit_result;
