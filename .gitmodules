@@ -1,9 +1,9 @@
 [submodule "exceptions"]
 	path = exceptions
-	url = ssh://rlc@192.168.200.80/srv/git/rlc/exceptions.git
+	url = https://github.com/VlinderSoftware/meta.git
 [submodule "cmake"]
 	path = cmake
-	url = ../cmake
+	url = https://github.com/VlinderSoftware/cmake.git
 [submodule "meta"]
 	path = meta
-	url = ../meta
+	url = https://github.com/VlinderSoftware/meta.git
