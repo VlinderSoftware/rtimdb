@@ -1,0 +1,16 @@
+version: 1.0.{build}
+build:
+  project: rtimdb.sln
+before_build:
+- cmd: git submodule init
+- cmd: git submodule update
+- cmd: git submodule foreach git checkout master
+- cmd: git submodule foreach git pull
+- cmd: mkdir _build
+- cmd: cd _build
+- cmd: cmake ..
+build_script:
+- cmd: msbuild rtimdb.sln /p:Configuration=Release /p:Platform=Win32 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+- cmd: msbuild rtimdb.sln /p:Configuration=Debug /p:Platform=Win32 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+test_script:
+- cmd: msbuild RUN_TESTS.vcxproj /p:Configuration=Debug /p:Platform=Win32 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
