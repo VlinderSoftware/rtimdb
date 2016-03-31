@@ -68,7 +68,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 
 	unsigned int Consumer::getEventCount(EventClass event_class) const noexcept
 	{
-		if (event_class == EventClass::class_0__) 0;
+		if (event_class == EventClass::class_0__) return 0;
 		static_assert(EventClass::class_3__ == EventClass::class_count__, "unexpected value for EventClass enumerators");
 		return event_queues_[static_cast< unsigned int >(event_class) - 1/* offset for class 0 */].size();
 	}
@@ -106,7 +106,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 				return (mapping.tag_ == tag);
 			  }
 			));
-		return which;
+		return which == end(mappings_) ? nullptr : which;
 	}
 
 	Consumer::Mapping const* Consumer::findMapping(PointType point_type, unsigned int system_id) const noexcept
@@ -118,7 +118,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 				return ((mapping.point_type_ == point_type) && (mapping.system_id_ == system_id));
 			  }
 			));
-		return which;
+		return which == end(mappings_) ? nullptr : which;
 	}
 
 	Consumer::Mapping* Consumer::findMapping(uintptr_t tag) noexcept
@@ -130,7 +130,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 				return (mapping.tag_ == tag);
 			  }
 			));
-		return which;
+		return which == end(mappings_) ? nullptr : which;
 	}
 
 	Consumer::Mapping* Consumer::findMapping(PointType point_type, unsigned int system_id) noexcept
@@ -142,7 +142,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 				return ((mapping.point_type_ == point_type) && (mapping.system_id_ == system_id));
 			  }
 			));
-		return which;
+		return which == end(mappings_) ? nullptr : which;
 	}
 
 	void Consumer::setCommitted(unsigned int committed_version) noexcept
