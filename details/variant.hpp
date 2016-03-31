@@ -14,6 +14,8 @@
 #define vlinder_rtimdb_details_variant_hpp
 
 #include "meta/typelist.hpp"
+#include <cstddef>
+#include <stdexcept>
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	template < typename T1, typename TL >

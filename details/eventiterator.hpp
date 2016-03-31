@@ -23,7 +23,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 	{
 	public :
 		EventIterator(Events const *events, unsigned int size);
-		constexpr EventIterator();
+		constexpr EventIterator() : events_(0), size_(0), offset_(0), at_end_(true) {}
 		EventIterator(EventIterator const &) = default;
 		EventIterator(EventIterator &&) = default;
 		EventIterator& operator=(EventIterator const &) = default;

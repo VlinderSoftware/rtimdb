@@ -14,7 +14,7 @@
 #define vlinder_rtimdb_transition_hpp
 
 #include "details/variant.hpp"
-#include "../core/point.hpp"
+#include "core/point.hpp"
 #include <limits>
 
 namespace Vlinder { namespace RTIMDB {

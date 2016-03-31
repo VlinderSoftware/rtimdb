@@ -23,12 +23,6 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		, offset_(0)
 		, at_end_(false)
 	{ /* no-op */ }
-	constexpr EventIterator::EventIterator()
-		: events_(0)
-		, size_(0)
-		, offset_(0)
-		, at_end_(true)
-	{ /* no-op */ }
 
 	Event const &EventIterator::operator*() const
 	{

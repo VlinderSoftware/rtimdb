@@ -13,6 +13,8 @@
 #ifndef vlinder_rtimdb_core_details_bubblesort_hpp
 #define vlinder_rtimdb_core_details_bubblesort_hpp
 
+#include <algorithm>
+
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	template < typename It, typename Cmp >
 	void bubbleSort(It beg, It end, Cmp cmp)

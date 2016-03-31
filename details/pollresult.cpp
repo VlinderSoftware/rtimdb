@@ -13,6 +13,7 @@
 #include "pollresult.hpp"
 #include "consumer.hpp"
 #include <algorithm>
+#include <type_traits>
 
 using namespace std;
 
@@ -86,7 +87,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		auto count(count_if(
 			  events.begin()
 			, events.end()
-			, [=](decltype(*events.begin()) const &event)
+			, [=](typename std::remove_reference< decltype(*events.begin()) >::type const &event)
 				{
 					return event.value_.version_ <= transaction_.getVersion(); 
 				})

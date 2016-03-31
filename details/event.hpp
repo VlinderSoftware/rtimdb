@@ -15,6 +15,7 @@
 
 #include "../core/point.hpp"
 #include "timestamp.hpp"
+#include <limits>
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	struct Event
