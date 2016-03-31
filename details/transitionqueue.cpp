@@ -69,7 +69,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return tail - head;
 	}
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	TransitionTransactionEntry&& TransitionQueue::front() const
+	TransitionTransactionEntry TransitionQueue::front() const
 	{
 		auto result(front(nothrow));
 		if (!result.second)
@@ -82,7 +82,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return move(result.first);
 	}
 #endif
-	pair< TransitionTransactionEntry&&, bool > TransitionQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
+	pair< TransitionTransactionEntry, bool > TransitionQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
 	{
 		unsigned int head(head_.load(memory_order_relaxed));
 		unsigned int tail(cached_tail_);

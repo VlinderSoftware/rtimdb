@@ -35,9 +35,9 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		bool overflow() const noexcept;
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Event&& front() const;
+		Event front() const;
 #endif
-		std::pair< Event&&, Errors > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
+		std::pair< Event, Errors > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
 		void pop() noexcept;
 		void clear() noexcept;
 

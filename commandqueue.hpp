@@ -39,9 +39,9 @@ namespace Vlinder { namespace RTIMDB {
 		unsigned int capacity() const noexcept;
 		unsigned int size() const noexcept;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Command&& front() const;
+		Command front() const;
 #endif
-		std::pair< Command&&, bool > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
+		std::pair< Command, bool > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
 		void pop() noexcept;
 
 		bool overflow() const;

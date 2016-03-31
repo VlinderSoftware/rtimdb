@@ -45,14 +45,14 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return tail - head;
 	}
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Event&& EventQueue::front() const
+	Event EventQueue::front() const
 	{
 		auto result(front(nothrow));
 		throwException(result.second);
-		return move(result.first);
+		return result.first;
 	}
 #endif
-	pair< Event&&, Errors > EventQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
+	pair< Event, Errors > EventQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
 	{
 		unsigned int head(head_.load(memory_order_relaxed));
 		unsigned int tail(cached_tail_);

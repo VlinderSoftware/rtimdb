@@ -49,9 +49,9 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		bool overflow() const;
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		TransitionTransactionEntry&& front() const;
+		TransitionTransactionEntry front() const;
 #endif
-		std::pair< TransitionTransactionEntry&&, bool > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
+		std::pair< TransitionTransactionEntry, bool > front(RTIMDB_NOTHROW_PARAM_1) const noexcept;
 		void pop() noexcept;
 
 	private :

@@ -43,7 +43,7 @@ namespace Vlinder { namespace RTIMDB {
 		return tail - head;
 	}
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	Command&& CommandQueue::front() const
+	Command CommandQueue::front() const
 	{
 		auto result(front(nothrow));
 		if (!result.second)
@@ -53,10 +53,10 @@ namespace Vlinder { namespace RTIMDB {
 		else
 		{ /* all is well */ }
 
-		return move(result.first);
+		return result.first;
 	}
 #endif
-	pair< Command&&, bool > CommandQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
+	pair< Command, bool > CommandQueue::front(RTIMDB_NOTHROW_PARAM_1) const noexcept
 	{
 		unsigned int head(head_.load(memory_order_relaxed));
 		unsigned int tail(cached_tail_);
