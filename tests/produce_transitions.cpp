@@ -1,7 +1,6 @@
 #include "../database.hpp"
+#include "exceptions/contract.hpp"
 
-#undef assert
-#define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #define DOT_FIRST
 #define FIRST

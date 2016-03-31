@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 #include "../core/datastore.hpp"
+#include "exceptions/contract.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;

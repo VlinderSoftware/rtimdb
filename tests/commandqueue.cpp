@@ -12,8 +12,8 @@
  * limitations under the License. */
 #include "../commandqueue.hpp"
 #include <stdexcept>
+#include "exceptions/contract.hpp"
 
-#define assert(x) if (!(x)) { throw std::logic_error("Assertion failed"); }
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #define DOT_FIRST
 #define FIRST
@@ -27,6 +27,17 @@
 using namespace std;
 using namespace Vlinder::RTIMDB;
 
+namespace Vlinder { namespace RTIMDB { namespace Private {
+class CommandQueueTestAttorney
+{
+public :
+	static bool push(CommandQueue *queue, Command const &command) noexcept
+	{
+		return queue->push(command RTIMDB_NOTHROW_ARG);
+	}
+};
+}}}
+
 int tryCreateInstance()
 {
 	static_assert(RTIMDB_COMMAND_QUEUE_CAPACITY == 16, "This test is written for queues with a capacity of 16. Please contact support@vlinder.ca if you need help for a different queue capacity");
@@ -35,9 +46,34 @@ int tryCreateInstance()
 	return 0;
 }
 
+int tryPushAndPop()
+{
+	CommandQueue queue;
+	Details::CROB crob(Details::CROB::operate_pulse_on__, false, Details::CROB::close__, 1, 0, 0);
+	assert(Private::CommandQueueTestAttorney::push(&queue, crob));
+	assert(!queue.empty());
+	assert(queue.size() == 1);
+	auto queue_front(queue.front(RTIMDB_NOTHROW_ARG_1));
+	assert(queue_front.second);
+	assert(Command::crob__ == queue_front.first.type_);
+	auto da_crob(queue_front.first.get< Details::CROB >());
+	assert(crob.clear_ == da_crob.clear_);
+	assert(crob.count_ == da_crob.count_);
+	assert(crob.off_time_ == da_crob.off_time_);
+	assert(crob.on_time_ == da_crob.on_time_);
+	assert(crob.op_type_ == da_crob.op_type_);
+	assert(crob.tcc_ == da_crob.tcc_);
+	queue.pop();
+	assert(queue.empty());
+	assert(queue.size() == 0);
+	
+	return 0;
+}
+
 int main()
 {
 	return 0
 		|| tryCreateInstance()
+		|| tryPushAndPop()
 		;
 }

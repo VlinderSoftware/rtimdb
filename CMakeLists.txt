@@ -109,6 +109,7 @@ set(TESTS
 	try_concurrent_transactions
 	try_freeze
 	try_iterate
+	variant
 	)
 
 foreach (test

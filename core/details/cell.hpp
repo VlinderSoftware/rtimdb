@@ -17,12 +17,12 @@
 #include "observer.hpp"
 #include "../../details/duplicateselectionpolicy.hpp"
 #include "../point.hpp"
-#include "../exceptions.hpp"
+#include "../../exceptions.hpp"
+#include "exceptions/contract.hpp"
 #include <algorithm>
 #include <atomic>
 #include <mutex>
 #include <vector>
-#include <cassert>
 
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	template < unsigned int cell_size__, RTIMDB::Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >

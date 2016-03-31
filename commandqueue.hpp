@@ -21,6 +21,9 @@
 #include <atomic>
 
 namespace Vlinder { namespace RTIMDB {
+	namespace Private {
+		class CommandQueueTestAttorney;
+	}
 	class Database;
 	class RTIMDB_API CommandQueue
 	{
@@ -65,6 +68,7 @@ namespace Vlinder { namespace RTIMDB {
 		mutable std::atomic< bool > overflow_;
 
 		friend class Database;
+		friend class Private::CommandQueueTestAttorney;
 	};
 }}
 

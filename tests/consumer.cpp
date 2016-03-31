@@ -1,4 +1,5 @@
 #include "../database.hpp"
+#include "exceptions/contract.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Details;
