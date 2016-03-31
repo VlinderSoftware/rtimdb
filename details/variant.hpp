@@ -43,6 +43,10 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		{
 			return false;
 		}
+		static void cloneInto(unsigned char *target_buffer, unsigned char const *source_buffer, unsigned int type)
+		{
+			throw std::logic_error("Type error");
+		}
 	};
 	template < typename T1, typename TL >
 	struct VariantCarrier : public VariantCarrier< typename Meta::Head< TL >::type, typename Meta::Tail< TL >::type >
@@ -71,6 +75,17 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 			if (0 == type) return true;
 			else return false;
 		}
+		static void cloneInto(unsigned char *target_buffer, unsigned char const *source_buffer, unsigned int type)
+		{
+			if (type == 0)
+			{
+				new (target_buffer) T1(*(reinterpret_cast< T1 const* >(source_buffer)));
+			}
+			else
+			{
+				super::cloneInto(target_buffer, source_buffer, type - 1);
+			}
+		}
 	};
 	template <
 		  typename  T1,                      typename  T2 = Vlinder::Meta::Nil, typename  T3 = Vlinder::Meta::Nil, typename  T4 = Vlinder::Meta::Nil
@@ -97,6 +112,11 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Variant()
 			: type_(-1)
 		{ /* no-op */ }
+		Variant(Variant const &other)
+			: type_(other.type_)
+		{
+			other.cloneInto(payload_.buffer_);
+		}
 		template < typename T >
 		explicit Variant(T const &v)
 			: type_(Vlinder::Meta::IndexOf< typename Vlinder::Meta::MakeTypeList<
@@ -111,6 +131,20 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		{
 			super::destroy(payload_.buffer_, type_);
 		}
+		
+		// there really is no safe way to do this, so we'll provide the weak
+		// guarantee only: if we fail, we'll be coherent (but we will have lost
+		// the object we held before -- without leaking, but still)
+		Variant& operator=(Variant const &other)
+		{
+			super::destroy(payload_.buffer_, type_);
+			type_ = -1;
+			other.cloneInto(payload_.buffer_); // might fail here
+			type_ = other.type_;
+			
+			return *this;
+		}
+		
 		template < typename T > T const& get() const
 		{
 			T const *p((T const *) payload_.buffer_);
@@ -134,6 +168,12 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 				, T18, T19, T20, T21, T22, T23, T24, T25
 				, T26, T27, T28, T29, T30, T31, T32 >::type >::value];
 		};
+		
+		void cloneInto(unsigned char *target_buffer) const
+		{
+			super::cloneInto(target_buffer, payload_.buffer_, type_);
+		}
+		
 		unsigned int type_;
 		Payload payload_;
 	};
