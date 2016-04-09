@@ -16,7 +16,7 @@
 #include <memory>
 #include <atomic>
 #include "../../exceptions.hpp"
-#include "../point.hpp"
+#include "../pointvalue.hpp"
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
@@ -87,14 +87,16 @@ namespace Vlinder { namespace RTIMDB {
 			Entry()
 				: point_id_(-1)
 			{ /* no-op */ }
-			Entry(unsigned int point_id, Point value)
-				: point_id_(point_id)
+			Entry(PointType type, unsigned int point_id, PointValue value)
+				: type_(type)
+				, point_id_(point_id)
 				, value_(value)
 				, transact_state_(TransactState::initial__)
 			{ /* no-op */ }
 
+			PointType type_;
 			unsigned int point_id_;
-			Point value_;
+			PointValue value_;
 			TransactState transact_state_;
 		};
 
@@ -104,10 +106,10 @@ namespace Vlinder { namespace RTIMDB {
 			, next_entry_(0)
 		{ /* no-op */ }
 
-		Errors push(unsigned int point_id, Point const &new_value)
+		Errors push(PointType point_type, unsigned int point_id, PointValue const &new_value)
 		{
 			if (next_entry_ == sizeof(entries_) / sizeof(entries_[0])) return Errors::too_many_transitions__;
-			entries_[next_entry_++] = std::move(Entry(point_id, new_value));
+			entries_[next_entry_++] = std::move(Entry(point_type, point_id, new_value));
 			return Errors::no_error__;
 		}
 

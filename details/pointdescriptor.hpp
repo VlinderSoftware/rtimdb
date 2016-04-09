@@ -13,15 +13,15 @@
 #ifndef vlinder_rtimdb_details_pointdescriptor_hpp
 #define vlinder_rtimdb_details_pointdescriptor_hpp
 
-#include "../pointtype.hpp"
+#include "../core/pointtype.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	struct PointDescriptor
 	{
 		PointDescriptor() noexcept
-			: point_type_(PointType::_type_count__)
+			: point_type_(Core::PointType::_type_count__)
 		{ /* no-op */ }
-		PointDescriptor(PointType point_type, unsigned int data_store_id, unsigned int producer_id) noexcept
+		PointDescriptor(Core::PointType point_type, unsigned int data_store_id, unsigned int producer_id) noexcept
 			: point_type_(point_type)
 			, data_store_id_(data_store_id)
 			, producer_id_(producer_id)
@@ -31,7 +31,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		PointDescriptor(PointDescriptor &&other) = default;
 		PointDescriptor& operator=(PointDescriptor &&other) = default;
 
-		PointType point_type_;
+		Core::PointType point_type_;
 		unsigned int data_store_id_;
 		unsigned int producer_id_;
 	};

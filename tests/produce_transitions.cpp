@@ -12,7 +12,7 @@
 #endif
 
 using namespace Vlinder::RTIMDB;
-using Vlinder::RTIMDB::PointType;
+using Vlinder::RTIMDB::Core::PointType;
 using Vlinder::RTIMDB::Errors;
 
 int main()
@@ -58,15 +58,15 @@ int main()
 	{
 		for (unsigned int bi_index(0); bi_index < 32; ++bi_index)
 		{
-			transaction[bi_index] = Transition(bi_index, PointType::binary_input__, false); // we're pretending - so we don't care about the value much for now
+			transaction[bi_index] = Transition(PointType::binary_input__, bi_index, false); // we're pretending - so we don't care about the value much for now
 		}
 		for (unsigned int bo_index(0); bo_index < 8; ++bo_index)
 		{
-			transaction[bo_index + 32/* offset for the BIs */] = Transition(bo_index, PointType::binary_output__, false); // we're pretending - so we don't care about the value much for now
+			transaction[bo_index + 32/* offset for the BIs */] = Transition(PointType::binary_output__, bo_index, false); // we're pretending - so we don't care about the value much for now
 		}
 		for (unsigned int ai_index(0); ai_index < 8; ++ai_index)
 		{
-			transaction[ai_index + 40/* offset for the BOs */] = Transition(ai_index, PointType::analog_input__, 0.0f); // we're pretending - so we don't care about the value much for now
+			transaction[ai_index + 40/* offset for the BOs */] = Transition(PointType::analog_input__, ai_index, 0.0f); // we're pretending - so we don't care about the value much for now
 		}
 		database.commit(producer DOT_FIRST, transaction);
 	}

@@ -11,20 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 #include "../core/details/optional.hpp"
-#include "../core/point.hpp"
+#include "../core/pointvalue.hpp"
 #include "exceptions/contract.hpp"
 
 using namespace Vlinder::RTIMDB::Core;
 
 int tryCreateInstance()
 {
-	Details::Optional< Point > v;
+	Details::Optional< PointValue > v;
 	return v.empty() ? 0 : 1;
 }
 int tryNonEmptyInstance()
 {
-	Point p;
-	Details::Optional< Point > v(p);
+	PointValue p;
+	Details::Optional< PointValue > v(p);
 
 	return v.empty() ? 1 : 0;
 }

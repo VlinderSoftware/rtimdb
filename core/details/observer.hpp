@@ -14,10 +14,10 @@
 #define vlinder_rtimdb_core_details_observer_hpp
 
 #include <functional>
-#include "../point.hpp"
+#include "../pointvalue.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
-	typedef std::function< void(RTIMDB::Details::Action action, Point new_value, Point old_value) throw() > Observer;
+	typedef std::function< void(RTIMDB::Details::Action action, PointValue new_value, PointValue old_value) throw() > Observer;
 }}}}
 
 #endif

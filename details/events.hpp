@@ -14,7 +14,6 @@
 #define vlinder_rtimdb_details_events_hpp
 
 #include "prologue.hpp"
-#include "../core/point.hpp"
 #include "timestamp.hpp"
 #include <limits>
 #include "eventiterator.hpp"

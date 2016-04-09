@@ -15,7 +15,7 @@
 
 #include "eventclass.hpp"
 #include "../exceptions.hpp"
-#include "../pointtype.hpp"
+#include "../core/pointtype.hpp"
 #include <utility>
 #include <mutex>
 #include <condition_variable>
@@ -32,15 +32,15 @@ namespace Details {
 		Consumer();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void mapPoint(uintptr_t tag, PointType point_type, unsigned int system_id);
+		void mapPoint(uintptr_t tag, Core::PointType point_type, unsigned int system_id);
 		void setEventClass(uintptr_t tag, EventClass event_class);
 		EventClass getEventClass(uintptr_t tag) const;
-		EventClass getEventClass(PointType point_type, unsigned int system_id) const;
+		EventClass getEventClass(Core::PointType point_type, unsigned int system_id) const;
 #endif
-		Errors mapPoint(uintptr_t tag, PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) noexcept;
+		Errors mapPoint(uintptr_t tag, Core::PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) noexcept;
 		Errors setEventClass(uintptr_t tag, EventClass event_class RTIMDB_NOTHROW_PARAM) noexcept;
 		std::pair< EventClass, Errors > getEventClass(uintptr_t tag RTIMDB_NOTHROW_PARAM) const noexcept;
-		std::pair< EventClass, Errors > getEventClass(PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) const noexcept;
+		std::pair< EventClass, Errors > getEventClass(Core::PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) const noexcept;
 
 		bool eventsAvailable(EventClass event_class) const noexcept;
 		unsigned int getEventCount(EventClass event_class) const noexcept;
@@ -59,7 +59,7 @@ namespace Details {
 			Mapping()
 				: event_class_(EventClass::class_0__)
 			{ /* no-op */ }
-			Mapping(uintptr_t tag, PointType point_type, unsigned int system_id)
+			Mapping(uintptr_t tag, Core::PointType point_type, unsigned int system_id)
 				: tag_(tag)
 				, point_type_(point_type)
 				, system_id_(system_id)
@@ -67,20 +67,20 @@ namespace Details {
 			{ /* no-op */ }
 
 			uintptr_t tag_;
-			PointType point_type_;
+			Core::PointType point_type_;
 			unsigned int system_id_;
 			EventClass event_class_;
 		};
 		
 		void reset(Database *database);
 
-		Mapping const* findMapping(PointType point_type, unsigned int system_id) const noexcept;
-		Mapping* findMapping(PointType point_type, unsigned int system_id) noexcept;
+		Mapping const* findMapping(Core::PointType point_type, unsigned int system_id) const noexcept;
+		Mapping* findMapping(Core::PointType point_type, unsigned int system_id) noexcept;
 
 		void setCommitted(unsigned int committed_version) noexcept;
 		void awaitTransactionDone(unsigned int transaction_version) const noexcept;
 
-		Core::Point getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
+		Core::PointValue getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
 
 	private :
 		Mapping const* findMapping(uintptr_t tag) const noexcept;

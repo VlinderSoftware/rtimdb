@@ -13,7 +13,8 @@
 #ifndef vlinder_rtimdb_details_event_hpp
 #define vlinder_rtimdb_details_event_hpp
 
-#include "../core/point.hpp"
+#include "../core/pointtype.hpp"
+#include "../core/pointvalue.hpp"
 #include "timestamp.hpp"
 #include <limits>
 
@@ -23,15 +24,17 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Event()
 			: id_(std::numeric_limits< decltype(id_) >::max())
 		{ /* no-op */ }
-		Event(Timestamp const &timestamp, Core::Point const &value, unsigned int id, uintptr_t tag)
+		Event(Timestamp const &timestamp, Core::PointType type, unsigned int id, Core::PointValue const &value, uintptr_t tag)
 			: timestamp_(timestamp)
-			, value_(value)
+			, type_(type)
 			, id_(id)
+			, value_(value)
 			, tag_(tag)
 		{ /* no-op */ }
 		Timestamp timestamp_;
-		Core::Point value_;
+		Core::PointType type_;
 		unsigned int id_;
+		Core::PointValue value_;
 		uintptr_t tag_;
 	};
 }}}

@@ -34,28 +34,28 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		~DataStore();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		unsigned int insert(Point const &value);
+		unsigned int insert(PointType type, PointValue const &value);
 #endif
-		std::pair< unsigned int, Errors > insert(Point value RTIMDB_NOTHROW_PARAM) throw();
+		std::pair< unsigned int, Errors > insert(PointType type, PointValue value RTIMDB_NOTHROW_PARAM) throw();
 
 		const_iterator begin();
 		const_iterator end();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void update(unsigned int index, Point new_value);
-		void update(Details::Transaction &transaction, unsigned int index, Point new_value);
+		void update(PointType type, unsigned int index, PointValue new_value);
+		void update(Details::Transaction &transaction, PointType type, unsigned int index, PointValue new_value);
 #endif
-		Errors update(unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(Details::Transaction &transaction, unsigned int index, Point new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(PointType type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(Details::Transaction &transaction, PointType type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Point read(PointType type, unsigned int index) const;
+		PointValue read(PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Optional< Point >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< PointValue >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		Point read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const;
+		PointValue read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Optional< Point >, Errors > read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< PointValue >, Errors > read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Details::Transaction startTransaction();

@@ -70,11 +70,13 @@ namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 			else if (empty_ && !other.empty_)
 			{
 				p_ = new (value_.buffer_) T(other.get());
+				empty_ = false;
 				other.clear();
 			}
 			else if (!empty_ && other.empty_)
 			{
 				other.p_ = new (other.value_.buffer_) T(get());
+				other.empty_ = false;
 				clear();
 			}
 			else

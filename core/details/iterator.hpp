@@ -20,9 +20,9 @@
 
 namespace Vlinder { namespace RTIMDB { namespace Core { 
 	class DataStore;
-	struct Point;
+	struct PointValue;
 	namespace Details {
-	class RTIMDB_API Iterator : public std::iterator< std::input_iterator_tag, Point >
+	class RTIMDB_API Iterator : public std::iterator< std::input_iterator_tag, PointValue >
 	{
 	public :
 		Iterator();

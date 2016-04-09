@@ -18,7 +18,7 @@
 #include "variant.hpp"
 #include "event.hpp"
 #include "../core/details/transaction.hpp"
-#include "../core/point.hpp"
+#include "../core/pointvalue.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	class Consumer;
@@ -42,7 +42,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 
 		unsigned int size() const noexcept;
 
-		Variant< Event, Core::Point > operator[](unsigned int index) const noexcept;
+		Variant< Event, Core::PointValue > operator[](unsigned int index) const noexcept;
 
 		void confirm() noexcept;
 
@@ -50,7 +50,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		void awaitTransactionDone() const noexcept;
 		unsigned int getEventCount(EventClass event_class) const noexcept;
 		Event getClassEvent(EventClass event_class, unsigned int index) const noexcept;
-		Core::Point getStatic(unsigned int index) const noexcept;
+		Core::PointValue getStatic(unsigned int index) const noexcept;
 
 		PollDescriptor descriptor_;
 		Consumer *consumer_;

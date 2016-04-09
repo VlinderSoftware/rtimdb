@@ -8,7 +8,9 @@ template < typename T >
 void fillToTheBrim(DataStore &data_store, PointType point_type, T value)
 {
 	for (int i(0); i < RTIMDB_POINT_COUNT; ++i)
-		data_store.insert(Point(point_type, value));
+	{
+		data_store.insert(point_type, PointValue(value));
+	}
 }
 #else
 template < typename T >
@@ -16,7 +18,7 @@ Errors fillToTheBrim(DataStore &data_store, PointType point_type, T value)
 {
 	for (int i(0); i < RTIMDB_POINT_COUNT; ++i)
 	{
-		auto insert_result(data_store.insert(Point(point_type, value)));
+		auto insert_result(data_store.insert(point_type, PointValue(value)));
 		if (Errors::no_error__ != insert_result.second) return insert_result.second;
 	}
 	return Errors::no_error__;
@@ -33,7 +35,7 @@ int tryInsertTooMany()
 	bool caught(false);
 	try
 	{
-		data_store.insert(Point(point_type__, value__));
+		data_store.insert(point_type__, PointValue(value__));
 	}
 	catch (DatabaseFull const &)
 	{
@@ -42,7 +44,7 @@ int tryInsertTooMany()
 	if (!caught) return 1;
 #else
 	if (Errors::no_error__ != fillToTheBrim(data_store, point_type__, value__)) return 1;
-	auto insert_result(data_store.insert(Point(point_type__, value__)));
+	auto insert_result(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::database_full__ != insert_result.second) return 1;
 #endif
 
@@ -55,15 +57,15 @@ int tryInsertUpdateInsert()
 	T const value__(static_cast< T >(0));
 	DataStore data_store;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	data_store.insert(Point(point_type__, value__));
-	data_store.update(0, Point(point_type__, static_cast< T >(value__ + 1)));
-	data_store.insert(Point(point_type__, value__));
+	data_store.insert(point_type__, PointValue(value__));
+	data_store.update(point_type__, 0, PointValue(static_cast< T >(value__ + 1)));
+	data_store.insert(point_type__, PointValue(value__));
 #else
-	auto insert_result(data_store.insert(Point(point_type__, value__)));
+	auto insert_result(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result.second) return 1;
-	auto update_result(data_store.update(0, Point(point_type__, static_cast< T >(value__ + 1))));
+	auto update_result(data_store.update(point_type__, 0, PointValue(static_cast< T >(value__ + 1))));
 	if (Errors::no_error__ != update_result) return 1;
-	auto insert_result2(data_store.insert(Point(point_type__, value__)));
+	auto insert_result2(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result2.second) return 1;
 #endif
 
@@ -75,16 +77,16 @@ int tryInsertReadInsert()
 	T const value__(static_cast< T >(0));
 	DataStore data_store;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	data_store.insert(Point(point_type__, value__));
+	data_store.insert(point_type__, PointValue(value__));
 	if (value__ != getValue< T >(data_store.read(point_type__, 0))) return 1;
-	data_store.insert(Point(point_type__, value__));
+	data_store.insert(point_type__, PointValue(value__));
 #else
-	auto insert_result(data_store.insert(Point(point_type__, value__)));
+	auto insert_result(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result.second) return 1;
 	auto read_result(data_store.read(point_type__, 0));
 	if (Errors::no_error__ != read_result.second) return 1;
 	if (value__ != getValue< T >(*read_result.first)) return 1;
-	auto insert_result2(data_store.insert(Point(point_type__, value__)));
+	auto insert_result2(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result2.second) return 1;
 #endif
 
@@ -96,15 +98,15 @@ int tryInsertFreezeInsert()
 	T const value__(static_cast< T >(0));
 	DataStore data_store;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	data_store.insert(Point(point_type__, value__));
+	data_store.insert(point_type__, PointValue(value__));
 	auto freeze_result(data_store.startTransaction());
-	data_store.insert(Point(point_type__, value__));
+	data_store.insert(point_type__, PointValue(value__));
 #else
-	auto insert_result(data_store.insert(Point(point_type__, value__)));
+	auto insert_result(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result.second) return 1;
 	auto freeze_result(data_store.startTransaction());
 	if (Errors::no_error__ != freeze_result.second) return 1;
-	auto insert_result2(data_store.insert(Point(point_type__, value__)));
+	auto insert_result2(data_store.insert(point_type__, PointValue(value__)));
 	if (Errors::no_error__ != insert_result2.second) return 1;
 #endif
 

@@ -14,7 +14,7 @@
 #define vlinder_rtimdb_transition_hpp
 
 #include "details/variant.hpp"
-#include "core/point.hpp"
+#include "core/pointvalue.hpp"
 #include <limits>
 
 namespace Vlinder { namespace RTIMDB {
@@ -23,16 +23,17 @@ namespace Vlinder { namespace RTIMDB {
 		Transition()
 			: system_id_(std::numeric_limits< decltype(system_id_) >::max())
 		{ /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, bool value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, int16_t value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, int32_t value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, uint16_t value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, uint32_t value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, float value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
-		Transition(unsigned int system_id, PointType point_type, double value) : system_id_(system_id), point_value_(point_type, value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, bool value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, int16_t value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, int32_t value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, uint16_t value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, uint32_t value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, float value) : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
+		Transition(Core::PointType point_type, unsigned int system_id, double value)   : system_id_(system_id), point_type_(point_type), point_value_(value) { /* no-op */ }
 
 		unsigned int system_id_;
-		Core::Point point_value_;
+		Core::PointType point_type_;
+		Core::PointValue point_value_;
 	};
 }}
 

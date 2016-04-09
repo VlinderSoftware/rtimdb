@@ -28,14 +28,14 @@ using namespace Vlinder::RTIMDB::Core;
 int main()
 {
 	DataStore data_store;
-	auto index(data_store.insert(Point(PointType::binary_input__, false)) DOT_FIRST);
+	auto index(data_store.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST);
 
 	auto transaction(data_store.startROTransaction() DOT_FIRST);
-	data_store.update(index, Point(PointType::binary_input__, true));
+	data_store.update(PointType::binary_input__, index, PointValue(true));
 	auto frozen_value(data_store.read(transaction, PointType::binary_input__, index) DOT_FIRST);
-	assert(PointType::binary_input__ == frozen_value DEREF type_);
+	//assert(PointType::binary_input__ == frozen_value DEREF type_);
 	assert(false == frozen_value DEREF payload_.bool_);
 	frozen_value = data_store.read(PointType::binary_input__, index) DOT_FIRST;
-	assert(PointType::binary_input__ == frozen_value DEREF type_);
+	//assert(PointType::binary_input__ == frozen_value DEREF type_);
 	assert(true == frozen_value DEREF payload_.bool_);
 }

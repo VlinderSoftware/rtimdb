@@ -45,8 +45,9 @@ set(RTIMDB_CORE_SOURCES
 	core/details/selection.hpp
 	core/details/transaction.hpp
 	core/details/optional.hpp
-	core/point.cpp
-	core/point.hpp
+	core/pointtype.hpp
+	core/pointvalue.cpp
+	core/pointvalue.hpp
 	)
 set(RTIMDB_OUTSTATION_SOURCES
 	command.hpp
@@ -85,7 +86,6 @@ set(RTIMDB_SOURCES
 	exceptions.cpp
 	exceptions.hpp
 	rtimdb_config.hpp
-	pointtype.hpp
 	)
 add_library(rtimdb SHARED
 	${RTIMDB_CORE_SOURCES}

@@ -10,8 +10,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#include "point.hpp"
-#include <limits>
+#ifndef vlinder_rtimdb_pointtype_hpp
+#define vlinder_rtimdb_pointtype_hpp
+
+#include <cstdint>
 
 namespace Vlinder { namespace RTIMDB { namespace Core {
+	enum struct PointType {
+		  binary_input__				// g1, g2
+		, binary_output__				// g10, g11, g12, g13
+		, counter__						// g20, g21, g22, g23
+		, analog_input__				// g30, g31, g32, g33
+		, analog_output__				// g40, g41, g42, g43
+		, _type_count__
+		};
 }}}
+
+#endif
+
