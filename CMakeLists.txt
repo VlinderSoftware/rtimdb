@@ -14,7 +14,6 @@ include_directories(${CMAKE_SOURCE_DIR})
 set(RTIMDB_MAX_CONCURRENT_TRANSACTIONS				  5	CACHE STRING "Maximum number of concurrent read transactions (for freezes during polls)")
 set(RTIMDB_POINT_COUNT								200	CACHE STRING "Total number of points in the system (maximum)")
 set(RTIMDB_ALLOW_EXCEPTIONS							 ON	CACHE BOOL   "Should exceptions be thrown from the library, on error")
-set(RTIMDB_ABORT_SELECTION_ON_DUPLICATE_SELECTION	 ON	CACHE BOOL   "On duplicate selection (i.e. select on a point already selected) abort selection (true) or replace it (false)")
 set(RTIMDB_COMMAND_QUEUE_CAPACITY					 16 CACHE STRING "Number of commands that can be queued at any given time, per queue")
 set(RTIMDB_MAX_PRODUCER_COUNT						  2	CACHE STRING "Maximum number of producers in the application")
 set(RTIMDB_MAX_CONSUMER_COUNT						  2	CACHE STRING "Maximum number of consumer in the application")
@@ -91,7 +90,6 @@ set(RTIMDB_OUTSTATION_SOURCES
 	)
 set(RTIMDB_SOURCES
 	details/action.hpp
-	details/duplicateselectionpolicy.hpp
 	details/prologue.hpp
 	exceptions.cpp
 	exceptions.hpp
@@ -129,7 +127,7 @@ foreach (test
 	target_link_libraries(test_${test} rtimdb)
 	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
 endforeach (test)
-foreach (test_config 1 2 3 4 5 6 7 8)
+foreach (test_config 1 2 3 4)
 	add_library(rtimdb_cfg_${test_config} SHARED
 		${RTIMDB_CORE_SOURCES}
 		${RTIMDB_SOURCES}

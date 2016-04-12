@@ -24,7 +24,6 @@ namespace Vlinder {	namespace RTIMDB {
 		, unknown_point__
 		, cannot_freeze__
 		, not_allowed__
-		, duplicate_selection__
 		, operate_without_select__
 		, not_yet_implemented__
 		, expired_while_freezing__
@@ -40,7 +39,6 @@ namespace Vlinder {	namespace RTIMDB {
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::unknown_point__ > UnknownPoint;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::cannot_freeze__ > CannotFreeze;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::not_allowed__ > NotAllowed;
-	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::duplicate_selection__ > DuplicateSelection;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::operate_without_select__ > OperateWithoutSelect;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::not_yet_implemented__ > NotYetImplemented;
 	typedef Exceptions::Exception< std::runtime_error, Errors, Errors::expired_while_freezing__ > ExpiredWhileFreezing;

@@ -28,8 +28,6 @@ namespace Vlinder { namespace RTIMDB {
 			throw CannotFreeze("Cannot freeze");
 		case Errors::not_allowed__:
 			throw NotAllowed("Not allowed");
-		case Errors::duplicate_selection__ :
-			throw DuplicateSelection("Duplicate selection");
 		case Errors::operate_without_select__ :
 			throw OperateWithoutSelect("Operate without select");
 		case Errors::not_yet_implemented__ : 

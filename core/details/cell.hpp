@@ -15,7 +15,6 @@
 
 #include "../../details/action.hpp"
 #include "observer.hpp"
-#include "../../details/duplicateselectionpolicy.hpp"
 #include "../pointvalue.hpp"
 #include "../../exceptions.hpp"
 #include "exceptions/contract.hpp"
@@ -26,7 +25,7 @@
 #include <vector>
 
 namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
-	template < unsigned int cell_size__, RTIMDB::Details::DuplicateSelectionPolicy duplicate_selection_policy__ = RTIMDB_DUPLICATE_SELECTION_POLICY >
+	template < unsigned int cell_size__ >
 	class Cell
 	{
 	public :
