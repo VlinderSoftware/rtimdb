@@ -13,16 +13,23 @@
 #include "consumer.hpp"
 #include "database.hpp"
 #include "exceptions/contract.hpp"
+#include "rtimdb_config.hpp"
+#include "defaultmappinghelper.hpp"
+#include "sortedmappinghelper.hpp"
 #include <algorithm>
 
 using namespace std;
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
 	Consumer::Consumer()
-		: next_mapping_entry_(0)
+		: mapping_helper_(new RTIMDB_MappingHelper)
 		, database_(0)
 		, committed_version_(1) // datastore starts at version 1
 	{ /* no-op */ }
+	Consumer::~Consumer()
+	{
+		delete mapping_helper_;
+	}
 	
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	void Consumer::mapPoint(uintptr_t tag, Core::PointType point_type, unsigned int system_id) { throwException(mapPoint(tag, point_type, system_id, nothrow)); }
@@ -33,29 +40,27 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 
 	Errors Consumer::mapPoint(uintptr_t tag, Core::PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) noexcept
 	{
-		if ((sizeof(mappings_) / sizeof(mappings_[0])) == next_mapping_entry_) return Errors::mapping_full__;
-		mappings_[next_mapping_entry_++] = Mapping(tag, point_type, system_id);
-		return Errors::no_error__;
+		return mapping_helper_->insert(tag, point_type, system_id);
 	}
 	
 	Errors Consumer::setEventClass(uintptr_t tag, EventClass event_class RTIMDB_NOTHROW_PARAM) noexcept
 	{
-		auto which(findMapping(tag));
-		if (end(mappings_) == which) return Errors::unknown_point__;
+		auto which(mapping_helper_->find(tag));
+		if (nullptr == which) return Errors::unknown_point__;
 		which->event_class_ = event_class;
 		return Errors::no_error__;
 	}
 	
 	std::pair< EventClass, Errors > Consumer::getEventClass(uintptr_t tag RTIMDB_NOTHROW_PARAM) const noexcept
 	{
-		auto which(findMapping(tag));
-		if (end(mappings_) == which) return make_pair(EventClass::class_0__, Errors::unknown_point__);
+		auto which(mapping_helper_->find(tag));
+		if (nullptr == which) return make_pair(EventClass::class_0__, Errors::unknown_point__);
 		return make_pair(which->event_class_, Errors::no_error__);
 	}
 	std::pair< EventClass, Errors > Consumer::getEventClass(Core::PointType point_type, unsigned int system_id RTIMDB_NOTHROW_PARAM) const noexcept
 	{
-		auto which(findMapping(point_type, system_id));
-		if (end(mappings_) == which) return make_pair(EventClass::class_0__, Errors::unknown_point__);
+		auto which(mapping_helper_->find(point_type, system_id));
+		if (nullptr == which) return make_pair(EventClass::class_0__, Errors::unknown_point__);
 		return make_pair(which->event_class_, Errors::no_error__);
 	}
 
@@ -93,56 +98,8 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 	{
 		//NOTE: we do not reset committed_version_!
 		database_ = database;
-		next_mapping_entry_ = 0;
+		mapping_helper_->clear();
 		for_each(begin(event_queues_), end(event_queues_), [=](remove_reference< decltype(event_queues_[0]) >::type &q){ q.clear(); });
-	}
-
-	Consumer::Mapping const* Consumer::findMapping(uintptr_t tag) const noexcept
-	{
-		auto which(find_if(
-			  begin(mappings_)
-			, end(mappings_)
-			, [=](remove_reference< decltype(*begin(mappings_)) >::type &mapping) -> bool {
-				return (mapping.tag_ == tag);
-			  }
-			));
-		return which == end(mappings_) ? nullptr : which;
-	}
-
-	Consumer::Mapping const* Consumer::findMapping(Core::PointType point_type, unsigned int system_id) const noexcept
-	{
-		auto which(find_if(
-			  begin(mappings_)
-			, end(mappings_)
-			, [=](remove_reference< decltype(*begin(mappings_)) >::type &mapping) -> bool {
-				return ((mapping.point_type_ == point_type) && (mapping.system_id_ == system_id));
-			  }
-			));
-		return which == end(mappings_) ? nullptr : which;
-	}
-
-	Consumer::Mapping* Consumer::findMapping(uintptr_t tag) noexcept
-	{
-		auto which(find_if(
-			  begin(mappings_)
-			, end(mappings_)
-			, [=](remove_reference< decltype(*begin(mappings_)) >::type &mapping) -> bool {
-				return (mapping.tag_ == tag);
-			  }
-			));
-		return which == end(mappings_) ? nullptr : which;
-	}
-
-	Consumer::Mapping* Consumer::findMapping(Core::PointType point_type, unsigned int system_id) noexcept
-	{
-		auto which(find_if(
-			  begin(mappings_)
-			, end(mappings_)
-			, [=](remove_reference< decltype(*begin(mappings_)) >::type &mapping) -> bool {
-				return ((mapping.point_type_ == point_type) && (mapping.system_id_ == system_id));
-			  }
-			));
-		return which == end(mappings_) ? nullptr : which;
 	}
 
 	void Consumer::setCommitted(unsigned int committed_version) noexcept
@@ -159,15 +116,37 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		}
 	}
 
+	Mapping const* Consumer::findMapping(Core::PointType point_type, unsigned int system_id) const noexcept
+	{
+		return mapping_helper_->find(point_type, system_id);
+	}
+	Mapping* Consumer::findMapping(Core::PointType point_type, unsigned int system_id) noexcept
+	{
+		return mapping_helper_->find(point_type, system_id);
+	}
+	Mapping const* Consumer::findMapping(uintptr_t tag) const noexcept
+	{
+		return mapping_helper_->find(tag);
+	}
+	Mapping* Consumer::findMapping(uintptr_t tag) noexcept
+	{
+		return mapping_helper_->find(tag);
+	}
+
 	Core::PointValue Consumer::getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept
 	{
-		pre_condition(index < next_mapping_entry_);
-		auto mapping(mappings_[index]);
-		auto read_result(database_->read(transaction, mapping.point_type_, mapping.system_id_));
+		pre_condition(index < mapping_helper_->size());
+		auto mapping(mapping_helper_->at(index));
+		post_condition(mapping);
+		auto read_result(database_->read(transaction, mapping->point_type_, mapping->system_id_));
 		// the only way for the read of the database to fail is if the point doesn't exist, in which case the mapping should have failed. Hence, this cannot fail without it being a bug
 		post_condition(Errors::no_error__ == read_result.second);
 		post_condition(!read_result.first.empty());
 		return *(read_result.first);
+	}
+	unsigned int Consumer::getMappingSize() const noexcept
+	{
+		return mapping_helper_->size();
 	}
 }}}
 

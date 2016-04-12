@@ -24,9 +24,9 @@
 #define RTIMDB_TRANSITION_QUEUE_CAPACITY 256
 #define RTIMDB_EVENT_QUEUE_CAPACITY 64
 #define RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION 200
-#define RTIMDB_MAPPING Default
+#define RTIMDB_MAPPING Sorted
 
-#define RTIMDB_MappingHelper DefaultMappingHelper
+#define RTIMDB_MappingHelper SortedMappingHelper
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #	define RTIMDB_NOTHROW_PARAM_1 std::nothrow_t const&

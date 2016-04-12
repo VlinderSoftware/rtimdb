@@ -10,15 +10,31 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_duplicateselectionpolicy_hpp
-#define vlinder_rtimdb_details_duplicateselectionpolicy_hpp
+#ifndef vlinder_rtimdb_details_mapping_hpp
+#define vlinder_rtimdb_details_mapping_hpp
+
+#include "eventclass.hpp"
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
-	enum struct DuplicateSelectionPolicy {
-		  abort_selection__
-		, replace_selection__
-		};
+	struct Mapping
+	{
+		Mapping()
+			: event_class_(EventClass::class_0__)
+		{ /* no-op */ }
+		Mapping(uintptr_t tag, Core::PointType point_type, unsigned int system_id)
+			: tag_(tag)
+			, point_type_(point_type)
+			, system_id_(system_id)
+			, event_class_(EventClass::class_0__)
+		{ /* no-op */ }
+
+		uintptr_t tag_;
+		Core::PointType point_type_;
+		unsigned int system_id_;
+		EventClass event_class_;
+	};
 }}}
 
 #endif
+
 

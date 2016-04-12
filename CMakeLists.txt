@@ -21,6 +21,9 @@ set(RTIMDB_MAX_CONSUMER_COUNT						  2	CACHE STRING "Maximum number of consumer 
 set(RTIMDB_TRANSITION_QUEUE_CAPACITY				256 CACHE STRING "Number of transitions that can be queued at any given time, per queue")
 set(RTIMDB_MAX_TRANSITIONS_PER_TRANSACTION			200 CACHE STRING "Maximum number of transitions that can be expected to occur in a single transaction.")
 set(RTIMDB_EVENT_QUEUE_CAPACITY						 64 CACHE STRING "Maximum number of events, per event class")
+set(RTIMDB_MAPPING							  "Default" CACHE STRING "Choose the way mappings are handled")
+set_property(CACHE RTIMDB_MAPPING PROPERTY STRINGS Default Sorted)
+
 include(CheckLibraryExists)
 CHECK_LIBRARY_EXISTS(atomic __atomic_load CMAKE_LIBRARY_PATH HAVE_ATOMIC_LIB)
 if (HAVE_ATOMIC_LIB)
@@ -58,6 +61,8 @@ set(RTIMDB_OUTSTATION_SOURCES
 	details/consumer.cpp
 	details/consumer.hpp
 	details/crob.hpp
+	details/defaultmappinghelper.cpp
+	details/defaultmappinghelper.hpp
 	details/event.hpp
 	details/eventclass.hpp
 	details/eventiterator.cpp
@@ -66,11 +71,16 @@ set(RTIMDB_OUTSTATION_SOURCES
 	details/eventqueue.hpp
 	details/events.cpp
 	details/events.hpp
+	details/mapping.hpp
+	details/mappinghelper.cpp
+	details/mappinghelper.hpp
 	details/pointdescriptor.hpp
 	details/polldescriptor.hpp
 	details/pollresult.cpp
 	details/pollresult.hpp
 	details/producer.hpp
+	details/sortedmappinghelper.cpp
+	details/sortedmappinghelper.hpp
 	details/timestamp.hpp
 	details/transitionqueue.cpp
 	details/transitionqueue.hpp
@@ -119,7 +129,7 @@ foreach (test
 	target_link_libraries(test_${test} rtimdb)
 	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
 endforeach (test)
-foreach (test_config 1 2 3 4)
+foreach (test_config 1 2 3 4 5 6 7 8)
 	add_library(rtimdb_cfg_${test_config} SHARED
 		${RTIMDB_CORE_SOURCES}
 		${RTIMDB_SOURCES}

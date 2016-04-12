@@ -22,14 +22,17 @@
 #include "eventqueue.hpp"
 #include "events.hpp"
 #include "pollresult.hpp"
+#include "mapping.hpp"
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
 namespace Details {
+	class MappingHelper;
 	class RTIMDB_API Consumer
 	{
 	public :
 		Consumer();
+		~Consumer();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		void mapPoint(uintptr_t tag, Core::PointType point_type, unsigned int system_id);
@@ -51,43 +54,25 @@ namespace Details {
 #endif
 		std::pair< PollResult, Errors > poll(PollDescriptor const &poll_descriptor RTIMDB_NOTHROW_PARAM) noexcept;
 
-		unsigned int getMappingSize() const noexcept { return next_mapping_entry_; }
-
 	private : // friend-only API
-		struct Mapping
-		{
-			Mapping()
-				: event_class_(EventClass::class_0__)
-			{ /* no-op */ }
-			Mapping(uintptr_t tag, Core::PointType point_type, unsigned int system_id)
-				: tag_(tag)
-				, point_type_(point_type)
-				, system_id_(system_id)
-				, event_class_(EventClass::class_0__)
-			{ /* no-op */ }
-
-			uintptr_t tag_;
-			Core::PointType point_type_;
-			unsigned int system_id_;
-			EventClass event_class_;
-		};
-		
 		void reset(Database *database);
-
-		Mapping const* findMapping(Core::PointType point_type, unsigned int system_id) const noexcept;
-		Mapping* findMapping(Core::PointType point_type, unsigned int system_id) noexcept;
 
 		void setCommitted(unsigned int committed_version) noexcept;
 		void awaitTransactionDone(unsigned int transaction_version) const noexcept;
 
-		Core::PointValue getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
-
-	private :
+		Mapping const* findMapping(Core::PointType point_type, unsigned int system_id) const noexcept;
+		Mapping* findMapping(Core::PointType point_type, unsigned int system_id) noexcept;
 		Mapping const* findMapping(uintptr_t tag) const noexcept;
 		Mapping* findMapping(uintptr_t tag) noexcept;
+		Core::PointValue getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
+		unsigned int getMappingSize() const noexcept;
 
-		Mapping mappings_[RTIMDB_POINT_COUNT];
-		unsigned int next_mapping_entry_;
+	private : // not copy-constructible
+		Consumer(Consumer const &) = delete;
+		Consumer& operator=(Consumer const &) = delete;
+
+	private :
+		MappingHelper *mapping_helper_;
 		EventQueue event_queues_[static_cast< unsigned int >(EventClass::class_count__)];
 		Database *database_;
 		unsigned int committed_version_;
