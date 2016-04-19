@@ -31,14 +31,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	{ /* no-op */ }
 	
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	unsigned int DataStore::insert(PointType type, PointValue const &value)
+	unsigned int DataStore::insert(PointType type, PointValue const &value, Flags const &flags, Timestamp const &timestamp)
 	{
-		auto insert_result(insert(type, value, nothrow));
+		auto insert_result(insert(type, value, flags, timestamp, nothrow));
 		throwException(insert_result.second);
 		return insert_result.first;
 	}
 #endif
-	std::pair< unsigned int, Errors > DataStore::insert(PointType type, PointValue value RTIMDB_NOTHROW_PARAM) throw()
+	std::pair< unsigned int, Errors > DataStore::insert(PointType type, PointValue const &value, Flags const &flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw()
 	{
 		using std::begin;
 		using std::end;
@@ -57,7 +57,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		auto target_end(begin(points_) + last_index + 1);
 		move_backward(curr_begin, curr_end, target_end);
 		points_[next_index] = &cells_[next_cell_++];
-		auto set_result((*points_[next_index]).set(type, value));
+		auto set_result((*points_[next_index]).set(type, value, flags, timestamp));
 		if (Errors::no_error__ != set_result) return make_pair(-1, set_result);
 
 		dismiss = true;
@@ -79,27 +79,25 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	void DataStore::update(PointType point_type, unsigned int index, PointValue new_value)
-	{ throwException(update(point_type, index, new_value, nothrow)); }
-	void DataStore::update(Details::Transaction &transaction, PointType point_type, unsigned int index, PointValue new_value)
-	{ throwException(update(transaction, point_type, index, new_value, nothrow)); }
+	void DataStore::update(PointType point_type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp)										{ throwException(update(point_type, index, new_value, new_flags, timestamp, nothrow)); }
+	void DataStore::update(Details::Transaction &transaction, PointType point_type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp)	{ throwException(update(transaction, point_type, index, new_value, new_flags, timestamp, nothrow)); }
 #endif
 
-	Errors DataStore::update(PointType point_type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::update(PointType point_type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw()
 	{
 		auto transaction(startTransaction(RTIMDB_NOTHROW_ARG_1));
 		if (transaction.second != Errors::no_error__) return transaction.second;
-		auto result(update(transaction.first, point_type, index, new_value RTIMDB_NOTHROW_ARG));
+		auto result(update(transaction.first, point_type, index, new_value, new_flags, timestamp RTIMDB_NOTHROW_ARG));
 		if (result != Errors::no_error__) return result;
 		return commit(transaction.first RTIMDB_NOTHROW_ARG);
 	}
-	Errors DataStore::update(Details::Transaction &transaction, PointType point_type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw()
+	Errors DataStore::update(Details::Transaction &transaction, PointType point_type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw()
 	{
-		return transaction.push(point_type, index, new_value);
+		return transaction.push(point_type, index, new_value, new_flags, timestamp);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	PointValue DataStore::read(PointType type, unsigned int index) const
+	Point DataStore::read(PointType type, unsigned int index) const
 	{
 		auto result(read(type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -114,14 +112,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 	}
 #endif
 
-	pair< Details::Optional< PointValue >, Errors > DataStore::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	pair< Details::Optional< Point >, Errors > DataStore::read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
-		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get() : Details::Optional< PointValue >(), fetch_result.second);
+		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get() : Details::Optional< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-	PointValue DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const
+	Point DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const
 	{
 		auto result(read(transaction, type, index RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ == result.second)
@@ -135,10 +133,10 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		throw logic_error("Unreachable code");
 	}
 #endif
-	std::pair< Details::Optional< PointValue >, Errors > DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
+	std::pair< Details::Optional< Point >, Errors > DataStore::read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw()
 	{
 		auto fetch_result(fetch(type, index));
-		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(transaction.getVersion()) : Details::Optional< PointValue >(), fetch_result.second);
+		return make_pair((Errors::no_error__ == fetch_result.second) ? (*fetch_result.first)->get(transaction.getVersion()) : Details::Optional< Point >(), fetch_result.second);
 	}
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
@@ -374,7 +372,32 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 					auto read_result(read(transaction, entry.type_, entry.point_id_ RTIMDB_NOTHROW_ARG));
 					retval = read_result.second;
 					if (Errors::no_error__ != retval) return;
-					entry.transact_state_ = (*read_result.first == entry.value_) ? decltype(entry.transact_state_)::unchanged__ : decltype(entry.transact_state_)::value_changed__;
+					//TODO this is where we need to check for flag changes
+					entry.transact_state_ = Details::Transaction::Entry::TransactState::unchanged__;
+					if (entry.flags_.empty())
+					{
+						entry.flags_ = read_result.first.get().flags_;
+					}
+					else
+					{ /* flags are set, and should therefore be compared */ }
+					if (entry.value_.empty())
+					{
+						entry.value_ = read_result.first.get().value_;
+					}
+					else
+					{ /* value is set, and should therefore be compared */ }
+					if ((entry.flags_.get() == read_result.first.get().flags_) && (entry.value_.get() == read_result.first.get().value_))
+					{
+						entry.transact_state_ = decltype(entry.transact_state_)::unchanged__;
+					}
+					else if (entry.flags_.get() != read_result.first.get().flags_)
+					{
+						entry.transact_state_ = decltype(entry.transact_state_)::flags_changed__;
+					}
+					else
+					{
+						entry.transact_state_ = decltype(entry.transact_state_)::value_changed__;
+					}
 				}
 				else
 				{ /* some error occurred, can't continue */ }
@@ -446,8 +469,8 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 			, [&](decltype(transaction.entries_[0]) &entry){
 				auto fetch_result(fetch(entry.type_, entry.point_id_));
 				assert(Errors::no_error__ == fetch_result.second);
-				entry.value_.version_ = transaction.getVersion();
-				auto set_result((*fetch_result.first)->set(entry.type_, entry.value_));
+				entry.value_.get().version_ = transaction.getVersion();
+				auto set_result((*fetch_result.first)->set(entry.type_, *entry.value_, *entry.flags_, entry.timestamp_));
 				assert(Errors::no_error__ == set_result);
 			  }
 			);

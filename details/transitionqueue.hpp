@@ -20,7 +20,7 @@
 #include <stdexcept>
 #include <atomic>
 #include "transitionqueuetransaction.hpp"
-#include "timestamp.hpp"
+#include "../core/timestamp.hpp"
 #include "variant.hpp"
 #include "transitiontransactionentry.hpp"
 
@@ -38,7 +38,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		TransitionQueue();
 		~TransitionQueue();
 
-		TransitionQueueTransaction beginTransaction(Timestamp const &timestamp) noexcept;
+		TransitionQueueTransaction beginTransaction(Core::Timestamp const &timestamp) noexcept;
 		void commit(TransitionQueueTransaction const &transaction) noexcept;
 		void signalOverflow() noexcept;
 

@@ -30,138 +30,138 @@ int main()
 	unsigned int exp_ai_index(0);
 	unsigned int exp_bi_index(0);
 
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
 
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
-	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false)) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
+	assert(exp_bi_index == database.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST); ++exp_bi_index;
 
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
-	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0)) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
+	assert(exp_ai_index == database.insert(PointType::analog_input__, PointValue(0.0), Flags(), Timestamp()) DOT_FIRST); ++exp_ai_index;
 
 	auto first_transaction_(database.startROTransaction());
 	auto first_transaction(first_transaction_ DOT_FIRST);
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == first_transaction_.second);
 #endif
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 3, PointValue(13.24) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 5, PointValue(26.48) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 7, PointValue(52.96) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::analog_input__, 13, PointValue(104.192) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::analog_input__,  3,   PointValue(13.24), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::analog_input__,  5,   PointValue(26.48), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::analog_input__,  7,   PointValue(52.96), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::analog_input__, 13, PointValue(104.192), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
 	auto second_transaction_(database.startROTransaction());
 	auto second_transaction(second_transaction_ DOT_FIRST);
 #ifndef RTIMDB_ALLOW_EXCEPTIONS
 	assert(Errors::no_error__ == second_transaction_.second);
 #endif
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 3, PointValue(true) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 5, PointValue(true) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 7, PointValue(true) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 13, PointValue(true) RTIMDB_NOTHROW_ARG));
-	assert(Errors::no_error__ == database.update(PointType::binary_input__, 17, PointValue(true) RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::binary_input__,  3, PointValue(true), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::binary_input__,  5, PointValue(true), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::binary_input__,  7, PointValue(true), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::binary_input__, 13, PointValue(true), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
+	assert(Errors::no_error__ == database.update(PointType::binary_input__, 17, PointValue(true), Flags(Flag::online__), Timestamp() RTIMDB_NOTHROW_ARG));
 
 	// a read using the first transaction should get the old analogs and the old binaries
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-#define CHECK(EXP, TRANSACTION, TYPE, INDEX, PAYLOAD)										\
+#define CHECK(EXP, TRANSACTION, TYPE, INDEX, PAYLOAD)									\
 	{																					\
 		auto read_result_1(database.read(TRANSACTION, TYPE, INDEX));					\
-		assert(EXP == read_result_1.FIRST_DEREF payload_.PAYLOAD);					\
+		assert(EXP == read_result_1.FIRST_DEREF value_.payload_.PAYLOAD);				\
 	}
 #else
 #define CHECK(EXP, TRANSACTION, TYPE, INDEX, PAYLOAD)									\
 	{																					\
 		auto read_result_1(database.read(TRANSACTION, TYPE, INDEX));					\
 		assert(Errors::no_error__ == read_result_1.second);								\
-		assert(EXP == read_result_1.FIRST_DEREF payload_.PAYLOAD);						\
+		assert(EXP == read_result_1.FIRST_DEREF value_.payload_.PAYLOAD);				\
 	}
 #endif
 

@@ -15,7 +15,7 @@
 
 #include "eventclass.hpp"
 #include "../exceptions.hpp"
-#include "../core/pointtype.hpp"
+#include "../core/point.hpp"
 #include <utility>
 #include <mutex>
 #include <condition_variable>
@@ -64,7 +64,7 @@ namespace Details {
 		Mapping* findMapping(Core::PointType point_type, unsigned int system_id) noexcept;
 		Mapping const* findMapping(uintptr_t tag) const noexcept;
 		Mapping* findMapping(uintptr_t tag) noexcept;
-		Core::PointValue getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
+		Core::Point getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept;
 		unsigned int getMappingSize() const noexcept;
 
 	private : // not copy-constructible

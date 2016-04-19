@@ -15,7 +15,8 @@
 
 #include "../core/pointtype.hpp"
 #include "../core/pointvalue.hpp"
-#include "timestamp.hpp"
+#include "../core/flags.hpp"
+#include "../core/timestamp.hpp"
 #include <limits>
 
 namespace Vlinder { namespace RTIMDB { namespace Details {
@@ -24,17 +25,19 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		Event()
 			: id_(std::numeric_limits< decltype(id_) >::max())
 		{ /* no-op */ }
-		Event(Timestamp const &timestamp, Core::PointType type, unsigned int id, Core::PointValue const &value, uintptr_t tag)
+		Event(Core::Timestamp const &timestamp, Core::PointType type, unsigned int id, Core::PointValue const &value, Core::Flags const &flags, uintptr_t tag)
 			: timestamp_(timestamp)
 			, type_(type)
 			, id_(id)
 			, value_(value)
+			, flags_(flags)
 			, tag_(tag)
 		{ /* no-op */ }
-		Timestamp timestamp_;
+		Core::Timestamp timestamp_;
 		Core::PointType type_;
 		unsigned int id_;
 		Core::PointValue value_;
+		Core::Flags flags_;
 		uintptr_t tag_;
 	};
 }}}

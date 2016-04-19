@@ -18,17 +18,17 @@ using namespace Vlinder::RTIMDB::Core;
 int main()
 {
 	DataStore data_store;
-	data_store.insert(PointType::binary_output__, PointValue(true));
-	data_store.insert(PointType::analog_input__, PointValue(25.35));
-	data_store.insert(PointType::counter__, PointValue(static_cast< uint32_t >(463)));
-	data_store.insert(PointType::analog_output__, PointValue(58.24));
-	data_store.insert(PointType::binary_input__, PointValue(true));
-	data_store.insert(PointType::binary_input__, PointValue(true));
-	data_store.insert(PointType::binary_output__, PointValue(true));
-	data_store.insert(PointType::analog_input__, PointValue(3.623632346));
-	data_store.insert(PointType::counter__, PointValue(static_cast< uint32_t >(2587546342)));
-	data_store.insert(PointType::analog_output__, PointValue(72.435));
-	data_store.insert(PointType::binary_input__, PointValue(true));
+	data_store.insert(PointType::binary_output__, PointValue(true), Flags(), Timestamp());
+	data_store.insert(PointType::analog_input__, PointValue(25.35), Flags(), Timestamp());
+	data_store.insert(PointType::counter__, PointValue(static_cast< uint32_t >(463)), Flags(), Timestamp());
+	data_store.insert(PointType::analog_output__, PointValue(58.24), Flags(), Timestamp());
+	data_store.insert(PointType::binary_input__, PointValue(true), Flags(), Timestamp());
+	data_store.insert(PointType::binary_input__, PointValue(true), Flags(), Timestamp());
+	data_store.insert(PointType::binary_output__, PointValue(true), Flags(), Timestamp());
+	data_store.insert(PointType::analog_input__, PointValue(3.623632346), Flags(), Timestamp());
+	data_store.insert(PointType::counter__, PointValue(static_cast< uint32_t >(2587546342)), Flags(), Timestamp());
+	data_store.insert(PointType::analog_output__, PointValue(72.435), Flags(), Timestamp());
+	data_store.insert(PointType::binary_input__, PointValue(true), Flags(), Timestamp());
 
-	data_store.update(PointType::binary_input__, 1, PointValue(false));
+	data_store.update(PointType::binary_input__, 1, PointValue(false), Flags(Flag::online__), Timestamp());
 }

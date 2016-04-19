@@ -15,7 +15,7 @@
 
 #include "../../details/action.hpp"
 #include "observer.hpp"
-#include "../pointvalue.hpp"
+#include "../point.hpp"
 #include "../../exceptions.hpp"
 #include "exceptions/contract.hpp"
 #include "optional.hpp"
@@ -59,10 +59,10 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			return type_;
 		}
-		PointValue get(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
+		Point get(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
 		{
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
-			return get_(max_version);
+			return get_(max_version).get(); // implicit post-condition: get_ found something. This means we have an implicit pre-condition of having called set() before calling get()
 		}
 		Errors setType(PointType point_type) noexcept
 		{
@@ -77,14 +77,14 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 				return Errors::no_error__;
 			}
 		}
-		Errors set(PointType type, PointValue const &point_value)
+		Errors set(PointType type, PointValue const &point_value, Flags const &flags, Timestamp const &timestamp)
 		{
 			std::unique_lock< decltype(values_lock_) > values_lock(values_lock_);
 			auto target(fetchAvailableSlot());
 			if ((type == type_) || (PointType::_type_count__ == type_))
 			{
 				type_ = type;
-				*target = point_value;
+				*target = Point(type, point_value, flags, timestamp);
 				return Errors::no_error__;
 			}
 			else
@@ -151,7 +151,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 		Cell(Cell const&) = delete;
 		Cell& operator=(Cell const&) = delete;
 
-		Optional< PointValue >* fetchAvailableSlot()
+		Optional< Point >* fetchAvailableSlot()
 		{
 			using std::begin;
 			using std::end;
@@ -176,7 +176,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 				  std::find_if(
 					  begin(values_)
 					, end(values_)
-					, [=](Optional< PointValue > const &point_value)->bool{ return point_value.empty() || point_value.get().version_ > highest_frozen_version; }
+					, [=](Optional< Point > const &point_value)->bool{ return point_value.empty() || point_value.get().value_.version_ > highest_frozen_version; }
 					)
 				);
 			// replace it if it exists
@@ -184,7 +184,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 			// use an empty slot if it doesn't
 			return findEmptySlot();
 		}
-		Optional< PointValue >* findEmptySlot()
+		Optional< Point >* findEmptySlot()
 		{
 			using std::begin;
 			using std::end;
@@ -205,13 +205,13 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 								{ /* can't freeze an empty value */ }
 								else
 								{
-									if (curr->get().version_ <= frozen_version)
+									if (curr->get().value_.version_ <= frozen_version)
 									{
 										if (value_with_highest_version_lower_than_frozen->empty())
 										{
 											value_with_highest_version_lower_than_frozen = curr;
 										}
-										else if (value_with_highest_version_lower_than_frozen->get().version_ < curr->get().version_)
+										else if (value_with_highest_version_lower_than_frozen->get().value_.version_ < curr->get().value_.version_)
 										{
 											value_with_highest_version_lower_than_frozen = curr;
 										}
@@ -249,32 +249,32 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 				, std::end(values_)
 				, [&](decltype(*values_) point)
 					{
-						if (!point.empty() && (current_version < point.get().version_)) current_version = point.get().version_; 
+						if (!point.empty() && (current_version < point.get().value_.version_)) current_version = point.get().value_.version_;
 					}
 				);
 			return current_version;
 		}
-		PointValue get_(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
+		Optional< Point > get_(unsigned int max_version = std::numeric_limits< unsigned int >::max()) const
 		{
 			using std::begin;
 			using std::end;
 
-			PointValue retval;
+			Optional< Point > retval;
 			unsigned int highest_version_so_far(0);
 			std::for_each(
 				  begin(values_)
 				, end(values_)
-				, [&](Optional< PointValue > const &point_value)
+				, [&](Optional< Point > const &point_value)
 					{
 						if (point_value.empty())
 						{ /* this value is not set */ }
 						else
 						{
-							PointValue p(point_value.get());
-							if ((highest_version_so_far <= p.version_) && (p.version_ <= max_version))
+							Point p(point_value.get());
+							if ((highest_version_so_far <= p.value_.version_) && (p.value_.version_ <= max_version))
 							{
-								highest_version_so_far = p.version_;
-								retval = p;
+								highest_version_so_far = p.value_.version_;
+								retval = point_value;
 							}
 							else
 							{ /* not the latest version */ }
@@ -286,7 +286,7 @@ namespace Vlinder { namespace RTIMDB { namespace Core { namespace Details {
 	
 		mutable std::mutex values_lock_;
 		PointType type_;
-		Optional< PointValue > values_[cell_size__];
+		Optional< Point > values_[cell_size__];
 		static_assert(RTIMDB_MAX_CONCURRENT_TRANSACTIONS < cell_size__, "There must be more points in a cell than the maximum number of transactions");
 		std::atomic< unsigned int > frozen_versions_[RTIMDB_MAX_CONCURRENT_TRANSACTIONS];
 		std::atomic< bool > lock_flag_;

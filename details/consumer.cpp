@@ -133,7 +133,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return mapping_helper_->find(tag);
 	}
 
-	Core::PointValue Consumer::getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept
+	Core::Point Consumer::getPointByIndex(Core::Details::ROTransaction const &transaction, unsigned int index) const noexcept
 	{
 		pre_condition(index < mapping_helper_->size());
 		auto mapping(mapping_helper_->at(index));

@@ -17,6 +17,9 @@
 #include <atomic>
 #include "../../exceptions.hpp"
 #include "../pointvalue.hpp"
+#include "../flags.hpp"
+#include "../timestamp.hpp"
+#include "optional.hpp"
 
 namespace Vlinder { namespace RTIMDB { 
 	class Database;
@@ -81,22 +84,27 @@ namespace Vlinder { namespace RTIMDB {
 				  initial__
 				, unchanged__
 				, value_changed__
+				, flags_changed__ = value_changed__
 				, pended__
 				, transacted__
 			};
 			Entry()
 				: point_id_(-1)
 			{ /* no-op */ }
-			Entry(PointType type, unsigned int point_id, PointValue value)
+			Entry(PointType type, unsigned int point_id, Optional< PointValue > const &value, Optional< Flags > const &flags, Timestamp const &timestamp)
 				: type_(type)
 				, point_id_(point_id)
 				, value_(value)
+				, flags_(flags)
+				, timestamp_(timestamp)
 				, transact_state_(TransactState::initial__)
 			{ /* no-op */ }
 
 			PointType type_;
 			unsigned int point_id_;
-			PointValue value_;
+			Optional< PointValue > value_;
+			Optional< Flags > flags_;
+			Timestamp timestamp_;
 			TransactState transact_state_;
 		};
 
@@ -106,10 +114,10 @@ namespace Vlinder { namespace RTIMDB {
 			, next_entry_(0)
 		{ /* no-op */ }
 
-		Errors push(PointType point_type, unsigned int point_id, PointValue const &new_value)
+		Errors push(PointType point_type, unsigned int point_id, Optional< PointValue > const &value, Optional< Flags > const &flags, Timestamp const &timestamp)
 		{
 			if (next_entry_ == sizeof(entries_) / sizeof(entries_[0])) return Errors::too_many_transitions__;
-			entries_[next_entry_++] = std::move(Entry(point_type, point_id, new_value));
+			entries_[next_entry_++] = std::move(Entry(point_type, point_id, value, flags, timestamp));
 			return Errors::no_error__;
 		}
 

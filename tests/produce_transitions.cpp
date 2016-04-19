@@ -41,7 +41,7 @@ int main()
 		assert(result.first == ai_index + 40);
 	}
 
-	Details::Timestamp timestamp;
+	Core::Timestamp timestamp;
 	auto transaction(database.beginTransaction(producer DOT_FIRST, timestamp));
 	static_assert(RTIMDB_TRANSITION_QUEUE_CAPACITY == 256, "This test is written for a transition queue of 256 entries. If you need help with other sizes, please contact support@vlinder.ca");
 	assert(transaction.size() == 254);

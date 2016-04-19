@@ -47,9 +47,14 @@ set(RTIMDB_CORE_SOURCES
 	core/details/selection.hpp
 	core/details/transaction.hpp
 	core/details/optional.hpp
+	core/flag.hpp
+	core/flags.cpp
+	core/flags.hpp
+	core/point.hpp
 	core/pointtype.hpp
 	core/pointvalue.cpp
 	core/pointvalue.hpp
+	core/timestamp.hpp
 	)
 set(RTIMDB_OUTSTATION_SOURCES
 	command.hpp
@@ -80,7 +85,6 @@ set(RTIMDB_OUTSTATION_SOURCES
 	details/producer.hpp
 	details/sortedmappinghelper.cpp
 	details/sortedmappinghelper.hpp
-	details/timestamp.hpp
 	details/transitionqueue.cpp
 	details/transitionqueue.hpp
 	details/transitionqueuetransaction.cpp

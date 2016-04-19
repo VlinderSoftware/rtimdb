@@ -1,4 +1,4 @@
-/* Copyright 2014  Vlinder Software
+/* Copyright 2016  Vlinder Software
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,27 +10,30 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_timestamp_hpp
-#define vlinder_rtimdb_details_timestamp_hpp
+#ifndef vlinder_rtimdb_core_flags_hpp
+#define vlinder_rtimdb_core_flags_hpp
 
-#include "details/prologue.hpp"
-#include <cstdint>
+#include "flag.hpp"
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	struct Timestamp
+namespace Vlinder { namespace RTIMDB { namespace Core {
+	struct Flags
 	{
-		Timestamp()
-			: high_(0)
-			, low_(0)
+		Flags()
+			: flags_(0)
 		{ /* no-op */ }
-		Timestamp(uint16_t high, uint32_t low)
-			: high_(high)
-			, low_(low)
-		{ /* no-op */ }
+		Flags(uint8_t flags)
+			: flags_(flags)
+		{ /* no-op */}
+		Flags(Flag flag)
+			: flags_(static_cast< uint8_t >(flag))
+		{ /* no-op */
+		}
 
-		uint16_t high_;
-		uint32_t low_;
+		uint8_t flags_;
 	};
+
+	bool operator==(Flags const &lhs, Flags const &rhs);
+	bool operator!=(Flags const &lhs, Flags const &rhs);
 }}}
 
 #endif

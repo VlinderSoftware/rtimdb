@@ -10,25 +10,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License. */
-#ifndef vlinder_rtimdb_details_transitiontransactionentry_hpp
-#define vlinder_rtimdb_details_transitiontransactionentry_hpp
+#ifndef vlinder_rtimdb_core_timestamp_hpp
+#define vlinder_rtimdb_core_timestamp_hpp
 
-#include "prologue.hpp"
-#include "variant.hpp"
-#include "../transition.hpp"
-#include "../core/timestamp.hpp"
+#include "details/prologue.hpp"
+#include <cstdint>
 
-namespace Vlinder { namespace RTIMDB { namespace Details {
-	struct RTIMDB_API TransitionTransactionEntry : Variant< Core::Timestamp, Transition >
+namespace Vlinder { namespace RTIMDB { namespace Core {
+	struct Timestamp
 	{
-		typedef Variant< Core::Timestamp, Transition > super;
+		Timestamp()
+			: high_(0)
+			, low_(0)
+		{ /* no-op */ }
+		Timestamp(uint16_t high, uint32_t low)
+			: high_(high)
+			, low_(low)
+		{ /* no-op */ }
 
-		TransitionTransactionEntry()
-		{ /* no-op */ }
-		template < typename T >
-		TransitionTransactionEntry(T const &v)
-			: super(v)
-		{ /* no-op */ }
+		uint16_t high_;
+		uint32_t low_;
 	};
 }}}
 

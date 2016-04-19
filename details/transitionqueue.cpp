@@ -26,7 +26,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 	TransitionQueue::~TransitionQueue()
 	{ /* no-op */ }
 
-	TransitionQueueTransaction TransitionQueue::beginTransaction(Timestamp const &timestamp) noexcept
+	TransitionQueueTransaction TransitionQueue::beginTransaction(Core::Timestamp const &timestamp) noexcept
 	{
 		unsigned int tail(tail_.load(memory_order_relaxed));
 		unsigned int head(cached_head_ = head_.load(memory_order_acquire));

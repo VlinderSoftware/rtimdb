@@ -2,6 +2,7 @@
 #include "exceptions/contract.hpp"
 
 using namespace Vlinder::RTIMDB;
+using namespace Vlinder::RTIMDB::Core;
 using namespace Vlinder::RTIMDB::Details;
 
 #define USER_MAPPING_BI 1
@@ -274,7 +275,7 @@ int classPoll()
 		assert(event2.get< Event >().type_ == Core::PointType::binary_input__);
 		assert(event2.get< Event >().value_.payload_.bool_);
 		assert(static3.type() == 1);
-		assert(static3.get< Core::PointValue >().payload_.bool_);
+		assert(static3.get< Core::Point >().value_.payload_.bool_);
 		poll_result.first.confirm();
 	}
 

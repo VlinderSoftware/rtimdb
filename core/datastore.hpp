@@ -21,6 +21,7 @@
 #include "../exceptions.hpp"
 #include "details/iterator.hpp"
 #include "details/optional.hpp"
+#include "flags.hpp"
 #include <memory>
 #include <utility>
 
@@ -34,28 +35,28 @@ namespace Vlinder { namespace RTIMDB { namespace Core {
 		~DataStore();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		unsigned int insert(PointType type, PointValue const &value);
+		unsigned int insert(PointType type, PointValue const &value, Flags const &flags, Timestamp const &timestamp);
 #endif
-		std::pair< unsigned int, Errors > insert(PointType type, PointValue value RTIMDB_NOTHROW_PARAM) throw();
+		std::pair< unsigned int, Errors > insert(PointType type, PointValue const &value, Flags const &flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw();
 
 		const_iterator begin();
 		const_iterator end();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		void update(PointType type, unsigned int index, PointValue new_value);
-		void update(Details::Transaction &transaction, PointType type, unsigned int index, PointValue new_value);
+		void update(PointType type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp);
+		void update(Details::Transaction &transaction, PointType type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp);
 #endif
-		Errors update(PointType type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw();
-		Errors update(Details::Transaction &transaction, PointType type, unsigned int index, PointValue new_value RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(PointType type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw();
+		Errors update(Details::Transaction &transaction, PointType type, unsigned int index, Details::Optional< PointValue > const &new_value, Details::Optional< Flags > const &new_flags, Timestamp const &timestamp RTIMDB_NOTHROW_PARAM) throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		PointValue read(PointType type, unsigned int index) const;
+		Point read(PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Optional< PointValue >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< Point >, Errors > read(PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
-		PointValue read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const;
+		Point read(Details::ROTransaction const &transaction, PointType type, unsigned int index) const;
 #endif
-		std::pair< Details::Optional< PointValue >, Errors > read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
+		std::pair< Details::Optional< Point >, Errors > read(Details::ROTransaction const &transaction, PointType type, unsigned int index RTIMDB_NOTHROW_PARAM) const throw();
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 		Details::Transaction startTransaction();

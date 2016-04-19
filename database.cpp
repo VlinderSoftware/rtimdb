@@ -32,13 +32,7 @@ namespace Vlinder { namespace RTIMDB {
 	Details::Producer const * Database::registerProducer() { auto result(registerProducer(nothrow)); throwException(result.second); return result.first; }
 	Details::Consumer* Database::registerConsumer() { auto result(registerConsumer(nothrow)); throwException(result.second); return result.first; }
 
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, bool initial_value)		{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, int16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, int32_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, uint16_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, uint32_t initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, float initial_value)	{ auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
-	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType point_type, double initial_value)   { auto result(createPoint(producer, point_type, initial_value, nothrow)); throwException(result.second); return result.first; }
+	unsigned int Database::createPoint(Details::Producer const *producer, Core::PointType const &point_type, Core::PointValue const &initial_value/* = Core::PointValue()*/, Core::Flags const &initial_flags/* = Core::Flags()*/, Core::Timestamp const &initial_timestamp/* = Core::Timestamp()*/)		{ auto result(createPoint(producer, point_type, initial_value, initial_flags, initial_timestamp, nothrow)); throwException(result.second); return result.first; }
 
 	Core::Details::ROTransaction Database::beginTransaction(Details::Consumer *consumer) { auto result(beginTransaction(consumer, nothrow)); throwException(result.second); return result.first; }
 #endif
@@ -104,64 +98,28 @@ namespace Vlinder { namespace RTIMDB {
 		return transition_queues_[producer->transition_queue_id_];
 	}
 
-	std::pair< Core::Details::Optional< Core::PointValue >, Errors > Database::read(Core::Details::ROTransaction const &transaction, Core::PointType point_type, unsigned int system_id) const noexcept
+	std::pair< Core::Details::Optional< Core::Point >, Errors > Database::read(Core::Details::ROTransaction const &transaction, Core::PointType point_type, unsigned int system_id) const noexcept
 	{
 		return data_store_.read(transaction, point_type, system_id RTIMDB_NOTHROW_ARG);
 	}
 
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, bool initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType const &point_type RTIMDB_NOTHROW_PARAM) noexcept
 	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
+		return createPoint(producer, point_type, Core::PointValue(), Core::Flags(), Core::Timestamp() RTIMDB_NOTHROW_ARG);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, int16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType const &point_type, Core::PointValue const &initial_value RTIMDB_NOTHROW_PARAM) noexcept
 	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
+		return createPoint(producer, point_type, initial_value, Core::Flags(), Core::Timestamp() RTIMDB_NOTHROW_ARG);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, int32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType const &point_type, Core::PointValue const &initial_value, Core::Flags const &initial_flags RTIMDB_NOTHROW_PARAM) noexcept
 	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
+		return createPoint(producer, point_type, initial_value, initial_flags, Core::Timestamp() RTIMDB_NOTHROW_ARG);
 	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, uint16_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
+	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType const &point_type, Core::PointValue const &initial_value, Core::Flags const &initial_flags, Core::Timestamp const &initial_timestamp RTIMDB_NOTHROW_PARAM) noexcept
 	{
 		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
 		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
-	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, uint32_t initial_value RTIMDB_NOTHROW_PARAM) noexcept
-	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
-	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, float initial_value RTIMDB_NOTHROW_PARAM) noexcept
-	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
-		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
-		return createPoint_(producer, point_type, result.first);
-	}
-	std::pair< unsigned int, Errors > Database::createPoint(Details::Producer const *producer, Core::PointType point_type, double initial_value RTIMDB_NOTHROW_PARAM) noexcept
-	{
-		pre_condition((producer >= producers_) && (producer < producers_ + (sizeof(producers_) / sizeof(producers_[0]))));
-		Core::PointValue point(initial_value);
-		auto result(data_store_.insert(point_type, point RTIMDB_NOTHROW_ARG));
+		auto result(data_store_.insert(point_type, initial_value, initial_flags, initial_timestamp RTIMDB_NOTHROW_ARG));
 		if (result.second != Errors::no_error__) return std::make_pair(0, result.second);
 		return createPoint_(producer, point_type, result.first);
 	}
@@ -180,7 +138,7 @@ namespace Vlinder { namespace RTIMDB {
 		return data_store_.startROTransaction(RTIMDB_NOTHROW_ARG_1);
 	}
 
-	Details::TransitionQueueTransaction Database::beginTransaction(Details::Producer const *producer, Details::Timestamp const &timestamp) noexcept
+	Details::TransitionQueueTransaction Database::beginTransaction(Details::Producer const *producer, Core::Timestamp const &timestamp) noexcept
 	{
 		return getTransitionQueue(producer).beginTransaction(timestamp);
 	}
@@ -211,7 +169,7 @@ namespace Vlinder { namespace RTIMDB {
 				post_condition(transition.second);
 				if (0 == transition.first.type()) // entry is a time stamp
 				{
-					latest_timestamp_[transition_queue - transition_queues_] = transition.first.get< Details::Timestamp >();
+					latest_timestamp_[transition_queue - transition_queues_] = transition.first.get< Core::Timestamp >();
 					if (!first)
 					{
 						retval = commitTransaction(latest_timestamp_[transition_queue - transition_queues_], transaction.first);
@@ -225,7 +183,7 @@ namespace Vlinder { namespace RTIMDB {
 					first = false;
 					invariant(1 == transition.first.type());
 					auto value(transition.first.get< Transition >());
-					Errors update_result(data_store_.update(transaction.first, value.point_type_, value.system_id_, value.point_value_ RTIMDB_NOTHROW_ARG));
+					Errors update_result(data_store_.update(transaction.first, value.point_type_, value.system_id_, value.point_value_, value.flags_, latest_timestamp_[transition_queue - transition_queues_] RTIMDB_NOTHROW_ARG));
 					if (Errors::no_error__ != update_result)
 					{
 						transition_queue->pop(); // we'll have to pop it because there's no other way to get rid of it
@@ -252,7 +210,7 @@ namespace Vlinder { namespace RTIMDB {
 		return make_pair(point_id, Errors::no_error__);
 	}
 
-	Errors Database::commitTransaction(Details::Timestamp const &timestamp, Core::Details::Transaction &transaction) noexcept
+	Errors Database::commitTransaction(Core::Timestamp const &timestamp, Core::Details::Transaction &transaction) noexcept
 	{
 		Errors commit_result(data_store_.commit(transaction RTIMDB_NOTHROW_ARG));
 		if (Errors::no_error__ != commit_result) return commit_result;
@@ -262,7 +220,7 @@ namespace Vlinder { namespace RTIMDB {
 			, [&](decltype(*(transaction.begin())) entry){
 				if ((Errors::no_error__ == commit_result) && (decltype(entry.transact_state_)::transacted__ == entry.transact_state_))
 				{
-					commit_result = dispatch(timestamp, entry.type_, entry.point_id_, entry.value_);
+					commit_result = dispatch(timestamp, entry.type_, entry.point_id_, entry.value_.get(), entry.flags_.get());
 				}
 				else
 				{ /* not transacted, or something went horribly wrong */ }
@@ -279,7 +237,13 @@ namespace Vlinder { namespace RTIMDB {
 		return commit_result;
 	}
 
-	Errors Database::dispatch(Details::Timestamp const &timestamp, Core::PointType type, unsigned int id, Core::PointValue const &value) noexcept
+	Errors Database::dispatch(
+		  Core::Timestamp const &timestamp
+		, Core::PointType type
+		, unsigned int id
+		, Core::PointValue const &value
+		, Core::Flags const &flags
+		) noexcept
 	{
 		Errors retval(Errors::no_error__);
 		for_each(
@@ -291,7 +255,7 @@ namespace Vlinder { namespace RTIMDB {
 					auto mapping(consumer.findMapping(type, id));
 					if (mapping && (Details::EventClass::class_0__ != mapping->event_class_))
 					{
-						retval = consumer.event_queues_[static_cast< unsigned int >(mapping->event_class_) - 1].push(Details::Event(timestamp, type, id, value, mapping->tag_) RTIMDB_NOTHROW_ARG);
+						retval = consumer.event_queues_[static_cast< unsigned int >(mapping->event_class_) - 1].push(Details::Event(timestamp, type, id, value, flags, mapping->tag_) RTIMDB_NOTHROW_ARG);
 					}
 					else
 					{ /* Point not mapped for this consumer */ }

@@ -44,13 +44,13 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		return result_size_;
 	}
 
-	Variant< Event, Core::PointValue > PollResult::operator[](unsigned int index) const noexcept
+	Variant< Event, Core::Point > PollResult::operator[](unsigned int index) const noexcept
 	{
 		size();
-		if (index < class_1_size_) return Variant< Event, Core::PointValue >(getClassEvent(EventClass::class_1__, index));
-		else if (index < (class_1_size_ + class_2_size_)) return Variant< Event, Core::PointValue >(getClassEvent(EventClass::class_2__, index - class_1_size_));
-		else if (index < (class_1_size_ + class_2_size_ + class_3_size_)) return Variant< Event, Core::PointValue >(getClassEvent(EventClass::class_3__, index - (class_1_size_ + class_2_size_)));
-		else return Variant< Event, Core::PointValue >(getStatic(index - (class_1_size_ + class_2_size_ + class_2_size_)));
+		if (index < class_1_size_) return Variant< Event, Core::Point >(getClassEvent(EventClass::class_1__, index));
+		else if (index < (class_1_size_ + class_2_size_)) return Variant< Event, Core::Point >(getClassEvent(EventClass::class_2__, index - class_1_size_));
+		else if (index < (class_1_size_ + class_2_size_ + class_3_size_)) return Variant< Event, Core::Point >(getClassEvent(EventClass::class_3__, index - (class_1_size_ + class_2_size_)));
+		else return Variant< Event, Core::Point >(getStatic(index - (class_1_size_ + class_2_size_ + class_2_size_)));
 	}
 
 	void PollResult::confirm() noexcept
@@ -66,7 +66,7 @@ namespace Vlinder { namespace RTIMDB { namespace Details {
 		auto events(consumer_->getEvents(event_class));
 		return events[index];
 	}
-	Core::PointValue PollResult::getStatic(unsigned int index) const noexcept
+	Core::Point PollResult::getStatic(unsigned int index) const noexcept
 	{
 		return consumer_->getPointByIndex(transaction_, index);
 	}

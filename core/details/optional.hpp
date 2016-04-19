@@ -90,6 +90,10 @@ namespace Vlinder {	namespace RTIMDB { namespace Core { namespace Details {
 		T const &get() const { return *p_; }
 		T const &operator*() const { return get(); }
 		T const *operator->() const { return p_; }
+		T &get() { return *p_; }
+		T &operator*() { return get(); }
+		T *operator->() { return p_; }
+
 		bool empty() const { return empty_; }
 		void clear()
 		{
