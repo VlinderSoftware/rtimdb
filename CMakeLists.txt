@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.5 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(rtimdb)
 
 if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
@@ -6,7 +6,6 @@ if (${PROJECT_BINARY_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 	include(CTest)
 endif()
 
-set(VLINDER_USING_CXX11 1)
 include(cmake/settings.cmake)
 
 include_directories(${CMAKE_SOURCE_DIR})
