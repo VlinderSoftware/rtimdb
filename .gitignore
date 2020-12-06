@@ -17,3 +17,5 @@ rtimdb.v12.suo
 /_build
 .build
 *.bak
+.vs/
+out/
