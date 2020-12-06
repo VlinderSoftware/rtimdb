@@ -11,22 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
  #include "../core/datastore.hpp"
+ #include "catch.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
 
-int tryIterateEmptyDB()
-{
+TEST_CASE("Try to iterate on an empty database", "[empty database]") {
 	DataStore db;
-	if (db.begin() != db.end()) return 1;
-	if (db.end() != db.begin()) return 1;
-	if (!(db.begin() == db.end())) return 1;
-	if (!(db.end() == db.begin())) return 1;
-	return 0;
+	REQUIRE( !(db.begin() != db.end()) );
+	REQUIRE( !(db.end() != db.begin()) );
+	REQUIRE( (db.begin() == db.end()) );
+	REQUIRE( (db.end() == db.begin()) );
 }
 
-int tryReadFromEmptyDB()
-{
+TEST_CASE("Try to read from an empty database", "[empty database]") {
 	DataStore db;
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 	bool caught(false);
@@ -38,20 +36,11 @@ int tryReadFromEmptyDB()
 	{
 		caught = true;
 	}
-	return caught ? 0 : 1;
+	REQUIRE( caught );
 #else
 	auto transaction(db.startROTransaction());
-	if (transaction.second != Errors::no_error__) return 1;
+	REQUIRE( transaction.second == Errors::no_error__ );
 	auto read_result(db.read(transaction.first, PointType::binary_input__, 0));
-	return read_result.second == Errors::unknown_point__ ? 0 : 1;
+	REQUIRE( read_result.second == Errors::unknown_point__ );
 #endif
 }
-
-int main()
-{
-	return 0
-		|| tryIterateEmptyDB()
-		|| tryReadFromEmptyDB()
-		;
-}
-

@@ -1,12 +1,12 @@
 #include "../core/datastore.hpp"
 #include <vector>
+#include "catch.hpp"
 
 using namespace std;
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
 
-int tryTooManyFreezes()
-{
+TEST_CASE("Too many freezes", "[freezing]") {
 	DataStore data_store;
 	vector< decltype(data_store.startTransaction()) > transactions;
 
@@ -30,12 +30,5 @@ int tryTooManyFreezes()
 	}
 #endif
 
-	return caught ? 0 : 1;
-}
-
-int main()
-{
-	return 0
-		|| tryTooManyFreezes()
-		;
+	REQUIRE( caught );
 }

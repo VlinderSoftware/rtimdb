@@ -105,59 +105,36 @@ add_library(rtimdb SHARED
 	)
 target_link_libraries(rtimdb exceptions ${EXTRA_LIBS})
 
-set(TESTS
-	bubblesort
-	commandqueue
-	commandqueuemanagement
-	consumer
-	create_data_store
-	insertions
-	freezing
-	optional
-	produce_transitions
-	queries_on_empty_db
-	register_producer
-	try_concurrent_transactions
-	try_freeze
-	try_iterate
-	variant
-	)
+file(GLOB TESTS tests/*.cpp)
 
-foreach (test
-	${TESTS}
-	)
-	add_executable(test_${test} tests/${test}.cpp)
-	target_link_libraries(test_${test} rtimdb)
-	add_test(test_${test} ${EXECUTABLE_OUTPUT_PATH}/test_${test})
-endforeach (test)
-foreach (test_config 1 2 3 4)
-	add_library(rtimdb_cfg_${test_config} SHARED
-		${RTIMDB_CORE_SOURCES}
-		${RTIMDB_SOURCES}
-		${RTIMDB_OUTSTATION_SOURCES}
-		)
-	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
-	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
-	if (MSVC)
-		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
-	else()
-		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
-	endif()
-	set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_EXPORTS")
+add_executable(test_rtimdb ${TESTS})
+target_link_libraries(test_rtimdb rtimdb)
+add_test(test_rtimdb ${EXECUTABLE_OUTPUT_PATH}/test_rtimdb)
 
-	foreach (test
-		${TESTS}
-		)
-		add_executable(test_cfg${test_config}_${test} tests/${test}.cpp)
-		if (MSVC)
-			set_target_properties(test_cfg${test_config}_${test} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
-		else()
-			set_target_properties(test_cfg${test_config}_${test} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
-		endif()
-		target_link_libraries(test_cfg${test_config}_${test} rtimdb_cfg_${test_config})
-		add_test(test_cfg${test_config}_${test} ${EXECUTABLE_OUTPUT_PATH}/test_cfg${test_config}_${test})
-	endforeach (test)
-endforeach(test_config)
+#foreach (test_config 1 2 3 4)
+#	add_library(rtimdb_cfg_${test_config} SHARED
+#		${RTIMDB_CORE_SOURCES}
+#		${RTIMDB_SOURCES}
+#		${RTIMDB_OUTSTATION_SOURCES}
+#		)
+#	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
+#	target_link_libraries(rtimdb_cfg_${test_config} exceptions ${EXTRA_LIBS})
+#	if (MSVC)
+#		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
+#	else()
+#		set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
+#	endif()
+#	set_target_properties(rtimdb_cfg_${test_config} PROPERTIES COMPILE_DEFINITIONS "rtimdb_EXPORTS")
+#
+#	add_executable(test_cfg${test_config}_rtimdb ${TESTS})
+#	if (MSVC)
+#		set_target_properties(test_cfg${test_config}_rtimdb PROPERTIES COMPILE_FLAGS "/FI\"${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp\"")
+#	else()
+#		set_target_properties(test_cfg${test_config}_rtimdb PROPERTIES COMPILE_FLAGS "-include ${CMAKE_SOURCE_DIR}/tests/test_config_${test_config}.hpp")
+#	endif()
+#	target_link_libraries(test_cfg${test_config}_rtimdb rtimdb_cfg_${test_config})
+#	add_test(test_cfg${test_config}_rtimdb ${EXECUTABLE_OUTPUT_PATH}/test_cfg${test_config}_rtimdb)
+#endforeach(test_config)
 
 configure_file(rtimdb_config.hpp.in rtimdb_config.hpp)
 

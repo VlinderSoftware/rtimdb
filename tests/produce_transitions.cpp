@@ -1,5 +1,6 @@
 #include "../database.hpp"
 #include "exceptions/contract.hpp"
+#include "catch.hpp"
 
 #ifdef RTIMDB_ALLOW_EXCEPTIONS
 #define DOT_FIRST
@@ -15,8 +16,7 @@ using namespace Vlinder::RTIMDB;
 using Vlinder::RTIMDB::Core::PointType;
 using Vlinder::RTIMDB::Errors;
 
-int main()
-{
+TEST_CASE("produce transitions", "[transitions]") {
 	Database database;
 
 	auto producer(database.registerProducer());
@@ -25,26 +25,26 @@ int main()
 	for (unsigned int bi_index(0); bi_index < 32; ++bi_index)
 	{
 		auto result(database.createPoint(producer DOT_FIRST, PointType::binary_input__, false RTIMDB_NOTHROW_ARG));
-		assert(Errors::no_error__ == result.second);
-		assert(result.first == bi_index);
+		REQUIRE( Errors::no_error__ == result.second );
+		REQUIRE( result.first == bi_index );
 	}
 	for (unsigned int bo_index(0); bo_index < 8; ++bo_index)
 	{
 		auto result(database.createPoint(producer DOT_FIRST, PointType::binary_output__, false RTIMDB_NOTHROW_ARG));
-		assert(Errors::no_error__ == result.second);
-		assert(result.first == bo_index + 32);
+		REQUIRE( Errors::no_error__ == result.second );
+		REQUIRE( result.first == bo_index + 32 );
 	}
 	for (unsigned int ai_index(0); ai_index < 8; ++ai_index)
 	{
 		auto result(database.createPoint(producer DOT_FIRST, PointType::analog_input__, false RTIMDB_NOTHROW_ARG));
-		assert(Errors::no_error__ == result.second);
-		assert(result.first == ai_index + 40);
+		REQUIRE( Errors::no_error__ == result.second );
+		REQUIRE( result.first == ai_index + 40 );
 	}
 
 	Core::Timestamp timestamp;
 	auto transaction(database.beginTransaction(producer DOT_FIRST, timestamp));
 	static_assert(RTIMDB_TRANSITION_QUEUE_CAPACITY == 256, "This test is written for a transition queue of 256 entries. If you need help with other sizes, please contact support@vlinder.ca");
-	assert(transaction.size() == 254);
+	REQUIRE( transaction.size() == 254 );
 
 	/* pretend we are a typical device with 32 BIs, 8 BOs and 8 AIs. Our scanning task should 
 	 * not be worried about what the previous values were, so it'll just read everything and 
@@ -78,7 +78,5 @@ int main()
 	 * and start by making sure its view of the system is up to date. In that case, there is only one
 	 * event queue -- but it may well be subscribed to all points in the system. */
 	Errors update_result(database.update(RTIMDB_NOTHROW_ARG_1));
-	assert(Errors::no_error__ == update_result);
-
-	return 0;
+	REQUIRE( Errors::no_error__ == update_result );
 }

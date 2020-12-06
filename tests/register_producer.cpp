@@ -1,9 +1,9 @@
 #include "../database.hpp"
+#include "catch.hpp"
 
 using namespace Vlinder::RTIMDB;
 
-int main()
-{
+TEST_CASE("Try to register a producer", "[producer]") {
 	Database database;
 
 	auto registration(database.registerProducer());

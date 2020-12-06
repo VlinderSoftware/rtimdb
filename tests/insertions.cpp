@@ -1,4 +1,5 @@
 #include "../core/datastore.hpp"
+#include "catch.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
@@ -113,29 +114,26 @@ int tryInsertFreezeInsert()
 	return 0;
 }
 
-int main()
-{
-	return 0
-		|| tryInsertTooMany< PointType::binary_input__, bool >()
-		|| tryInsertTooMany< PointType::binary_output__, bool >()
-		|| tryInsertTooMany< PointType::counter__, uint32_t >()
-		|| tryInsertTooMany< PointType::analog_input__, double >()
-		|| tryInsertTooMany< PointType::analog_output__, double >()
-		|| tryInsertUpdateInsert< PointType::binary_input__, bool >()
-		|| tryInsertUpdateInsert< PointType::binary_output__, bool >()
-		|| tryInsertUpdateInsert< PointType::counter__, uint32_t >()
-		|| tryInsertUpdateInsert< PointType::analog_input__, double >()
-		|| tryInsertUpdateInsert< PointType::analog_output__, double >()
-		|| tryInsertReadInsert< PointType::binary_input__, bool >()
-		|| tryInsertReadInsert< PointType::binary_output__, bool >()
-		|| tryInsertReadInsert< PointType::counter__, uint32_t >()
-		|| tryInsertReadInsert< PointType::analog_input__, double >()
-		|| tryInsertReadInsert< PointType::analog_output__, double >()
-		|| tryInsertFreezeInsert< PointType::binary_input__, bool >()
-		|| tryInsertFreezeInsert< PointType::binary_output__, bool >()
-		|| tryInsertFreezeInsert< PointType::counter__, uint32_t >()
-		|| tryInsertFreezeInsert< PointType::analog_input__, double >()
-		|| tryInsertFreezeInsert< PointType::analog_output__, double >()
-		;
+TEST_CASE("insertions", "insertions") {
+	REQUIRE( 0 == tryInsertTooMany< PointType::binary_input__, bool >() );
+	REQUIRE( 0 == tryInsertTooMany< PointType::binary_output__, bool >() );
+	REQUIRE( 0 == tryInsertTooMany< PointType::counter__, uint32_t >() );
+	REQUIRE( 0 == tryInsertTooMany< PointType::analog_input__, double >() );
+	REQUIRE( 0 == tryInsertTooMany< PointType::analog_output__, double >() );
+	REQUIRE( 0 == tryInsertUpdateInsert< PointType::binary_input__, bool >() );
+	REQUIRE( 0 == tryInsertUpdateInsert< PointType::binary_output__, bool >() );
+	REQUIRE( 0 == tryInsertUpdateInsert< PointType::counter__, uint32_t >() );
+	REQUIRE( 0 == tryInsertUpdateInsert< PointType::analog_input__, double >() );
+	REQUIRE( 0 == tryInsertUpdateInsert< PointType::analog_output__, double >() );
+	REQUIRE( 0 == tryInsertReadInsert< PointType::binary_input__, bool >() );
+	REQUIRE( 0 == tryInsertReadInsert< PointType::binary_output__, bool >() );
+	REQUIRE( 0 == tryInsertReadInsert< PointType::counter__, uint32_t >() );
+	REQUIRE( 0 == tryInsertReadInsert< PointType::analog_input__, double >() );
+	REQUIRE( 0 == tryInsertReadInsert< PointType::analog_output__, double >() );
+	REQUIRE( 0 == tryInsertFreezeInsert< PointType::binary_input__, bool >() );
+	REQUIRE( 0 == tryInsertFreezeInsert< PointType::binary_output__, bool >() );
+	REQUIRE( 0 == tryInsertFreezeInsert< PointType::counter__, uint32_t >() );
+	REQUIRE( 0 == tryInsertFreezeInsert< PointType::analog_input__, double >() );
+	REQUIRE( 0 == tryInsertFreezeInsert< PointType::analog_output__, double >() );
 }
 

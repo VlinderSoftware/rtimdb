@@ -13,24 +13,22 @@
 #include "../core/details/optional.hpp"
 #include "../core/pointvalue.hpp"
 #include "exceptions/contract.hpp"
+#include "catch.hpp"
 
 using namespace Vlinder::RTIMDB::Core;
 
-int tryCreateInstance()
-{
+TEST_CASE("Try to create an instance (of an optional)", "[optional]") {
 	Details::Optional< PointValue > v;
-	return v.empty() ? 0 : 1;
+	REQUIRE( v.empty() );
 }
-int tryNonEmptyInstance()
-{
+TEST_CASE("Try to create a non-empty instance", "[optional]") {
 	PointValue p;
 	Details::Optional< PointValue > v(p);
 
-	return v.empty() ? 1 : 0;
+	REQUIRE( !v.empty() );
 }
 
-int tryCopyOptional()
-{
+TEST_CASE("Try to copy", "[optional]") {
 	struct T
 	{
 		T(bool &f)
@@ -47,14 +45,13 @@ int tryCopyOptional()
 	bool f(false);
 	T t(f);
 	Details::Optional< T > v1(t);
-	if (!f) return 1;
+	REQUIRE( f );
 	f = false;
 	Details::Optional< T > v2(t);
-	return f ? 0 : 1;
+	REQUIRE( f );
 }
 
-int tryAssignOptional()
-{
+TEST_CASE("Try to assign", "[optional]") {
 	struct T
 	{
 		T(bool &f)
@@ -71,19 +68,9 @@ int tryAssignOptional()
 	bool f(false);
 	T t(f);
 	Details::Optional< T > v1(t);
-	if (!f) return 1;
+	REQUIRE( f );
 	f = false;
 	Details::Optional< T > v2;
 	v2 = v1;
-	return f ? 0 : 1;
-}
-
-int main()
-{
-	return 0
-		|| tryCreateInstance()
-		|| tryNonEmptyInstance()
-		|| tryCopyOptional()
-		|| tryAssignOptional()
-		;
+	REQUIRE( f );
 }

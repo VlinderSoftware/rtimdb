@@ -11,12 +11,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 #include "../core/datastore.hpp"
+#include "catch.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
 
-int main()
-{
+TEST_CASE("Try to create a data store", "[datastore]") {
 	DataStore data_store;
 	data_store.insert(PointType::binary_output__, PointValue(true), Flags(), Timestamp());
 	data_store.insert(PointType::analog_input__, PointValue(25.35), Flags(), Timestamp());

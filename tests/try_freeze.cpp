@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License. */
 #include "../core/datastore.hpp"
+#include "catch.hpp"
 
 using namespace Vlinder::RTIMDB;
 using namespace Vlinder::RTIMDB::Core;
@@ -25,17 +26,16 @@ using namespace Vlinder::RTIMDB::Core;
 #define DEREF ->
 #endif
 
-int main()
-{
+TEST_CASE("Try to freeze", "[freeze]") {
 	DataStore data_store;
 	auto index(data_store.insert(PointType::binary_input__, PointValue(false), Flags(), Timestamp()) DOT_FIRST);
 
 	auto transaction(data_store.startROTransaction() DOT_FIRST);
 	data_store.update(PointType::binary_input__, index, PointValue(true), Flags(0), Timestamp());
 	auto frozen_value(data_store.read(transaction, PointType::binary_input__, index) DOT_FIRST);
-	//assert(PointType::binary_input__ == frozen_value DEREF type_);
-	assert(false == frozen_value DEREF value_.payload_.bool_);
+	//REQUIRE( PointType::binary_input__ == frozen_value DEREF type_ );
+	REQUIRE( false == frozen_value DEREF value_.payload_.bool_ );
 	frozen_value = data_store.read(PointType::binary_input__, index) DOT_FIRST;
-	//assert(PointType::binary_input__ == frozen_value DEREF type_);
-	assert(true == frozen_value DEREF value_.payload_.bool_);
+	//REQUIRE( PointType::binary_input__ == frozen_value DEREF type_ );
+	REQUIRE( true == frozen_value DEREF value_.payload_.bool_ );
 }
